@@ -3,7 +3,8 @@ name: "Shellcheck"
 
 on:
   push:
-    branches: ["*"]
+    branches:
+      - "*"
     paths:
       - "**/*.sh"
       - ".github/workflows/shellcheck.yaml"

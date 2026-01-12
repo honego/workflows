@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # SPDX-License-Identifier: GPL-3.0
 #
 # Based on: https://github.com/yitong2333/proxy-minging

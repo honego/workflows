@@ -1,31 +1,23 @@
 ---
-name: "Dependabot merge"
+name: "Dependabot Merge"
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
-  workflow_dispatch:
-    inputs:
-      pr_url:
-        description: "-_-"
-        required: true
 
 jobs:
   dependabot:
-    name: "Dependabot merge"
+    name: "Dependabot Merge"
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
     permissions:
-      pull-requests: read
+      contents: write
+      pull-requests: write
 
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-
-      # - name: "Fetch Dependabot metadata"
-      #   uses: dependabot/fetch-metadata@v2
-      #   with:
-      #     github-token: ${{ github.token }}
+      - name: "Fetch Dependabot metadata"
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ github.token }}
 
       - name: "Approve and Auto-merge"
         env:

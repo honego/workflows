@@ -10,7 +10,7 @@ jobs:
   dependabot:
     name: "Dependabot merge"
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
     permissions:
       pull-requests: read
 

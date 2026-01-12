@@ -15,18 +15,3 @@ updates:
       actions:
         patterns:
           - "*"
-
-  - package-ecosystem: "pip"
-    directory: "/evil/subscan"
-    schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "Asia/Shanghai"
-    open-pull-requests-limit: 10
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      pip:
-        patterns:
-          - "*"

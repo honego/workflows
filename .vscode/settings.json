@@ -32,15 +32,6 @@
   // prettier
   "prettier.useEditorConfig": true,
 
-  // python
-  "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit",
-      "source.organizeImports.ruff": "explicit"
-    }
-  },
-
   // go
   "[go]": {
     "editor.defaultFormatter": "golang.go",
@@ -67,6 +58,20 @@
   "go.inlayHints.functionTypeParameters": true,
   "go.inlayHints.parameterNames": true,
   "go.inlayHints.rangeVariableTypes": true,
+
+  // lua
+  "[lua]": {
+    "editor.defaultFormatter": "JohnnyMorganz.stylua"
+  },
+
+  // python
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
 
   // shell
   "[shellscript]": {

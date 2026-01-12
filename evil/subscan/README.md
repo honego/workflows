@@ -1,6 +1,8 @@
 # Subscan
 
-<img width="512" height="512" alt="Image" src="https://github.com/user-attachments/assets/e6f8fc4a-1bc4-46cc-92c3-788012c36fb9" />
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/e6f8fc4a-1bc4-46cc-92c3-788012c36fb9" width="64" />
+</div>
 
 [![Python Version](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](https://github.com/honeok/cross)
 [![License](https://img.shields.io/github/license/yitong2333/proxy-minging.svg?logo=github)](https://github.com/honeok/cross)

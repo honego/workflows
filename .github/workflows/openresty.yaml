@@ -15,7 +15,7 @@ on:
           - edge
 
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -53,8 +53,7 @@ jobs:
 
   build-stable:
     name: "Build stable image"
-    needs:
-      - check-stable
+    needs: [check-stable]
     if: |
       needs.check-stable.result == 'success' && (needs.check-stable.outputs.renew == 'true' || github.event_name == 'workflow_dispatch')
     strategy:
@@ -138,9 +137,7 @@ jobs:
 
   merge-stable:
     name: "Merge stable manifest"
-    needs:
-      - check-stable
-      - build-stable
+    needs: [check-stable, build-stable]
     runs-on: ubuntu-latest
 
     steps:
@@ -217,8 +214,7 @@ jobs:
 
   build-edge:
     name: "Build edge image"
-    needs:
-      - check-edge
+    needs: [check-edge]
     if: |
       needs.check-edge.result == 'success' && (needs.check-edge.outputs.renew == 'true' || github.event_name == 'workflow_dispatch')
     strategy:
@@ -302,9 +298,7 @@ jobs:
 
   merge-edge:
     name: "Merge edge manifest"
-    needs:
-      - check-edge
-      - build-edge
+    needs: [check-edge, build-edge]
     runs-on: ubuntu-latest
 
     steps:

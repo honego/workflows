@@ -22,7 +22,7 @@ get_ifaces() {
 }
 
 get_bytes() {
-    local TARGET_IFACE RX_BYTES TX_BYTES RX_PATH TX_PATH
+    local TARGET_IFACE RX_PATH TX_PATH RX_BYTES TX_BYTES
 
     TARGET_IFACE="$1"
     RX_PATH="/sys/class/net/$TARGET_IFACE/statistics/rx_bytes"

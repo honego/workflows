@@ -27,6 +27,9 @@ jobs:
   build:
     name: "Build Subscan"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./evil/subscan
 
     steps:
       - name: "Checkout repository"
@@ -38,9 +41,14 @@ jobs:
           python-version: "3.12"
 
       - name: "Install dependencies"
-        working-directory: evil/subscan
         run: python3 -m pip install --no-cache-dir -r requirements.txt
 
-      - name: "Run Subscan"
-        working-directory: evil/subscan
-        run: python3 ./main.py
+      - name: "Run subscan"
+        run: python3 main.py
+
+      - name: "Print subscan result"
+        run: |
+          set -eEuxo pipefail
+          cat latest.yaml
+          cat url.txt
+          cat v2ray.txt

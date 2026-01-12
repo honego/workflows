@@ -10,28 +10,27 @@
 set -eE
 
 get_ifaces() {
-    while read -r line; do
-        line="${line## }"
-        if [[ "$line" == *:* ]]; then
-            iface="${line%%:*}"
-            if [[ "$iface" != "lo" ]]; then
-                echo "$iface"
-            fi
+    local IFACE_PATH IFACE_NAME
+
+    for IFACE_PATH in /sys/class/net/*; do
+        [ -e "$IFACE_PATH" ] || continue
+        IFACE_NAME="${IFACE_PATH##*/}"
+        if [ "$IFACE_NAME" != "lo" ]; then
+            echo "$IFACE_NAME"
         fi
-    done < /proc/net/dev
+    done
 }
 
 get_bytes() {
-    local iface="$1"
-    while read -r line; do
-        line="${line## }"
-        if [[ "$line" == "$iface":* ]]; then
-            line="${line//:/ }"
-            read -ar cols <<< "$line"
-            # cols[1]: 入口流量
-            # cols[9]: 出口流量
-            echo "${cols[1]} ${cols[9]}"
-            return
-        fi
-    done < /proc/net/dev
+    local TARGET_IFACE RX_BYTES TX_BYTES RX_PATH TX_PATH
+
+    TARGET_IFACE="$1"
+    RX_PATH="/sys/class/net/$TARGET_IFACE/statistics/rx_bytes"
+    TX_PATH="/sys/class/net/$TARGET_IFACE/statistics/tx_bytes"
+
+    if [ -r "$RX_PATH" ] && [ -r "$TX_PATH" ]; then
+        RX_BYTES="$(< "$RX_PATH")"
+        TX_BYTES="$(< "$TX_PATH")"
+        echo "$RX_BYTES $TX_BYTES"
+    fi
 }

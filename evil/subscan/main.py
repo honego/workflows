@@ -48,7 +48,7 @@ def fetch_channel_links(channel_url):
             "https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]", page_content
         )
         found_proxies = re.findall(
-            "vmess://[^\s<]+|vless://[^\s<]+|ss://[^\s<]+|ssr://[^\s<]+|trojan://[^\s<]+|hy2://[^\s<]+|hysteria2://[^\s<]+",
+            r"vmess://[^\s<]+|vless://[^\s<]+|ss://[^\s<]+|ssr://[^\s<]+|trojan://[^\s<]+|hy2://[^\s<]+|hysteria2://[^\s<]+",
             page_content,
         )
         logger.info(channel_url + "\t获取成功")
@@ -97,7 +97,7 @@ def check_subscription(url, progress_bar):
                     if info:
                         expire_match = re.search(r"expire=(\d+)", info)
                         traffic_match = re.search(
-                            "upload=(\d+); download=(\d+); total=(\d+)", info
+                            r"upload=(\d+); download=(\d+); total=(\d+)", info
                         )
                         if traffic_match:
                             upload = int(traffic_match.group(1))
@@ -178,7 +178,7 @@ if __name__ == "__main__":
                 all_urls.append(url)
         all_proxies.extend(temp_proxies)
 
-    logger.info("开始筛选---")
+    logger.info("开始订阅筛选")
     all_urls = list(set(all_urls))
 
     progress_bar = tqdm(total=len(all_urls), desc="订阅筛选：")

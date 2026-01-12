@@ -11,6 +11,8 @@ jobs:
     name: "Dependabot merge"
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
+    permissions:
+      pull-requests: read
 
     steps:
       - name: "Fetch Dependabot metadata"

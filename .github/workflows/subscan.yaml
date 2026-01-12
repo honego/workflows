@@ -20,6 +20,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  TZ: Asia/Shanghai
+
 jobs:
   build:
     name: "Build Subscan"
@@ -36,9 +39,7 @@ jobs:
 
       - name: "Install dependencies"
         working-directory: evil/subscan
-        run: |
-          timedatectl set-timezone "Asia/Shanghai"
-          python3 -m pip install --no-cache-dir -r requirements.txt
+        run: python3 -m pip install --no-cache-dir -r requirements.txt
 
       - name: "Run Subscan"
         working-directory: evil/subscan

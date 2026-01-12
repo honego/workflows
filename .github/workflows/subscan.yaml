@@ -43,4 +43,4 @@ jobs:
 
       - name: "Run Subscan"
         working-directory: evil/subscan
-        run: ./main.py
+        run: sudo ./main.py

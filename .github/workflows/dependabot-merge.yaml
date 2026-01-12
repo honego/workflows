@@ -5,6 +5,10 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
+    inputs:
+      pr_url:
+        description: "-_-"
+        required: true
 
 jobs:
   dependabot:

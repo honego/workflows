@@ -15,10 +15,10 @@ jobs:
       pull-requests: read
 
     steps:
-      - name: "Fetch Dependabot metadata"
-        uses: dependabot/fetch-metadata@v2
-        with:
-          github-token: ${{ github.token }}
+      # - name: "Fetch Dependabot metadata"
+      #   uses: dependabot/fetch-metadata@v2
+      #   with:
+      #     github-token: ${{ github.token }}
 
       - name: "Approve and Auto-merge"
         env:

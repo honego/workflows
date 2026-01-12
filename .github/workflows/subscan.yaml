@@ -35,11 +35,11 @@ jobs:
           python-version: "3.12"
 
       - name: "Install dependencies"
-        working-directory: /evil/subscan
+        working-directory: evil/subscan
         run: |
           timedatectl set-timezone "Asia/Shanghai"
           python3 -m pip install --no-cache-dir -r requirements.txt
 
       - name: "Run Subscan"
-        working-directory: /evil/subscan
+        working-directory: evil/subscan
         run: ./main.py

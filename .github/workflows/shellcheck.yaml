@@ -3,8 +3,7 @@ name: "Shellcheck"
 
 on:
   push:
-    branches:
-      - "**"
+    branches: ["*"]
     paths:
       - "**/*.sh"
       - ".github/workflows/shellcheck.yaml"
@@ -13,6 +12,10 @@ on:
       - "**/*.sh"
       - ".github/workflows/shellcheck.yaml"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   shellcheck:

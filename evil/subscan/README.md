@@ -9,6 +9,10 @@ Automatically fetches and merges publicly available nodes and subscription links
 [![Python Version](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](https://github.com/honeok/cross)
 [![License](https://img.shields.io/github/license/RenaLio/proxy-minging.svg?logo=github)](https://github.com/honeok/cross)
 
+## Screenshot
+
+![Image](https://github.com/user-attachments/assets/b5708a91-b146-4e22-ad1c-d8247c7c3e79)
+
 ## Install
 
 Install dependencies.

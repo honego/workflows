@@ -11,7 +11,7 @@ Automatically fetches and merges publicly available nodes and subscription links
 
 ## Screenshot
 
-![Image](https://github.com/user-attachments/assets/b5708a91-b146-4e22-ad1c-d8247c7c3e79)
+<img width="1930" height="994" src="https://github.com/user-attachments/assets/b5708a91-b146-4e22-ad1c-d8247c7c3e79" />
 
 ## Install
 

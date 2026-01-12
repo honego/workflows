@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
-#
-# Description: This script installs or updates the latest nexttrace version, overcoming the official script's restriction to only stable versions.
-# Modified from the project: https://github.com/nxtrace/NTrace-V1
-#
-# Copyright (c) 2025 honeok <i@honeok.com>
 # SPDX-License-Identifier: GPL-3.0
 #
-# References:
-# https://github.com/bin456789/reinstall
-#
-# This script utilizes NextTrace, a powerful network diagnostic tool.
-# NextTrace is copyrighted and developed by the NextTrace project team.
-# For more details about NextTrace, visit: https://github.com/nxtrace
+# Modified from the project: https://github.com/nxtrace/NTrace-V1
+# Description: This script installs or updates the latest nexttrace version, overcoming the official script's restriction to only stable versions.
+# Copyright (c) 2025-2026 honeok <i@honeok.com>
 
 set -eE
 
@@ -24,28 +16,33 @@ _info_msg() { printf "\033[43m\033[1mInfo\033[0m %b\n" "$*"; }
 
 # 各变量默认值
 TEMP_DIR="$(mktemp -d)"
-GITHUB_PROXY='https://gh-proxy.com/'
+GITHUB_PROXY='https://v6.gh-proxy.org/'
 
-trap 'rm -rf "${TEMP_DIR:?}" >/dev/null 2>&1' INT TERM EXIT
+trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
 clear() {
-    [ -t 1 ] && tput clear 2>/dev/null || printf "\033[2J\033[H" || command clear
+    [ -t 1 ] && tput clear 2> /dev/null || printf "\033[2J\033[H" || command clear
 }
 
 # 打印错误信息并退出
 die() {
-    _err_msg >&2 "$(_red "$@")"; exit 1
+    _err_msg >&2 "$(_red "$@")"
+    exit 1
 }
 
 # 临时工作目录
-cd "$TEMP_DIR" >/dev/null 2>&1 || die "无法进入工作路径"
+cd "$TEMP_DIR" > /dev/null 2>&1 || die "无法进入工作路径"
 
 _exists() {
     local _CMD="$1"
-    if type "$_CMD" >/dev/null 2>&1; then return;
-    elif command -v "$_CMD" >/dev/null 2>&1; then return;
-    elif which "$_CMD" >/dev/null 2>&1; then return;
-    else return 1;
+    if type "$_CMD" > /dev/null 2>&1; then
+        return
+    elif command -v "$_CMD" > /dev/null 2>&1; then
+        return
+    elif which "$_CMD" > /dev/null 2>&1; then
+        return
+    else
+        return 1
     fi
 }
 
@@ -54,9 +51,9 @@ curl() {
     # 添加 --fail 不然404退出码也为0
     # 32位cygwin已停止更新, 证书可能有问题, 添加 --insecure
     # centos7 curl 不支持 --retry-connrefused --retry-all-errors 因此手动 retry
-    for ((i=1; i<=5; i++)); do
+    for ((i = 1; i <= 5; i++)); do
         command curl --connect-timeout 10 --fail --insecure "$@"
-        RET=$?
+        RET="$?"
         if [ "$RET" -eq 0 ]; then
             return
         else
@@ -82,20 +79,20 @@ check_cdn() {
 }
 
 check_sys() {
-    case "$(uname -s 2>/dev/null | sed 's/.*/\L&/')" in
-        linux) OS_NAME="linux" ;;
-        *) die "系统不被支持" ;;
+    case "$(uname -s 2> /dev/null | sed 's/.*/\L&/')" in
+    linux) OS_NAME="linux" ;;
+    *) die "系统不被支持" ;;
     esac
 }
 
 check_arch() {
-    case "$(uname -m 2>/dev/null)" in
-        i*86) OS_ARCH="386" ;;
-        amd64|x86_64) OS_ARCH="amd64" ;;
-        arm64|armv8|aarch64) OS_ARCH="arm64" ;;
-        armv7*) OS_ARCH="armv7" ;;
-        mips) OS_ARCH="mips" ;;
-        *) die "架构不被支持" ;;
+    case "$(uname -m 2> /dev/null)" in
+    i*86) OS_ARCH="386" ;;
+    amd64 | x86_64) OS_ARCH="amd64" ;;
+    arm64 | armv8 | aarch64) OS_ARCH="arm64" ;;
+    armv7*) OS_ARCH="armv7" ;;
+    mips) OS_ARCH="mips" ;;
+    *) die "架构不被支持" ;;
     esac
 }
 

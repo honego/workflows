@@ -46,7 +46,9 @@ jobs:
         run: python3 -m pip install -r requirements.txt
 
       - name: "Run subscan"
-        run: python3 main.py
+        run: |
+          chmod +x main.py
+          ./main.py
 
       - name: "Print subscan result"
         run: |

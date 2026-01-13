@@ -22,12 +22,10 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    env:
-      DEBUG: true
 
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: "Get NextTrace Version"
         env:

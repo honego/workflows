@@ -38,7 +38,7 @@ _warn_msg() {
 
 # Default variable values
 TEMP_DIR="$(mktemp -d)"
-GITHUB_PROXY='https://v6.gh-proxy.org/'
+GITHUB_PROXYS="('' 'https://v6.gh-proxy.org/' 'https://proxy.zzwsec.com/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')"
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
@@ -134,10 +134,16 @@ is_not_root() {
     [ "$(id -u)" -ne 0 ]
 }
 
+# 检测是否需要启用Github CDN如能直接连通则不使用
 check_cdn() {
-    if [[ -n "$GITHUB_PROXY" && "$(curl -Ls http://www.qualcomm.cn/cdn-cgi/trace | grep '^loc=' | cut -d= -f2 | grep .)" != "CN" ]]; then
-        GITHUB_PROXY=""
-    fi
+    # GITHUB_PROXYS数组第一个元素为空相当于直连
+    local CHECK_URL STATUS_CODE
+
+    for PROXY_URL in "${GITHUB_PROXYS[@]}"; do
+        CHECK_URL="${PROXY_URL}${RELEASES_URL}"
+        STATUS_CODE="$(command curl --connect-timeout 3 --fail --insecure -Ls --output /dev/null --write-out "%{http_code}" "$CHECK_URL")"
+        [ "$STATUS_CODE" = "200" ] && GITHUB_PROXY="$PROXY_URL" && break
+    done
 }
 
 is_darwin() {

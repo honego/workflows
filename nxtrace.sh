@@ -6,7 +6,7 @@
 # Description: This script installs or updates the latest nexttrace version, overcoming the official script's restriction to only stable versions.
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 
-set -eE
+set -eEu
 
 _red() { printf "\033[31m%b\033[0m\n" "$*"; }
 _green() { printf "\033[92m%b\033[0m\n" "$*"; }
@@ -21,12 +21,14 @@ GITHUB_PROXY='https://v6.gh-proxy.org/'
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
+VERSION="${VERSION:-}"
 VERSION="${VERSION#v}"
 
 # The channel to install from:
 #   * stable
 #   * dev
 DEFAULT_CHANNEL_VALUE="stable"
+CHANNEL="${CHANNEL:-}"
 if [ -z "$CHANNEL" ]; then
     CHANNEL="$DEFAULT_CHANNEL_VALUE"
 fi
@@ -51,7 +53,6 @@ while [ "$#" -gt 0 ]; do
         ;;
     --debug)
         set -x
-        shift
         ;;
     --version)
         VERSION="${2#v}"
@@ -114,7 +115,7 @@ is_not_root() {
 
 check_cdn() {
     if [[ -n "$GITHUB_PROXY" && "$(curl -Ls http://www.qualcomm.cn/cdn-cgi/trace | grep '^loc=' | cut -d= -f2 | grep .)" != "CN" ]]; then
-        unset GITHUB_PROXY
+        GITHUB_PROXY=""
     fi
 }
 
@@ -162,7 +163,6 @@ check_arch() {
 }
 
 do_install() {
-
     if is_have_cmd nexttrace; then
         tee >&2 <<- 'EOF'
 			Warning: the "nexttrace" command appears to already exist on this system.

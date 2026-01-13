@@ -189,7 +189,7 @@ do_install() {
     if is_have_cmd nexttrace; then
         tee >&2 <<- EOF
 			$(_warn_msg "")The "nexttrace" command appears to already exist on this system.
-            Press Ctrl +C to abort this script if you do not want to overwrite it.
+        Press Ctrl +C to abort this script if you do not want to overwrite it.
 		EOF
         (sleep 5)
     fi

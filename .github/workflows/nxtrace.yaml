@@ -47,6 +47,7 @@ jobs:
       - name: "Install dependencies"
         shell: bash
         run: |
+          set -x
           _exists() {
             command -v "$@" > /dev/null 2>&1
           }

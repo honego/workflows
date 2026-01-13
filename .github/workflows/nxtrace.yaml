@@ -3,8 +3,7 @@ name: "NextTrace CI"
 
 on:
   push:
-    branches:
-      - "*"
+    branches: ["*"]
     paths: ["**/nxtrace.*"]
   pull_request:
     types: [opened, reopened, synchronize]

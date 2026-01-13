@@ -179,8 +179,7 @@ do_install() {
     check_arch
 
     [ -n "$VERSION" ] || VERSION="$(curl -Ls "${GITHUB_PROXY}${RELEASES_URL}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n 1)"
-    curl -L "${GITHUB_PROXY}${DOWNLOAD_URL}/releases/download/${VERSION}/nexttrace_${OS_NAME}_${OS_ARCH}" -o nexttrace ||
-        die "NextTrace download failed."
+    curl -L "${GITHUB_PROXY}${DOWNLOAD_URL}/releases/download/${VERSION}/nexttrace_${OS_NAME}_${OS_ARCH}" -o nexttrace || die "NextTrace download failed."
 
     if is_writable "/usr/local/bin"; then
         BIN_WORKDIR="/usr/local/bin/nexttrace"

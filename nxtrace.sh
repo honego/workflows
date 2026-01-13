@@ -180,6 +180,8 @@ check_arch() {
 }
 
 do_install() {
+    local BIN_WORKDIR
+
     if is_have_cmd nexttrace; then
         tee >&2 <<- EOF
 			$(_warn_msg "")The "nexttrace" command appears to already exist on this system.

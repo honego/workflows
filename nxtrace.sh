@@ -3,7 +3,7 @@
 #
 # Based on from: https://github.com/nxtrace/NTrace-core
 #                https://github.com/nxtrace/NTrace-V1
-# Description: This script installs or updates the latest nexttrace version, overcoming the official script's restriction to only stable versions.
+# Description: The script installs NextTrace with support for stable/dev channels, custom versions, and multi-architecture compatibility.
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 
 set -eEuo pipefail

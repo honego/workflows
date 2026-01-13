@@ -87,11 +87,11 @@ while [ "$#" -gt 0 ]; do
 done
 
 case "$CHANNEL" in
-stable)
+stable | production)
     DOWNLOAD_URL="https://github.com/nxtrace/NTrace-core"
     RELEASES_URL="https://api.github.com/repos/nxtrace/NTrace-core/releases"
     ;;
-dev)
+dev | development)
     DOWNLOAD_URL="https://github.com/nxtrace/NTrace-V1"
     RELEASES_URL="https://api.github.com/repos/nxtrace/NTrace-V1/releases"
     ;;

@@ -47,27 +47,11 @@ jobs:
       - name: "Install dependencies"
         shell: bash
         run: |
-          _exists() {
-            command -v "$@" > /dev/null 2>&1
-          }
-
-          install_pkg() {
-            for pkg in "$@"; do
-              if _exists dnf; then
-                dnf install -y --allowerasing "$pkg"
-              elif _exists yum; then
-                yum install -y "$pkg"
-              elif _exists apt-get; then
-                DEBIAN_FRONTEND=noninteractive apt-get update
-                DEBIAN_FRONTEND=noninteractive apt-get install -y -q "$pkg"
-              fi
-            done
-          }
-
-          install_pkg bash curl
+          bash <(curl -Ls https://github.com/honeok/tools/raw/master/infra/ci-deps.sh)
 
       - name: "Run NextTrace install"
         run: |
+          set -x
           bash nxtrace.sh
           bash nxtrace.sh --channel stable --debug --version v1.5.0
           bash nxtrace.sh --channel dev --debug --version v1.5.0

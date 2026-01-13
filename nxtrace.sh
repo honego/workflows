@@ -6,7 +6,7 @@
 # Description: This script installs or updates the latest nexttrace version, overcoming the official script's restriction to only stable versions.
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 
-set -eEu
+set -eEuo pipefail
 
 # shellcheck disable=SC2034
 # MAJOR.MINOR.PATCH

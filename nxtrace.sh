@@ -219,7 +219,7 @@ do_install() {
 
     if is_have_cmd nexttrace; then
         _suc_msg "$(_green "NextTrace is now available on your system.")"
-        "$BIN_WORKDIR" --version
+        eval "$BIN_WORKDIR" --version
     else
         die "NextTrace installation failed, please try again"
     fi

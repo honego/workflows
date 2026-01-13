@@ -38,6 +38,7 @@ _warn_msg() {
 
 # Default variable values
 TEMP_DIR="$(mktemp -d)"
+GITHUB_PROXY="${GITHUB_PROXY:-}"
 GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://proxy.zzwsec.com/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
@@ -71,6 +72,9 @@ while [ "$#" -gt 0 ]; do
     --channel)
         CHANNEL="$2"
         shift
+        ;;
+    --ci)
+        GITHUB_CI=1
         ;;
     --debug)
         set -x
@@ -138,6 +142,10 @@ is_not_root() {
 check_cdn() {
     # GITHUB_PROXYS数组第一个元素为空相当于直连
     local CHECK_URL STATUS_CODE
+
+    if [ -n "$GITHUB_ACTIONS" ] || [ "$GITHUB_CI" = 1 ]; then
+        return
+    fi
 
     for PROXY_URL in "${GITHUB_PROXYS[@]}"; do
         CHECK_URL="${PROXY_URL}${RELEASES_URL}"

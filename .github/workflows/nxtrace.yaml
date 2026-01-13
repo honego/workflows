@@ -22,6 +22,8 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      DEBUG: true
 
     steps:
       - name: "Checkout repository"

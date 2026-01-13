@@ -184,7 +184,7 @@ check_arch() {
 }
 
 do_install() {
-    local BIN_WORKDIR
+    local SH_C BIN_WORKDIR
 
     if is_have_cmd nexttrace; then
         tee >&2 <<- EOF
@@ -194,8 +194,13 @@ do_install() {
         (sleep 5)
     fi
 
+    SH_C="${SH_C:-}"
     if is_not_root; then
-        die "This installer needs the ability to run commands as root."
+        if is_have_cmd sudo; then
+            SH_C="sudo"
+        else
+            die "This installer needs the ability to run commands as root."
+        fi
     fi
 
     check_sys

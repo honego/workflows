@@ -221,7 +221,7 @@ do_install() {
         BIN_WORKDIR="/usr/bin/nexttrace"
     fi
 
-    eval "$SH_C command install -m 755 ./nexttrace $BIN_WORKDIR"
+    eval "$SH_C install -m 755 ./nexttrace $BIN_WORKDIR"
 
     if is_have_cmd nexttrace; then
         _suc_msg "$(_green "NextTrace is now available on your system.")"

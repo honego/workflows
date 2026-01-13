@@ -5,14 +5,10 @@ on:
   push:
     branches:
       - "*"
-    paths:
-      - "nxtrace.sh"
-      - ".github/workflows/nxtrace.yaml"
+    paths: ["**/nxtrace.*"]
   pull_request:
     types: [opened, reopened, synchronize]
-    paths:
-      - "nxtrace.sh"
-      - ".github/workflows/nxtrace.yaml"
+    paths: ["**/nxtrace.*"]
   workflow_dispatch:
 
 concurrency:
@@ -25,47 +21,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          # debian
-          - debian:bookworm # 12
-          - debian:trixie # 13
-          - debian:forky # 14
-          - debian:sid
-          # ubuntu
-          - ubuntu:jammy # 22.04
-          - ubuntu:noble # 24.04
-          - ubuntu:plucky # 25.04
-          - ubuntu:rolling
-    runs-on: ubuntu-latest
-    container:
-      image: ${{ matrix.os }}
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v6
-
-      - name: "Install dependencies"
-        shell: bash
-        run: |
-          set -x
-          _exists() {
-            command -v "$@" > /dev/null 2>&1
-          }
-
-          install_pkg() {
-            for pkg in "$@"; do
-              if _exists dnf; then
-                dnf install -y --allowerasing "$pkg"
-              elif _exists yum; then
-                yum install -y "$pkg"
-              elif _exists apt-get; then
-                DEBIAN_FRONTEND=noninteractive apt-get update
-                DEBIAN_FRONTEND=noninteractive apt-get install -y -q "$pkg"
-              fi
-            done
-          }
-
-          install_pkg bash curl
+        uses: actions/checkout@v5
 
       - name: "Run NextTrace install"
         run: |

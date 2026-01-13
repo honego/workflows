@@ -63,7 +63,7 @@ die() {
 }
 
 usage_and_exit() {
-    tee >&2 << 'EOF'
+    tee >&2 <<- 'EOF'
 Usage: ./nxtrace.sh [options]
        bash <(curl -Ls https://github.com/honeok/cross/raw/master/nxtrace.sh) [options]
 

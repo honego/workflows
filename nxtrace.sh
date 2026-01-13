@@ -8,12 +8,29 @@
 
 set -eEu
 
-_red() { printf "\033[31m%b\033[0m\n" "$*"; }
-_green() { printf "\033[92m%b\033[0m\n" "$*"; }
-_yellow() { printf "\033[93m%b\033[0m\n" "$*"; }
-_err_msg() { printf "\033[41m\033[1mError\033[0m %b\n" "$*"; }
-_suc_msg() { printf "\033[42m\033[1mSuccess\033[0m %b\n" "$*"; }
-_info_msg() { printf "\033[43m\033[1mInfo\033[0m %b\n" "$*"; }
+_red() {
+    printf "\033[31m%b\033[0m\n" "$*"
+}
+
+_green() {
+    printf "\033[32m%b\033[0m\n" "$*"
+}
+
+_yellow() {
+    printf "\033[33m%b\033[0m\n" "$*"
+}
+
+_err_msg() {
+    printf "\033[41m\033[1mError\033[0m %b\n" "$*"
+}
+
+_suc_msg() {
+    printf "\033[42m\033[1mSuccess\033[0m %b\n" "$*"
+}
+
+_warn_msg() {
+    printf "\033[43m\033[1mWarning\033[0m %b\n" "$*"
+}
 
 # Default variable values
 TEMP_DIR="$(mktemp -d)"
@@ -22,7 +39,7 @@ GITHUB_PROXY='https://v6.gh-proxy.org/'
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
 VERSION="${VERSION:-}"
-VERSION="v${VERSION#v}"
+VERSION="${VERSION#v}"
 
 # The channel to install from:
 #   * stable
@@ -55,7 +72,7 @@ while [ "$#" -gt 0 ]; do
         set -x
         ;;
     --version)
-        VERSION="v${2#v}"
+        VERSION="${2#v}"
         shift
         ;;
     --*)
@@ -164,8 +181,8 @@ check_arch() {
 
 do_install() {
     if is_have_cmd nexttrace; then
-        tee >&2 <<- 'EOF'
-			Warning: the "nexttrace" command appears to already exist on this system.
+        tee >&2 <<- EOF
+			$(_warn_msg "")The "nexttrace" command appears to already exist on this system.
             Press Ctrl +C to abort this script if you do not want to overwrite it.
 		EOF
         (sleep 5)
@@ -178,8 +195,8 @@ do_install() {
     check_sys
     check_arch
 
-    [ -n "$VERSION" ] || VERSION="$(curl -Ls "${GITHUB_PROXY}${RELEASES_URL}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n 1)"
-    curl -L "${GITHUB_PROXY}${DOWNLOAD_URL}/releases/download/${VERSION}/nexttrace_${OS_NAME}_${OS_ARCH}" -o nexttrace || die "NextTrace download failed."
+    [ -n "$VERSION" ] || VERSION="$(curl -Ls "${GITHUB_PROXY}${RELEASES_URL}" | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/' | head -n 1)"
+    curl -L "${GITHUB_PROXY}${DOWNLOAD_URL}/releases/download/v${VERSION}/nexttrace_${OS_NAME}_${OS_ARCH}" -o nexttrace || die "NextTrace download failed."
 
     if is_writable "/usr/local/bin"; then
         BIN_WORKDIR="/usr/local/bin/nexttrace"

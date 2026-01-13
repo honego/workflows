@@ -62,10 +62,34 @@ die() {
     exit 1
 }
 
+usage_and_exit() {
+    tee >&2 << 'EOF'
+Usage: ./nxtrace.sh [options]
+       bash <(curl -Ls https://github.com/honeok/cross/raw/master/nxtrace.sh) [options]
+
+Options:
+    -h, --help          Show this help message and exit
+    --channel <name>    Install from channel: stable (default) or dev
+    --version <ver>     Install a specific version (e.g., 1.2.3)
+    --debug             Enable debug mode (set -x)
+
+Examples:
+    # Install stable version
+    ./nxtrace.sh
+
+    # Install specific version from dev channel
+    ./nxtrace.sh --channel dev --version <ver>
+EOF
+    exit 1
+}
+
 cd "$TEMP_DIR" > /dev/null 2>&1 || die "Can't access temporary work dir."
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
+    -h | --help)
+        usage_and_exit
+        ;;
     --channel)
         CHANNEL="$2"
         shift

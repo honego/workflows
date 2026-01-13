@@ -21,7 +21,6 @@ GITHUB_PROXY='https://v6.gh-proxy.org/'
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
-# Strip "v" prefix if present
 VERSION="${VERSION#v}"
 
 # The channel to install from:

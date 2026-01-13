@@ -38,7 +38,7 @@ _warn_msg() {
 
 # Default variable values
 TEMP_DIR="$(mktemp -d)"
-GITHUB_PROXYS="('' 'https://v6.gh-proxy.org/' 'https://proxy.zzwsec.com/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')"
+GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://proxy.zzwsec.com/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
@@ -221,7 +221,7 @@ do_install() {
         BIN_WORKDIR="/usr/bin/nexttrace"
     fi
 
-    command install -m 755 ./nexttrace "$BIN_WORKDIR"
+    eval "$SH_C command install -m 755 ./nexttrace $BIN_WORKDIR"
 
     if is_have_cmd nexttrace; then
         _suc_msg "$(_green "NextTrace is now available on your system.")"

@@ -22,7 +22,7 @@ GITHUB_PROXY='https://v6.gh-proxy.org/'
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
 VERSION="${VERSION:-}"
-VERSION="${VERSION#v}"
+VERSION="v${VERSION#v}"
 
 # The channel to install from:
 #   * stable
@@ -55,7 +55,7 @@ while [ "$#" -gt 0 ]; do
         set -x
         ;;
     --version)
-        VERSION="${2#v}"
+        VERSION="v${2#v}"
         shift
         ;;
     --*)
@@ -68,11 +68,11 @@ done
 case "$CHANNEL" in
 stable)
     DOWNLOAD_URL="https://github.com/nxtrace/NTrace-core"
-    DOWNLOAD_API_URL="https://api.github.com/repos/nxtrace/NTrace-core/releases"
+    RELEASES_URL="https://api.github.com/repos/nxtrace/NTrace-core/releases"
     ;;
 dev)
     DOWNLOAD_URL="https://github.com/nxtrace/NTrace-V1"
-    DOWNLOAD_API_URL="https://api.github.com/repos/nxtrace/NTrace-V1/releases"
+    RELEASES_URL="https://api.github.com/repos/nxtrace/NTrace-V1/releases"
     ;;
 *)
     die "unknown CHANNEL $CHANNEL: use either stable or dev."
@@ -178,7 +178,7 @@ do_install() {
     check_sys
     check_arch
 
-    [ -n "$VERSION" ] || VERSION="$(curl -Ls "${GITHUB_PROXY}${DOWNLOAD_API_URL}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sort -rV | head -n 1)"
+    [ -n "$VERSION" ] || VERSION="$(curl -Ls "${GITHUB_PROXY}${RELEASES_URL}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n 1)"
     curl -L "${GITHUB_PROXY}${DOWNLOAD_URL}/releases/download/${VERSION}/nexttrace_${OS_NAME}_${OS_ARCH}" -o nexttrace ||
         die "NextTrace download failed."
 

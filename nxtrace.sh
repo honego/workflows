@@ -8,6 +8,10 @@
 
 set -eEu
 
+# shellcheck disable=SC2034
+# MAJOR.MINOR.PATCH
+readonly SCRIPT_VERSION='v1.0.0'
+
 _red() {
     printf "\033[31m%b\033[0m\n" "$*"
 }

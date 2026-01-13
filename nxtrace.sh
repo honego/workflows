@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: GPL-3.0
+# SPDX-License-Identifier: GPL-2.0
 #
 # Based on from: https://github.com/nxtrace/NTrace-core
 #                https://github.com/nxtrace/NTrace-V1
 # Description: The script installs NextTrace with support for stable/dev channels, custom versions, and multi-architecture compatibility.
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 
-set -eEuo pipefail
+set -eE
 
 # shellcheck disable=SC2034
 # MAJOR.MINOR.PATCH
@@ -36,21 +36,19 @@ _warn_msg() {
     printf "\033[43m\033[1mWarning\033[0m %b\n" "$*"
 }
 
-# Default variable values
+# 各变量默认值
 TEMP_DIR="$(mktemp -d)"
 GITHUB_PROXY="${GITHUB_PROXY:-}"
-GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://proxy.zzwsec.com/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
+GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
-VERSION="${VERSION:-}"
 VERSION="${VERSION#v}"
 
-# The channel to install from:
+# 安装渠道来源:
 #   * stable
 #   * dev
 DEFAULT_CHANNEL_VALUE="stable"
-CHANNEL="${CHANNEL:-}"
 if [ -z "$CHANNEL" ]; then
     CHANNEL="$DEFAULT_CHANNEL_VALUE"
 fi
@@ -59,7 +57,6 @@ clear() {
     [ -t 1 ] && tput clear 2> /dev/null || printf "\033[2J\033[H" || command clear
 }
 
-# Print error message and exit
 die() {
     _err_msg >&2 "$(_red "$@")"
     exit 1
@@ -72,9 +69,6 @@ while [ "$#" -gt 0 ]; do
     --channel)
         CHANNEL="$2"
         shift
-        ;;
-    --ci)
-        GITHUB_CI=1
         ;;
     --debug)
         set -x
@@ -134,6 +128,20 @@ curl() {
     done
 }
 
+is_ci() {
+    if [ -n "$GITHUB_ACTIONS" ]; then
+        return
+    elif [ -n "$GITLAB_CI" ]; then
+        return
+    elif [ -n "$JENKINS_URL" ]; then
+        return
+    elif [ -n "$TEAMCITY_GIT_PATH" ]; then
+        return
+    else
+        return 1
+    fi
+}
+
 is_not_root() {
     [ "$(id -u)" -ne 0 ]
 }
@@ -143,7 +151,7 @@ check_cdn() {
     # GITHUB_PROXYS数组第一个元素为空相当于直连
     local CHECK_URL STATUS_CODE
 
-    if [ -n "$GITHUB_ACTIONS" ] || [ "$GITHUB_CI" = 1 ]; then
+    if is_ci; then
         return
     fi
 

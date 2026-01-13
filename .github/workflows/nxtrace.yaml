@@ -1,0 +1,47 @@
+---
+name: "NextTrace CI"
+
+on:
+  push:
+    branches:
+      - "*"
+    paths:
+      - "nxtrace.sh"
+      - ".github/workflows/nxtrace.yaml"
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - "nxtrace.sh"
+      - ".github/workflows/nxtrace.yaml"
+  workflow_dispatch:
+
+jobs:
+  run:
+    name: "NextTrace install"
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          # debian
+          - debian:bookworm # 12
+          - debian:trixie # 13
+          - debian:forky # 14
+          - debian:sid
+          # ubuntu
+          - ubuntu:jammy # 22.04
+          - ubuntu:noble # 24.04
+          - ubuntu:plucky # 25.04
+          - ubuntu:rolling
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.os }}
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v6
+
+      - name: "Run NextTrace install"
+        run: |
+          bash nxtrace.sh
+          bash nxtrace.sh --channel stable --debug --version v1.5.0
+          bash nxtrace.sh --channel dev --debug --version v1.5.0

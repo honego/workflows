@@ -50,12 +50,12 @@ while [ "$#" -gt 0 ]; do
         CHANNEL="$2"
         shift
         ;;
-    --version)
-        VERSION="${2#v}"
-        shift
-        ;;
     --debug)
         set -x
+        shift
+        ;;
+    --version)
+        VERSION="${2#v}"
         shift
         ;;
     --*)
@@ -131,10 +131,6 @@ is_writable() {
     [ -w "$1" ]
 }
 
-is_executable() {
-    [ -x "$1" ]
-}
-
 check_sys() {
     if is_linux; then
         OS_NAME="linux"
@@ -173,7 +169,7 @@ do_install() {
 			Warning: the "nexttrace" command appears to already exist on this system.
             Press Ctrl +C to abort this script if you do not want to overwrite it.
 		EOF
-        (sleep 20)
+        (sleep 5)
     fi
 
     if is_not_root; then
@@ -193,11 +189,7 @@ do_install() {
         BIN_WORKDIR="/usr/bin/nexttrace"
     fi
 
-    if is_executable ./nexttrace; then
-        chmod +x ./nexttrace
-    fi
-
-    mv -f ./nexttrace "$BIN_WORKDIR"
+    command install -m 755 ./nexttrace "$BIN_WORKDIR"
 
     if is_have_cmd nexttrace; then
         _suc_msg "$(_green "NextTrace is now available on your system.")"

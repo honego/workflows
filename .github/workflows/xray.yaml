@@ -57,10 +57,10 @@ jobs:
           echo "renew=${RENEW}" >> "$GITHUB_OUTPUT"
 
   release:
-    needs: [check]
-    if: needs.check.outputs.renew == 'true'
     name: "Build binary"
     runs-on: ubuntu-latest
+    needs: [check]
+    if: needs.check.outputs.renew == 'true'
     strategy:
       fail-fast: true
       matrix:

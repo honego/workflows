@@ -119,7 +119,6 @@ jobs:
             BINARY_NAME="${BINARY_NAME}v${GOARM}"
           fi
           mv xray "$BINARY_NAME"
-          touch -mt $(date +%Y01010000) "$BINARY_NAME"
           echo "BINARY_NAME=${BINARY_NAME}" >> "$GITHUB_ENV"
 
       - name: "Upload artifact"

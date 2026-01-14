@@ -97,7 +97,7 @@ jobs:
         working-directory: core/xray/src
         run: go mod download
 
-      - name: "Build binary"
+      - name: "Build Xray-core"
         working-directory: core/xray/src
         run: |
           set -eEuxo pipefail

@@ -112,8 +112,8 @@ jobs:
         working-directory: core/xray/src
         run: |
           set -eEuxo pipefail
-          PLATFORM=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "$GITHUB_ENV"
+          PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
           BINARY_NAME="xray-$GOARCH"
           if [ -n "$GOARM" ]; then
             BINARY_NAME="${BINARY_NAME}v${GOARM}"
@@ -153,8 +153,8 @@ jobs:
 
       - name: "Prepare"
         run: |
-          PLATFORM=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "$GITHUB_ENV"
+          PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
       - name: "Download binary"
         uses: actions/download-artifact@v7

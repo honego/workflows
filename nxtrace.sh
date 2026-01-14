@@ -8,7 +8,6 @@
 
 set -eE
 
-# shellcheck disable=SC2034
 # MAJOR.MINOR.PATCH
 readonly SCRIPT_VERSION='v1.0.0'
 
@@ -24,6 +23,10 @@ _yellow() {
     printf "\033[33m%b\033[0m\n" "$*"
 }
 
+_cyan() {
+    printf "\033[36m%b\033[0m\n" "$*"
+}
+
 _err_msg() {
     printf "\033[41m\033[1mError\033[0m %b\n" "$*"
 }
@@ -34,6 +37,11 @@ _suc_msg() {
 
 _warn_msg() {
     printf "\033[43m\033[1mWarning\033[0m %b\n" "$*"
+}
+
+# 斜体输出
+_italic() {
+    printf "\033[3m%b\033[23m\n" "$*"
 }
 
 # 各变量默认值
@@ -63,9 +71,9 @@ die() {
 }
 
 usage_and_exit() {
+    _italic "$(_cyan "Script Version: $SCRIPT_VERSION")"
     tee >&2 <<- 'EOF'
-Usage: ./nxtrace.sh [options]
-       bash <(curl -Ls https://github.com/honeok/cross/raw/master/nxtrace.sh) [options]
+Usage: ./nxtrace.sh [Options]
 
 Options:
     -h, --help          Show this help message and exit
@@ -80,7 +88,7 @@ Examples:
     # Install specific version from dev channel
     ./nxtrace.sh --channel dev --version <ver>
 EOF
-    exit 1
+    exit 91
 }
 
 cd "$TEMP_DIR" > /dev/null 2>&1 || die "Can't access temporary work dir."

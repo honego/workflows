@@ -31,12 +31,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       renew: ${{ steps.vers.outputs.renew }}
-      xray_tag: ${{ steps.ver.outputs.xray_tag }}
-      xray_version: ${{ steps.ver.outputs.xray_version }}
+      xray_tag: ${{ steps.vers.outputs.xray_tag }}
+      xray_version: ${{ steps.vers.outputs.xray_version }}
 
     steps:
       - name: "Fetch Versions and Decide"
-        id: ver
+        id: vers
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

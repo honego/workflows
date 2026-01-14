@@ -118,6 +118,7 @@ jobs:
           if [ -n "$GOARM" ]; then
             BINARY_NAME="${BINARY_NAME}v${GOARM}"
           fi
+          touch -mt $(date +%Y01010000) xray
           mv xray "$BINARY_NAME"
           echo "BINARY_NAME=${BINARY_NAME}" >> "$GITHUB_ENV"
 

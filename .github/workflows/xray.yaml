@@ -45,15 +45,13 @@ jobs:
           LATEST_TAG="$(gh release view -R XTLS/Xray-core --json tagName -q .tagName)"
           LATEST_VER=${LATEST_TAG#v}
           CURRENT_VER="$(skopeo list-tags "docker://docker.io/$DOCKERHUB_REPO" 2>/dev/null | jq -r '.Tags[] | select(. != "latest")' | sort -rV | head -n1 || true)"
-          echo "xray_tag=${LATEST_TAG}" >> "$GITHUB_OUTPUT"
-          echo "xray_version=${LATEST_VER}" >> "$GITHUB_OUTPUT"
           if [[ "$(printf '%s\n%s\n' "$LATEST_VER" "$CURRENT_VER" | sort -V | head -n1)" != "$LATEST_VER" ]] || [[ -z "$CURRENT_VER" && -n "$LATEST_VER" ]]; then
             echo "Build required."
             RENEW="true"
-          else
-            echo "No build required."
           fi
           echo "renew=${RENEW}" >> "$GITHUB_OUTPUT"
+          echo "xray_tag=${LATEST_TAG}" >> "$GITHUB_OUTPUT"
+          echo "xray_version=${LATEST_VER}" >> "$GITHUB_OUTPUT"
 
   release:
     name: "Build binary"

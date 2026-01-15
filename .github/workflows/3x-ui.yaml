@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOCKERHUB_REPO: ${{ secrets.DOCKER_USERNAME || github.repository_owner }}/3x-ui
+  DOCKERHUB_REPO: ${{ secrets.DOCKER_USERNAME }}/3x-ui
 
 jobs:
   check:

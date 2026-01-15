@@ -1,7 +1,6 @@
-# Description: This dockerfile is used to build the 3x-ui image in container.
-#
-# Copyright (c) 2025 honeok <i@honeok.com>
+# syntax=docker/dockerfile:1
 # SPDX-License-Identifier: GPL-2.0
+# Copyright (c) 2025-2026 honeok <i@honeok.com>
 #
 # References:
 # https://docs.docker.com/build/building/multi-platform
@@ -11,17 +10,15 @@ LABEL maintainer="honeok <i@honeok.com>"
 WORKDIR /go/src/github.com/MHSanaei/3x-ui
 ARG XRAY_VERSION
 ARG XUI_TAG
-ARG TARGETOS
-ARG TARGETARCH
+ARG TARGETOS TARGETARCH
 ENV CGO_ENABLED=1
 ENV CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
 COPY --chmod=755 build.sh .
-
 RUN set -ex \
     && apk add --update --no-cache build-base curl gcc git \
     && ./build.sh "$XRAY_VERSION" \
     && git clone --depth=1 --branch "$XUI_TAG" https://github.com/MHSanaei/3x-ui.git . \
-    && go build -a -trimpath -ldflags "-s -w -linkmode external -extldflags '-static'" -o /go/bin/3x-ui ./main.go
+    && go build -v -trimpath -o /go/bin/3x-ui -ldflags "-s -w -buildid= -linkmode external -extldflags '-static'"
 
 FROM alpine:3.23.2@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62 AS dist
 LABEL maintainer="honeok <i@honeok.com>"

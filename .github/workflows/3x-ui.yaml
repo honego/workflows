@@ -48,7 +48,7 @@ jobs:
 
       - name: "Clone source code"
         working-directory: core/3x-ui
-        run: git clone --depth=1 --branch ${{ needs.check.outputs.xray_tag }} https://github.com/MHSanaei/3x-ui.git src
+        run: git clone --depth=1 --branch v2.8.7 https://github.com/MHSanaei/3x-ui.git src
 
       - name: "Setup Go"
         uses: actions/setup-go@v6

@@ -1,13 +1,19 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2025 honeok <i@honeok.com>
 
-FROM alpine:3.23.2@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62 AS dist
+FROM alpine:3.23.2@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
 LABEL maintainer="honeok <i@honeok.com>"
 ARG TARGETARCH
 ARG TARGETVARIANT
 ARG TZ=Asia/Shanghai
-RUN set -ex \
-    && apk add --no-cache --update bash ca-certificates tzdata
-COPY xray-${TARGETARCH}${TARGETVARIANT} /usr/local/bin/xray
+COPY config.json /opt/config.json
+COPY --chmod=755 docker-entrypoint.sh /
+COPY --chmod=755 xray-${TARGETARCH}${TARGETVARIANT} /etc/xray/bin/xray
+COPY *.dat /etc/xray/bin/
 ENV TZ=$TZ
-ENTRYPOINT ["/usr/local/bin/xray"]
+RUN set -ex \
+    && apk add --no-cache --update bash ca-certificates tzdata \
+    && mkdir -p /etc/xray/conf /var/log/xray \
+    && touch /var/log/xray/{access,error}.log \
+    && ln -sf /etc/xray/bin/xray /usr/local/bin/xray
+ENTRYPOINT ["/docker-entrypoint.sh"]

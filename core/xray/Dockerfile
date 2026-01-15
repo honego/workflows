@@ -15,6 +15,6 @@ ENV TZ=$TZ
 RUN set -ex \
     && apk add --no-cache --update curl ca-certificates tzdata \
     && mkdir -p /etc/xray/conf /var/log/xray \
-    && touch /var/log/xray/{access,error}.log \
+    && touch /var/log/xray/access.log /var/log/xray/error.log \
     && ln -sf /etc/xray/bin/xray /usr/local/bin/xray
 ENTRYPOINT ["/docker-entrypoint.sh"]

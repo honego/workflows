@@ -19,6 +19,7 @@ RUN set -ex \
     && ./build.sh "$XRAY_VERSION" \
     && rm -f build.sh \
     && git clone --depth=1 --branch "$XUI_TAG" https://github.com/MHSanaei/3x-ui.git . \
+    && go mod download \
     && go build -v -trimpath -o /go/bin/3x-ui -ldflags "-s -w -buildid= -linkmode external -extldflags '-static'"
 
 FROM public.ecr.aws/docker/library/alpine:3.23.2@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62 AS dist

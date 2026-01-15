@@ -12,7 +12,7 @@ COPY --chmod=755 xray-${TARGETARCH}${TARGETVARIANT} /etc/xray/bin/xray
 COPY *.dat /etc/xray/bin/
 ENV TZ=$TZ
 RUN set -ex \
-    && apk add --no-cache --update bash ca-certificates tzdata \
+    && apk add --no-cache --update curl bash ca-certificates tzdata \
     && mkdir -p /etc/xray/conf /var/log/xray \
     && touch /var/log/xray/{access,error}.log \
     && ln -sf /etc/xray/bin/xray /usr/local/bin/xray

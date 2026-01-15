@@ -67,4 +67,4 @@ jobs:
         run: |
           set -eEuxo pipefail
           echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM"
-          go build -v -trimpath -o x-ui -ldflags="-s -w -buildid=" ./main.go
+          go build -v -o x-ui -ldflags="-s -w -linkmode external -extldflags '-static' -buildid=" ./main.go

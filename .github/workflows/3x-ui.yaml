@@ -204,7 +204,6 @@ jobs:
       - name: "Inspect image"
         run: |
           docker buildx imagetools inspect ${{ env.DOCKERHUB_REPO }}:${{ needs.check.outputs.xui_version }}
-          docker buildx imagetools inspect ${{ env.DOCKERHUB_REPO }}:latest
 
   sync:
     name: "Sync readme"

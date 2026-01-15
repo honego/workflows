@@ -17,6 +17,7 @@ COPY --chmod=755 build.sh .
 RUN set -ex \
     && apk add --update --no-cache build-base curl gcc git \
     && ./build.sh "$XRAY_VERSION" \
+    && rm -f build.sh \
     && git clone --depth=1 --branch "$XUI_TAG" https://github.com/MHSanaei/3x-ui.git . \
     && go build -v -trimpath -o /go/bin/3x-ui -ldflags "-s -w -buildid= -linkmode external -extldflags '-static'"
 

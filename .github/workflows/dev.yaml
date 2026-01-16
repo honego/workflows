@@ -16,3 +16,4 @@ jobs:
           echo "default_branch=${{ github.event.repository.default_branch }}"
           echo $GITHUB_ACTIONS
           echo $GITHUB_WORKSPACE
+          ls /github/workspace

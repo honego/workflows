@@ -1,0 +1,27 @@
+---
+name: "GitHub Actions Mirror"
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  mirror2gitgud:
+    name: "Mirror to gitgud"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: "Mirror to gitgud"
+        uses: honego/mirror-action@v1
+        with:
+          REMOTE: git@gitgud.io:${{ github.repository }}.git
+          GIT_SSH_PRIVATE_KEY: ${{ secrets.SYNC_PRIVATE_KEY }}
+          PUSH_ALL_REFS: false
+          GIT_SSH_NO_VERIFY_HOST: true

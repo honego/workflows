@@ -18,6 +18,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   WORK_DIR: ldnmp/openresty
   DOCKERHUB_REPO: ${{ secrets.DOCKER_USERNAME }}/openresty
@@ -118,7 +121,11 @@ jobs:
             RESTY_STRIP_BINARIES=1
           labels: ${{ steps.meta.outputs.labels }}
           outputs: >
-            type=image,name=${{ env.DOCKERHUB_REPO }},push-by-digest=true,name-canonical=true,push=true
+            type=image,
+            name=${{ env.DOCKERHUB_REPO }},
+            push-by-digest=${{ github.ref_name == github.event.repository.default_branch }},
+            name-canonical=${{ github.ref_name == github.event.repository.default_branch }},
+            push=${{ github.ref_name == github.event.repository.default_branch }}
 
       - name: "Export digest"
         run: |
@@ -279,7 +286,11 @@ jobs:
             RESTY_STRIP_BINARIES=1
           labels: ${{ steps.meta.outputs.labels }}
           outputs: >
-            type=image,name=${{ env.DOCKERHUB_REPO }},push-by-digest=true,name-canonical=true,push=true
+            type=image,
+            name=${{ env.DOCKERHUB_REPO }},
+            push-by-digest=${{ github.ref_name == github.event.repository.default_branch }},
+            name-canonical=${{ github.ref_name == github.event.repository.default_branch }},
+            push=${{ github.ref_name == github.event.repository.default_branch }}
 
       - name: "Export digest"
         run: |

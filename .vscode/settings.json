@@ -24,7 +24,6 @@
   "git.confirmSync": false,
   "git.fetchOnPull": true,
   "git.pruneOnFetch": true,
-  "git.enableCommitSigning": true,
 
   // error Lens
   "errorLens.fontStyleItalic": true,

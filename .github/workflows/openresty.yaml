@@ -75,8 +75,8 @@ jobs:
 
       - name: "Prepare"
         run: |
-          PLATFORM=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "$GITHUB_ENV"
+          PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
       - name: "Set permissions"
         working-directory: ${{ env.WORK_DIR }}/stable
@@ -120,19 +120,14 @@ jobs:
             ZSTD_VERSION=${{ needs.check-stable.outputs.zstd_version }}
             RESTY_STRIP_BINARIES=1
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: >
-            type=image,
-            name=${{ env.DOCKERHUB_REPO }},
-            push-by-digest=${{ github.ref_name == github.event.repository.default_branch }},
-            name-canonical=${{ github.ref_name == github.event.repository.default_branch }},
-            push=${{ github.ref_name == github.event.repository.default_branch }}
+          outputs: type=image,name=${{ env.DOCKERHUB_REPO }},push-by-digest=true,name-canonical=true,push=true
 
       - name: "Export digest"
         run: |
           rm -rf /tmp/digests
           mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          digest=${{ steps.build.outputs.digest }}
+          touch /tmp/digests/${digest#sha256:}
 
       - name: "Upload artifact"
         uses: actions/upload-artifact@v6
@@ -240,8 +235,8 @@ jobs:
 
       - name: "Prepare"
         run: |
-          PLATFORM=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "$GITHUB_ENV"
+          PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
       - name: "Set permissions"
         working-directory: ${{ env.WORK_DIR }}/edge
@@ -285,19 +280,14 @@ jobs:
             ZSTD_VERSION=${{ needs.check-edge.outputs.zstd_version }}
             RESTY_STRIP_BINARIES=1
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: >
-            type=image,
-            name=${{ env.DOCKERHUB_REPO }},
-            push-by-digest=${{ github.ref_name == github.event.repository.default_branch }},
-            name-canonical=${{ github.ref_name == github.event.repository.default_branch }},
-            push=${{ github.ref_name == github.event.repository.default_branch }}
+          outputs: type=image,name=${{ env.DOCKERHUB_REPO }},push-by-digest=true,name-canonical=true,push=true
 
       - name: "Export digest"
         run: |
           rm -rf /tmp/digests
           mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          digest=${{ steps.build.outputs.digest }}
+          touch /tmp/digests/${digest#sha256:}
 
       - name: "Upload artifact"
         uses: actions/upload-artifact@v6

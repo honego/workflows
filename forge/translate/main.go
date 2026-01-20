@@ -126,7 +126,6 @@ func executeGoogleTranslateRequest(textToTranslate string) (string, error) {
 			return chunkTranslationBuilder.String(), nil
 		}
 	}
-
 	return "", fmt.Errorf("failed to parse response")
 }
 

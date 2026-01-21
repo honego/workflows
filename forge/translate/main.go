@@ -37,7 +37,6 @@ type chunkInfo struct {
 }
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
 	retryClient = retryablehttp.NewClient()
 	retryClient.RetryMax = 5
 	retryClient.RetryWaitMin = 500 * time.Millisecond

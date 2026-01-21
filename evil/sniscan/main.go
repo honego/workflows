@@ -82,7 +82,7 @@ func main() {
 		return
 	}
 
-	log.Printf("[-] Found %d universities. Starting concurrent analysis (Pool Size: %d)...", totalTargetCount, MaxConcurrencyCount)
+	log.Printf("[-] Found %d universities. Starting concurrent analysis (Pool Size: %d)", totalTargetCount, MaxConcurrencyCount)
 
 	// 初始化并发控制组件
 	var validResults []ServerHealthResult

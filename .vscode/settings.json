@@ -3,6 +3,8 @@
   "workbench.colorTheme": "Default Dark Modern",
   "workbench.iconTheme": "vscode-icons",
 
+  "explorer.compactFolders": false,
+
   // editor setting
   "editor.fontSize": 16,
   "editor.renderWhitespace": "selection",

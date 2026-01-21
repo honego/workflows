@@ -85,7 +85,9 @@ func main() {
 
 	if strings.TrimSpace(content) == "" {
 		log.Println("File is empty, copying as-is.")
-		os.WriteFile(outputFile, contentBytes, 0644)
+		if err := os.WriteFile(outputFile, contentBytes, 0644); err != nil {
+			log.Printf("Failed to write output file: %v", err)
+		}
 		return
 	}
 
@@ -120,7 +122,7 @@ func main() {
 			mu.Lock()
 			results[i] = trans
 			mu.Unlock()
-			bar.Add(1)
+			_ = bar.Add(1)
 			time.Sleep(time.Duration(rand.Intn(600)+400) * time.Millisecond)
 			return nil
 		})

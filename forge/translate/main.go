@@ -26,14 +26,14 @@ const (
 )
 
 var (
-	retryClient *retryablehttp.Client
-	targetLang  string
-	concurrency int
+	retryClient    *retryablehttp.Client
+	targetLanguage string
+	concurrency    int
 )
 
 type chunkInfo struct {
-	text       string
-	addParaSep bool
+	text                    string
+	needsParagraphSeparator bool
 }
 
 func init() {
@@ -47,13 +47,13 @@ func init() {
 func main() {
 	log.SetFlags(log.LstdFlags)
 
-	for _, arg := range os.Args[1:] {
-		if arg == "-h" || arg == "--help" {
+	for _, argument := range os.Args[1:] {
+		if argument == "-h" || argument == "--help" {
 			printUsage()
 		}
 	}
 
-	flag.StringVar(&targetLang, "tl", "en", "target language code (default: en)")
+	flag.StringVar(&targetLanguage, "tl", "en", "target language code (default: en)")
 	flag.IntVar(&concurrency, "c", 4, "concurrency level (default: 4, recommended 3-6)")
 	flag.Parse()
 
@@ -74,82 +74,84 @@ func main() {
 	}
 
 	outputFile := generateOutputFilename(inputFile)
-	log.Printf("Starting task: %s → %s (target: %s, concurrency: %d)", inputFile, outputFile, targetLang, concurrency)
+	log.Printf("Starting task: %s → %s (target: %s, concurrency: %d)", inputFile, outputFile, targetLanguage, concurrency)
 
-	contentBytes, err := os.ReadFile(inputFile)
+	sourceContentBytes, err := os.ReadFile(inputFile)
 	if err != nil {
 		log.Fatalf("Failed to read file: %v", err)
 	}
-	content := string(contentBytes)
+	sourceContent := string(sourceContentBytes)
 
-	if strings.TrimSpace(content) == "" {
+	if strings.TrimSpace(sourceContent) == "" {
 		log.Println("File is empty, copying as-is.")
-		if err := os.WriteFile(outputFile, contentBytes, 0644); err != nil {
+		if err := os.WriteFile(outputFile, sourceContentBytes, 0644); err != nil {
 			log.Printf("Failed to write output file: %v", err)
 		}
 		return
 	}
 
-	chunks := splitIntoChunks(content)
+	chunks := splitIntoChunks(sourceContent)
 
 	if len(chunks) == 0 {
 		log.Fatal("Failed to split into chunks.")
 	}
 
-	bar := progressbar.Default(int64(len(chunks)), "Translating")
+	progressBar := progressbar.Default(int64(len(chunks)), "Translating")
 
 	startTime := time.Now()
-	var g errgroup.Group
-	g.SetLimit(concurrency)
+	var workerGroup errgroup.Group
+	workerGroup.SetLimit(concurrency)
 
-	results := make([]string, len(chunks))
-	var mu sync.Mutex
+	translatedSegments := make([]string, len(chunks))
+	var mutex sync.Mutex
 
-	for i, ch := range chunks {
-		i := i
-		ch := ch
-		g.Go(func() error {
-			trans := ch.text
-			if strings.TrimSpace(ch.text) != "" {
+	for index, chunk := range chunks {
+		currentIndex := index
+		currentChunk := chunk
+		workerGroup.Go(func() error {
+			translatedText := currentChunk.text
+			if strings.TrimSpace(currentChunk.text) != "" {
 				var err error
-				trans, err = translateChunk(ch.text)
+				translatedText, err = translateChunk(currentChunk.text)
 				if err != nil {
-					log.Printf("Chunk %d failed: %v → keeping original", i, err)
-					trans = ch.text
+					log.Printf("Chunk %d failed: %v → keeping original", currentIndex, err)
+					translatedText = currentChunk.text
 				}
 			}
-			mu.Lock()
-			results[i] = trans
-			mu.Unlock()
-			_ = bar.Add(1)
+			mutex.Lock()
+			translatedSegments[currentIndex] = translatedText
+			mutex.Unlock()
+
+			_ = progressBar.Add(1)
+
 			time.Sleep(time.Duration(rand.Intn(600)+400) * time.Millisecond)
 			return nil
 		})
 	}
 
-	if err := g.Wait(); err != nil {
+	if err := workerGroup.Wait(); err != nil {
 		log.Fatalf("Concurrency error: %v", err)
 	}
 
-	var final strings.Builder
-	for i, res := range results {
-		final.WriteString(res)
-		if chunks[i].addParaSep {
-			final.WriteString("\n\n")
+	var finalBuilder strings.Builder
+	for index, result := range translatedSegments {
+		finalBuilder.WriteString(result)
+		if chunks[index].needsParagraphSeparator {
+			finalBuilder.WriteString("\n\n")
 		}
 	}
 
-	translatedText := postProcess(final.String())
+	finalTranslatedText := postProcess(finalBuilder.String())
 
-	if err := os.WriteFile(outputFile, []byte(translatedText), 0644); err != nil {
+	if err := os.WriteFile(outputFile, []byte(finalTranslatedText), 0644); err != nil {
 		log.Fatalf("Failed to write output: %v", err)
 	}
 
-	totalRunes := len([]rune(content))
-	elapsed := time.Since(startTime)
+	totalRunes := len([]rune(sourceContent))
+	elapsedDuration := time.Since(startTime)
 	log.Printf("Done! Saved to: %s", outputFile)
 	log.Printf("Stats → Characters: %d | Time: %s | Speed: %.0f chars/sec",
-		totalRunes, elapsed.Round(time.Second), float64(totalRunes)/elapsed.Seconds())
+		totalRunes, elapsedDuration.Round(time.Second), float64(totalRunes)/elapsedDuration.Seconds())
 }
 
 func printUsage() {
@@ -167,16 +169,6 @@ Options:
 Examples:
   translate -tl en -c 5 novel.txt
   translate -tl fr docs.md
-
-Features:
-  • Smart paragraph/line chunking, preserves original structure
-  • Concurrent processing with beautiful progress bar
-  • Enterprise-grade retries + random delays to avoid bans
-  • Ultra-fast gjson parsing + rock-solid retryablehttp
-  • Failed chunks automatically keep original text
-  • Output filename auto-appended with _<tl>
-
-No registration, no API key required — pure free Google Translate power.
 `)
 	os.Exit(0)
 }
@@ -185,98 +177,99 @@ func splitIntoChunks(text string) []chunkInfo {
 	var chunks []chunkInfo
 	paragraphs := strings.Split(text, "\n\n")
 
-	for paraIdx, para := range paragraphs {
-		trimmed := strings.TrimSpace(para)
-		if trimmed == "" {
-			chunks = append(chunks, chunkInfo{"", true})
+	for paragraphIndex, paragraph := range paragraphs {
+		trimmedParagraph := strings.TrimSpace(paragraph)
+		if trimmedParagraph == "" {
+			chunks = append(chunks, chunkInfo{text: "", needsParagraphSeparator: true})
 			continue
 		}
 
-		lines := strings.Split(para, "\n")
-		var current strings.Builder
+		lines := strings.Split(paragraph, "\n")
+		var chunkBuilder strings.Builder
 
 		for _, line := range lines {
-			test := line
-			if current.Len() > 0 {
-				test = "\n" + line
+			testChunk := line
+			if chunkBuilder.Len() > 0 {
+				testChunk = "\n" + line
 			}
-			if len([]rune(current.String()+test)) > maxChunkRunes && current.Len() > 0 {
-				chunks = append(chunks, chunkInfo{current.String(), false})
-				current.Reset()
+			if len([]rune(chunkBuilder.String()+testChunk)) > maxChunkRunes && chunkBuilder.Len() > 0 {
+				chunks = append(chunks, chunkInfo{text: chunkBuilder.String(), needsParagraphSeparator: false})
+				chunkBuilder.Reset()
 			}
-			if current.Len() > 0 {
-				current.WriteString("\n")
+			if chunkBuilder.Len() > 0 {
+				chunkBuilder.WriteString("\n")
 			}
-			current.WriteString(line)
+			chunkBuilder.WriteString(line)
 		}
 
-		if current.Len() > 0 {
-			addSep := paraIdx < len(paragraphs)-1
-			chunks = append(chunks, chunkInfo{current.String(), addSep})
+		if chunkBuilder.Len() > 0 {
+			shouldAddSeparator := paragraphIndex < len(paragraphs)-1
+			chunks = append(chunks, chunkInfo{text: chunkBuilder.String(), needsParagraphSeparator: shouldAddSeparator})
 		}
 	}
 	return chunks
 }
 
 func translateChunk(text string) (string, error) {
-	params := url.Values{
+	queryParams := url.Values{
 		"client": {"gtx"},
 		"sl":     {"auto"},
-		"tl":     {targetLang},
+		"tl":     {targetLanguage},
 		"dt":     {"t"},
 		"q":      {text},
 	}
 
-	req, err := retryablehttp.NewRequest("GET", googleTranslateAPIURL+"?"+params.Encode(), nil)
+	request, err := retryablehttp.NewRequest("GET", googleTranslateAPIURL+"?"+queryParams.Encode(), nil)
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
-	req.Header.Set("Referer", "https://translate.google.com/")
+	request.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+	request.Header.Set("Referer", "https://translate.google.com/")
 
-	resp, err := retryClient.Do(req)
+	response, err := retryClient.Do(request)
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("HTTP %d", resp.StatusCode)
+	if response.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("HTTP %d", response.StatusCode)
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return "", err
 	}
 
-	var builder strings.Builder
-	gjson.Get(string(body), "0").ForEach(func(_, sentence gjson.Result) bool {
+	var translationBuilder strings.Builder
+	gjson.Get(string(responseBody), "0").ForEach(func(_, sentence gjson.Result) bool {
 		if sentence.IsArray() && sentence.Array()[0].Exists() {
-			builder.WriteString(sentence.Array()[0].String())
+			translationBuilder.WriteString(sentence.Array()[0].String())
 		}
 		return true
 	})
 
-	return builder.String(), nil
+	result := translationBuilder.String()
+	return result, nil
 }
 
 func postProcess(text string) string {
-	var cleaned []string
+	var cleanedLines []string
 	for _, line := range strings.Split(text, "\n") {
-		trimmed := strings.TrimSpace(line)
-		if trimmed == "" {
-			if len(cleaned) == 0 || cleaned[len(cleaned)-1] != "" {
-				cleaned = append(cleaned, "")
+		trimmedLine := strings.TrimSpace(line)
+		if trimmedLine == "" {
+			if len(cleanedLines) == 0 || cleanedLines[len(cleanedLines)-1] != "" {
+				cleanedLines = append(cleanedLines, "")
 			}
 		} else {
-			cleaned = append(cleaned, trimmed)
+			cleanedLines = append(cleanedLines, trimmedLine)
 		}
 	}
-	return strings.Join(cleaned, "\n")
+	return strings.Join(cleanedLines, "\n")
 }
 
 func generateOutputFilename(path string) string {
-	ext := filepath.Ext(path)
-	name := strings.TrimSuffix(path, ext)
-	return name + "_" + targetLang + ext
+	fileExtension := filepath.Ext(path)
+	fileNameWithoutExt := strings.TrimSuffix(path, fileExtension)
+	return fileNameWithoutExt + "_" + targetLanguage + fileExtension
 }

@@ -1,4 +1,4 @@
-module sniscan
+module github.com/honeok/cross/evil/sniscan
 
 go 1.25.6
 

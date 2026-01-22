@@ -76,8 +76,14 @@
   },
 
   // shell
+  "shellcheck.enable": true,
+  "shellcheck.enableQuickFix": true,
+  "shellcheck.run": "onSave",
   "[shellscript]": {
-    "editor.defaultFormatter": "mkhl.shfmt" // https://github.com/mvdan/sh
+    "editor.defaultFormatter": "mkhl.shfmt", // https://github.com/mvdan/sh
+    "editor.codeActionsOnSave": {
+      "source.fixAll.shellcheck": "explicit"
+    }
   },
 
   // yaml

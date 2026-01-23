@@ -1,0 +1,4 @@
+---
+include:
+  - local: "/.gitlab/entrypoint.yaml"
+  - local: "/.gitlab/shellcheck.yaml"

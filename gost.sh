@@ -124,4 +124,5 @@ do_install() {
 }
 
 # https://github.com/go-gost/gost/releases/download/v3.2.6/gost_3.2.6_linux_amd64.tar.gz
+
 curl -Ls https://api.github.com/repos/go-gost/gost/releases/latest | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/'

@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  mirror2framagit:
-    name: "Mirror to framagit"
+  mirror2gitgud:
+    name: "Mirror to gitgud"
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "Mirror to framagit"
+      - name: "Mirror to gitgud"
         uses: honeok/git-mirror-repository-action@v1
         with:
           REMOTE: git@gitgud.io:${{ github.repository }}.git

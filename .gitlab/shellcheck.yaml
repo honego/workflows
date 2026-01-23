@@ -8,5 +8,3 @@ shellcheck:
     - changes:
         - "**/*.sh"
   allow_failure: false
-  tags:
-    - docker

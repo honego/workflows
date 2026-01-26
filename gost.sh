@@ -4,8 +4,8 @@
 # shellcheck disable=all
 
 # 各变量默认值
+: "${BINARY_NAME:="gost"}"
 TEMP_DIR="$(mktemp -d)"
-GITHUB_PROXY="${GITHUB_PROXY:-}"
 GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT

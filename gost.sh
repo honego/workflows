@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0
 
 # shellcheck disable=all
+# shellcheck disable=all
 
 # 各变量默认值
 : "${BINARY_NAME:="gost"}"

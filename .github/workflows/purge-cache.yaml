@@ -27,7 +27,7 @@ jobs:
         run: |
           set -eEuxo pipefail
           CHANGED_FILES="$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.sh$' || true)"
-          [ -z "$CHANGED_FILES" ] || exit 0
+          [ -n "$CHANGED_FILES" ] || exit 0
           echo "$CHANGED_FILES" | while IFS= read -r FILE; do
             curl -fLsS "https://purge.jsdelivr.net/gh/$GITHUB_REPOSITORY@${GITHUB_REF##*/}/$FILE"
           done

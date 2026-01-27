@@ -1,0 +1,102 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (c) 2026 honeok <i@honeok.com>
+#
+# References:
+# https://www.nodeseek.com/post-491837-1
+
+## 全局配置
+allow-lan: false # 局域网连接
+
+#  find-process-mode has 3 values:always, strict, off
+#  - always, 开启，强制匹配所有进程
+#  - strict, 默认，由 mihomo 判断是否开启
+#  - off, 不匹配进程，推荐在路由器上使用此模式
+find-process-mode: off
+
+mode: rule
+
+log-level: error # 日志等级silent/error/warning/info/debug
+
+ipv6: true # IPv6总开关 关闭阻断所有IPv6链接和屏蔽DNS请求AAAA记录
+
+tcp-concurrent: true # TCP并发连接所有IP 将使用最快握手的TCP
+
+## 嗅探域名 可选配置
+sniffer:
+  enable: true
+  # 是否使用嗅探结果作为实际访问 默认true
+  # 全局配置 优先级低于sniffer.sniff实际配置
+  override-destination: false
+
+## DNS模块
+dns:
+  enable: true # 关闭将使用系统DNS
+  ipv6: true # false将返回AAAA的空结果
+  use-hosts: true # 查询hosts
+
+  enhanced-mode: normal # or redir-host
+  # DNS主要域名配置
+  nameserver:
+    - system
+  # 配置查询域名使用的DNS服务器
+  nameserver-policy:
+  #  "rule-set:netflix": ["x.x.x.x"]
+  "geosite:category-ads-all": rcode://success
+
+## 流量入站
+listeners:
+  - name: "shadowsocks-inbound"
+    type: shadowsocks
+    port: "8388"
+    listen: "::"
+    udp: true
+    udp-over-tcp: false
+    password: admin
+    cipher: aes-128-gcm
+
+  - name: "vless-inbound"
+    type: vless
+    port: "443"
+    listen: "::"
+    users:
+      - name: "7uL6RJ" # openssl rand -base64 6 | tr -cd 'A-Za-z0-9' | head -c 6
+        uuid: "9d0cb9d0-964f-4ef6-897d-6c6b3ccf9e68" # cat /proc/sys/kernel/random/uuid
+        flow: xtls-rprx-vision
+    # 如果填写reality-config则开启reality (注意不可与certificate和private-key同时填写)
+    reality-config:
+      dest: example.com:443
+      private-key: QHaWEYfRWPJZO1Kr1_5kWuOQqL1xlVUOHd5VPO87tHQ # 可由 mihomo generate reality-keypair 命令生成
+      short-id: [""]
+      server-names:
+        - "example.com"
+
+proxies:
+  - name: "出站-直出"
+    type: direct
+    ip-version: ipv4-prefer # ipv4-prefer即优先IPv4出站，但依然能访问纯IPv6站点
+    udp: true
+  - name: "出站-家宽" # 按需配置分流出口
+    type: ss
+    server: ""
+    port: ""
+    cipher: 2022-blake3-aes-128-gcm
+    password: ""
+    udp: true
+
+rules:
+  - RULE-SET,ai,出站-家宽 # 按需配置分流规则
+  - MATCH,出站-直出
+
+rule-providers:
+  "ai":
+    type: http
+    url: "https://raw.githubusercontent.com/dler-io/Rules/refs/heads/main/Clash/Provider/AI%20Suite.yaml"
+    format: yaml
+    behavior: classical
+    interval: 86400
+  "netflix": # 分流规则集可以在blackmatrix7/ios_rule_script的仓库找到，细致程度比geosite和geoip好多了
+    type: http
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix.list"
+    format: text
+    behavior: classical
+    interval: 86400

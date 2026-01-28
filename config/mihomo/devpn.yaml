@@ -1,0 +1,369 @@
+mixed-port: 8099
+mode: rule
+log-level: info
+unified-delay: false
+tcp-concurrent: true
+external-controller: 127.0.0.1:9090
+external-ui: ./ui
+dns:
+  enable: true
+  prefer-h3: true
+  listen: 0.0.0.0:53
+  ipv6: true
+  use-hosts: true
+  default-nameserver:
+    - 114.114.114.114
+    - 223.5.5.5
+    - 8.8.8.8
+    - tls://1.12.12.12:853
+    - tls://223.5.5.5:853
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+  nameserver-policy:
+    "www.baidu.com": "114.114.114.114"
+    "+.internal.crop.com": "10.0.0.1"
+    "geosite:cn":
+      - https://doh.pub/dns-query
+      - https://dns.alidns.com/dns-query
+  nameserver:
+    - https://1.0.0.1/dns-query
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fallback:
+    - tls://8.8.4.4
+    - tls://1.1.1.1
+  proxy-server-nameserver:
+    - 1.1.1.1
+    - https://doh.pub/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite:
+      - gfw
+    ipcidr:
+      - 240.0.0.0/4
+    domain:
+      - "+.google.com"
+      - "+.facebook.com"
+      - "+.youtube.com"
+sniffer:
+  enable:
+    true
+  override-destination:
+    false
+  sniff:
+    TLS:
+      ports: [443, 8443]
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+  force-domain:
+    - +.v2ex.com
+  skip-domain:
+    - Mijia Cloud
+    - dlg.io.mi.com
+    - +.apple.com
+tun:
+  enable: true
+  stack: gvisor
+  auto-route: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
+proxies:
+  - name: "美国 US7-reality"
+    type: vless
+    server: 144.202.9.50
+    port: 443
+    uuid: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: addons.mozilla.org
+    reality-opts:
+      public-key: hN-wki6Pu_teXOGeAiqpL-NrHKdtMzDK0sZiC_q-EVg
+      short-id: b44fa06e
+    client-fingerprint: random
+  - name: "美国 US7-hysteria"
+    type: hysteria2
+    server: 144.202.9.50
+    sni: us7.heon.win
+    port: 443
+    password: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+  - name: "美国 US9-reality"
+    type: vless
+    server: 149.28.116.49
+    port: 443
+    uuid: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: evernote.com
+    reality-opts:
+      public-key: hN-wki6Pu_teXOGeAiqpL-NrHKdtMzDK0sZiC_q-EVg
+      short-id: b44fa06e
+    client-fingerprint: random
+  - name: "美国 US9-hysteria"
+    type: hysteria2
+    server: 149.28.116.49
+    sni: us9.heon.win
+    port: 443
+    password: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+  - name: "新加坡 SG5-reality"
+    type: vless
+    server: 139.180.189.133
+    port: 443
+    uuid: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: www.microsoft.com
+    reality-opts:
+      public-key: hN-wki6Pu_teXOGeAiqpL-NrHKdtMzDK0sZiC_q-EVg
+      short-id: b44fa06e
+    client-fingerprint: random
+  - name: "新加坡 SG5-hysteria"
+    type: hysteria2
+    server: 139.180.189.133
+    sni: sg5.heon.win
+    port: 443
+    password: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+  - name: "日本 JP3-reality"
+    type: vless
+    server: 45.76.105.102
+    port: 443
+    uuid: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: www.odoo.com
+    reality-opts:
+      public-key: hN-wki6Pu_teXOGeAiqpL-NrHKdtMzDK0sZiC_q-EVg
+      short-id: b44fa06e
+    client-fingerprint: random
+  - name: "日本 JP3-hysteria"
+    type: hysteria2
+    server: 45.76.105.102
+    sni: jp3.heon.win
+    port: 443
+    password: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+  - name: "印度 IN1-reality"
+    type: vless
+    server: 172.232.123.6
+    port: 443
+    uuid: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: www.nvidia.com
+    reality-opts:
+      public-key: hN-wki6Pu_teXOGeAiqpL-NrHKdtMzDK0sZiC_q-EVg
+      short-id: b44fa06e
+    client-fingerprint: random
+  - name: "印度 IN1-hysteria"
+    type: hysteria2
+    server: 172.232.123.6
+    sni: in1.heon.win
+    port: 443
+    password: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+  - name: "德国 DE2-reality"
+    type: vless
+    server: 45.63.119.98
+    port: 443
+    uuid: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: www.jhu.edu
+    reality-opts:
+      public-key: hN-wki6Pu_teXOGeAiqpL-NrHKdtMzDK0sZiC_q-EVg
+      short-id: b44fa06e
+    client-fingerprint: random
+  - name: "德国 DE2-hysteria"
+    type: hysteria2
+    server: 45.63.119.98
+    sni: de2.heon.win
+    port: 443
+    password: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+  - name: "加拿大 CA1-reality"
+    type: vless
+    server: 155.138.134.128
+    port: 443
+    uuid: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: www.speedtest.org
+    reality-opts:
+      public-key: hN-wki6Pu_teXOGeAiqpL-NrHKdtMzDK0sZiC_q-EVg
+      short-id: b44fa06e
+    client-fingerprint: random
+  - name: "加拿大 CA1-hysteria"
+    type: hysteria2
+    server: 155.138.134.128
+    sni: ca1.heon.win
+    port: 443
+    password: "9fc6d1c91b417f1ae4f4a7af4ba62e9a"
+    udp: true
+proxy-groups:
+  - name: PROXY
+    type: select
+    proxies:
+      - AUTO
+      - "美国 US7-reality"
+      - "美国 US7-hysteria"
+      - "美国 US9-reality"
+      - "美国 US9-hysteria"
+      - "新加坡 SG5-reality"
+      - "新加坡 SG5-hysteria"
+      - "日本 JP3-reality"
+      - "日本 JP3-hysteria"
+      - "印度 IN1-reality"
+      - "印度 IN1-hysteria"
+      - "德国 DE2-reality"
+      - "德国 DE2-hysteria"
+      - "加拿大 CA1-reality"
+      - "加拿大 CA1-hysteria"
+  - name: AUTO
+    type: url-test
+    proxies:
+      - "美国 US7-reality"
+      - "美国 US7-hysteria"
+      - "美国 US9-reality"
+      - "美国 US9-hysteria"
+      - "新加坡 SG5-reality"
+      - "新加坡 SG5-hysteria"
+      - "日本 JP3-reality"
+      - "日本 JP3-hysteria"
+      - "印度 IN1-reality"
+      - "印度 IN1-hysteria"
+      - "德国 DE2-reality"
+      - "德国 DE2-hysteria"
+      - "加拿大 CA1-reality"
+      - "加拿大 CA1-hysteria"
+    url: http://1.1.1.1/generate_204
+    interval: 600
+  - name: OTHER
+    type: select
+    proxies:
+      - PROXY
+      - DIRECT
+rule-providers:
+  reject:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/reject.txt"
+    path: ./ruleset/reject.yaml
+    interval: 86400
+  icloud:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/icloud.txt"
+    path: ./ruleset/icloud.yaml
+    interval: 86400
+  apple:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/apple.txt"
+    path: ./ruleset/apple.yaml
+    interval: 86400
+  google:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/google.txt"
+    path: ./ruleset/google.yaml
+    interval: 86400
+  proxy:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/proxy.txt"
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+  direct:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/direct.txt"
+    path: ./ruleset/direct.yaml
+    interval: 86400
+  private:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/private.txt"
+    path: ./ruleset/private.yaml
+    interval: 86400
+  gfw:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/gfw.txt"
+    path: ./ruleset/gfw.yaml
+    interval: 86400
+  greatfire:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/greatfire.txt"
+    path: ./ruleset/greatfire.yaml
+    interval: 86400
+  tld-not-cn:
+    type: http
+    behavior: domain
+    url: "https://hfdes.com/lgnx/tool/tld-not-cn.txt"
+    path: ./ruleset/tld-not-cn.yaml
+    interval: 86400
+  telegramcidr:
+    type: http
+    behavior: ipcidr
+    url: "https://hfdes.com/lgnx/tool/telegramcidr.txt"
+    path: ./ruleset/telegramcidr.yaml
+    interval: 86400
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: "https://hfdes.com/lgnx/tool/cncidr.txt"
+    path: ./ruleset/cncidr.yaml
+    interval: 86400
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: "https://hfdes.com/lgnx/tool/lancidr.txt"
+    path: ./ruleset/lancidr.yaml
+    interval: 86400
+  applications:
+    type: http
+    behavior: classical
+    url: "https://hfdes.com/lgnx/tool/applications.txt"
+    path: ./ruleset/applications.yaml
+    interval: 86400
+rules:
+  - RULE-SET,applications,DIRECT
+  - DOMAIN,clash.razord.top,DIRECT
+  - DOMAIN,yacd.haishan.me,DIRECT
+  - DOMAIN-SUFFIX,gstatic.com,PROXY
+  - DOMAIN-SUFFIX,googletagmanager.com,PROXY
+  - RULE-SET,private,DIRECT
+  - RULE-SET,reject,REJECT
+  - RULE-SET,icloud,DIRECT
+  - RULE-SET,apple,DIRECT
+  - RULE-SET,google,DIRECT
+  - RULE-SET,proxy,PROXY
+  - RULE-SET,direct,DIRECT
+  - RULE-SET,lancidr,DIRECT
+  - RULE-SET,cncidr,DIRECT
+  - RULE-SET,telegramcidr,PROXY
+  - GEOIP,LAN,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,OTHER

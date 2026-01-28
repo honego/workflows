@@ -6,7 +6,7 @@
 
 set -eEu
 
-BRANCH="$1"
+BRANCH="${1:?Usage: $0 <branch-name>}"
 
 # Master: ... -- M1 -- M2 -- M3 (HEAD)
 #                 \

@@ -5,6 +5,12 @@
 # https://stash.wiki
 # https://github.com/Repcz/Tool
 
+## 全局配置
+mixed-port: 7890 # HTTP(S)和SOCKS代理混合端口
+
+allow-lan: true # 允许局域网连接
+bind-address: "*" # 绑定IP地址, 仅作用于allow-lan为true, '*'表示所有地址
+
 mode: rule # 规则模式: rule (规则) / global (全局代理) / direct (全局直连)
 
 # 5 个级别: silent / info / warning / error / debug 级别越高日志输出量越大 越倾向于调试 若需要请自行开启
@@ -12,12 +18,20 @@ log-level: warning
 
 ## DNS服务器配置
 dns:
+  enable: true # 关闭将使用系统DNS
+  listen: :1053 # 开启DNS服务器监听
+  ipv6: false # false将返回AAAA的空结果
+
   # 以下填写的DNS服务器将会被用来解析DNS服务的域名
   # 仅填写DNS服务器的IP地址
   default-nameserver:
     - 119.29.29.29
     - 223.5.5.5
     - system # 使用iOS系统DNS
+  enhanced-mode: fake-ip # 启用Fake-IP模式 or redir-host
+
+  fake-ip-range: 198.18.0.1/16 # fake-ip池设置
+  # fake-ip-range6: fdfe:dcba:9876::1/64 # fake-ip6池设置
 
   # 支持UDP / TCP / DoT / DoH协议的DNS服务可以指明具体的连接端口号
   # 所有DNS请求将会直接发送到服务器不经过任何代理
@@ -36,15 +50,6 @@ dns:
     - "+.stun.*.*.*"
     - "+.stun.*.*.*.*"
     - "+.stun.*.*.*.*.*"
-    - "lens.l.google.com" # Google Voices
-    - "*.n.n.srv.nintendo.net" # Nintendo Switch
-    - "+.stun.playstation.net" # PlayStation
-    # XBox
-    - "xbox.*.*.microsoft.com"
-    - "*.*.xboxlive.com"
-    # Microsoft
-    - "*.msftncsi.com"
-    - "*.msftconnecttest.com"
     - rule-set:fakeipfilter_domain
 
 ## 机场通用配置模板

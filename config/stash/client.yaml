@@ -16,9 +16,26 @@ mode: rule # 规则模式: rule (规则) / global (全局代理) / direct (全�
 # 5 个级别: silent / info / warning / error / debug 级别越高日志输出量越大 越倾向于调试 若需要请自行开启
 log-level: warning
 
+unified-delay: true # 统一延迟时会计算RTT以消除连接握手等带来的不同类型节点的延迟差异
+
+tcp-concurrent: true # TCP并发连接所有IP, 将使用最快握手的TCP
+
+# 全局TLS指纹, 优先低于proxy内的client-fingerprint
+# 可选： "chrome" "firefox" "safari" "ios" "random" "none" options.
+# Utls is currently support TLS transport in TCP/grpc/WS/HTTP for VLESS/Vmess and trojan.
+global-client-fingerprint: firefox
+
+# 缓解移动设备耗电问题
+# https://github.com/vernesong/OpenClash/issues/2614
+keep-alive-interval: 1800 # 设置TCP保活探测的间隔时间
+
+profile:
+  store-selected: true # 存储select选择记录
+  store-fake-ip: true # 持久化fake-ip
+
 script:
   shortcuts: # 使用表达式编写自定义规则
-    quic: network == 'udp' and dst_port == 443
+    quic: network == 'udp' and dst_port == 443 # 可以在规则中引用
 
 ## DNS服务器配置
 dns:
@@ -42,18 +59,14 @@ dns:
   # Stash会使用最先获得的解析记录回复DNS请求
   nameserver:
     # 不建议配置超过2个DNS服务器会增加系统功耗
-    - https://one.one.one.one/dns-query
-    - https://dns.google/dns-query
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
 
   # 跳过证书验证，解决部分兼容性问题 https://help.nextdns.io/t/g9hdkjz
   skip-cert-verify: true
 
   # 在以下列表的域名将不会被解析为fake ip 这些域名相关的解析请求将会返回它们真实的IP地址
   fake-ip-filter:
-    - "+.stun.*.*"
-    - "+.stun.*.*.*"
-    - "+.stun.*.*.*.*"
-    - "+.stun.*.*.*.*.*"
     - rule-set:fakeipfilter_domain
 
 ## 机场通用配置模板

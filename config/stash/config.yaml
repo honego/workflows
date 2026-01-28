@@ -133,7 +133,7 @@ rules:
   - RULE-SET,netflix_ip,🎥 NETFLIX,no-resolve
 
   # 兜底规则
-  - MATCH,🐟 漏网之鱼
+  - MATCH,🎣 漏网之鱼
 
 ## 规则集
 rule-anchor:

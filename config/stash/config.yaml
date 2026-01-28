@@ -2,6 +2,7 @@
 # Copyright (c) 2026 honeok <i@honeok.com>
 #
 # References:
+# https://stash.wiki
 # https://github.com/Repcz/Tool
 
 mode: rule # 规则模式: rule (规则) / global (全局代理) / direct (全局直连)
@@ -22,11 +23,29 @@ dns:
   # 所有DNS请求将会直接发送到服务器不经过任何代理
   # Stash会使用最先获得的解析记录回复DNS请求
   nameserver:
+    # 不建议配置超过2个DNS服务器会增加系统功耗
     - https://one.one.one.one/dns-query
     - https://dns.google/dns-query
 
   # 跳过证书验证，解决部分兼容性问题 https://help.nextdns.io/t/g9hdkjz
-  # skip-cert-verify: true
+  skip-cert-verify: true
+
+  # 在以下列表的域名将不会被解析为fake ip 这些域名相关的解析请求将会返回它们真实的IP地址
+  fake-ip-filter:
+    - "+.stun.*.*"
+    - "+.stun.*.*.*"
+    - "+.stun.*.*.*.*"
+    - "+.stun.*.*.*.*.*"
+    - "lens.l.google.com" # Google Voices
+    - "*.n.n.srv.nintendo.net" # Nintendo Switch
+    - "+.stun.playstation.net" # PlayStation
+    # XBox
+    - "xbox.*.*.microsoft.com"
+    - "*.*.xboxlive.com"
+    # Microsoft
+    - "*.msftncsi.com"
+    - "*.msftconnecttest.com"
+    - rule-set:fakeipfilter_domain
 
 ## 机场通用配置模板
 airport_conf: &airport_conf

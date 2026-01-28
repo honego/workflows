@@ -16,6 +16,10 @@ mode: rule # 规则模式: rule (规则) / global (全局代理) / direct (全�
 # 5 个级别: silent / info / warning / error / debug 级别越高日志输出量越大 越倾向于调试 若需要请自行开启
 log-level: warning
 
+script:
+  shortcuts: # 使用表达式编写自定义规则
+    quic: network == 'udp' and dst_port == 443
+
 ## DNS服务器配置
 dns:
   enable: true # 关闭将使用系统DNS
@@ -122,6 +126,7 @@ proxy-groups:
 
 ## 规则匹配
 rules:
+  - SCRIPT,quic,REJECT,no-track
   # 本地局域网
   - RULE-SET,private_ip,DIRECT,no-resolve
   - RULE-SET,private_domain,DIRECT

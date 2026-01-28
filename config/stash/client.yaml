@@ -59,8 +59,8 @@ dns:
   # Stash会使用最先获得的解析记录回复DNS请求
   nameserver:
     # 不建议配置超过2个DNS服务器会增加系统功耗
-    - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
 
   # 跳过证书验证，解决部分兼容性问题 https://help.nextdns.io/t/g9hdkjz
   skip-cert-verify: true

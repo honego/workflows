@@ -20,3 +20,4 @@ git merge "$BRANCH" --no-ff --no-commit
 
 # 提交并写入changelog
 git commit -m "Merge branch '$BRANCH'" -m "$CHANGELOG" --signoff
+git push origin "$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"

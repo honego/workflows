@@ -63,12 +63,12 @@ island: &island { type: select, proxies: [DIRECT], <<: *airports, filter: "(?i)(
 ## 代理分组
 proxy-groups:
   #------------------------基础分组------------------------#
-  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [♻️ 自动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动] }
-  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, url: "http://connectivitycheck.gstatic.com/generate_204", interval: 300 }
+  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [♻️ 自动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇺🇸 美国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动], icon: "https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@main/icon/select.png" }
+  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, url: "http://connectivitycheck.gstatic.com/generate_204", icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png", interval: 300 }
 
   #------------------------场景分组------------------------#
-  - { name: 🤖 AI, <<: *specific, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png" }
-  - { name: 🍀 Google, <<: *proxy, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png" }
+  - { name: 🤖 AI, <<: *specific, icon: "https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/OpenAI.png" }
+  - { name: 🍀 Google, <<: *proxy, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png" }
   - { name: 👨‍💻 GitHub, <<: *proxy, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/GitHub.png" }
   - { name: 🦊 GitLab, <<: *proxy, icon: "https://about.gitlab.com/images/press/logo/png/gitlab-icon-rgb.png" }
   - { name: 🐳 Docker, <<: *proxy, icon: "https://www.docker.com/app/uploads/2022/03/Moby-logo.png" }
@@ -81,7 +81,7 @@ proxy-groups:
   - { name: 🎵 TikTok, <<: *specific, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png" }
   - { name: 💶 PayPal, <<: *main, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/PayPal.png" }
   - { name: ✈️ Speedtest, <<: *main, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Speedtest.png" }
-  - { name: 🍎 Apple, <<: *main, icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png" }
+  - { name: 🍎 Apple, <<: *main, icon: "https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@main/icon/appleclassic.png" }
 
   #------------------------地区分组------------------------#
   - { name: 🇭🇰 香港自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, filter: "(?i)(🇭🇰|香港|hk|hong\\s?kong)", url: "http://connectivitycheck.gstatic.com/generate_204", icon: "https://flagcdn.com/w320/hk.png", interval: 300 }
@@ -93,8 +93,8 @@ proxy-groups:
   - { name: 🇩🇪 德国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, filter: "(?i)(🇩🇪|德国|de|germany|frankfurt)", url: "http://connectivitycheck.gstatic.com/generate_204", icon: "https://flagcdn.com/w320/de.png", interval: 300 }
 
   #------------------------特殊分组------------------------#
-  - { name: 🎯 全球直连, type: select, proxies: [DIRECT, 🚀 默认代理] }
-  - { name: 🐟 漏网之鱼, <<: *main }
+  - { name: 🎯 全球直连, type: select, proxies: [DIRECT, 🚀 默认代理], icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png" }
+  - { name: 🎣 漏网之鱼, <<: *main, icon: "https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@main/icon/friestash.png" }
 
 ## 规则匹配
 rules:

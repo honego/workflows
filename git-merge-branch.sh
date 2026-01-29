@@ -7,11 +7,14 @@
 set -eEuo pipefail
 
 MERGE_BRANCH="${1:?Usage: $0 <branch-name>}"
+SRC_TOP="$(git rev-parse --show-toplevel 2> /dev/null)"
 DEFAULT_BRANCH="$(git symbolic-ref refs/remotes/origin/HEAD --short | sed 's|.*/||' 2> /dev/null ||
     git ls-remote --symref origin HEAD | sed -n 's|^ref: refs/heads/\([^[:space:]]*\).*|\1|p' 2> /dev/null)"
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
 
-git pull --rebase origin "$CURRENT_BRANCH" > /dev/null 2>&1
+cd "$SRC_TOP" || exit 1
+
+git pull --rebase origin "$CURRENT_BRANCH" 1> /dev/null
 
 # Master: ... -- M1 -- M2 -- M3 (HEAD)
 #                 \

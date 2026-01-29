@@ -12,7 +12,7 @@ DEFAULT_BRANCH="$(git symbolic-ref refs/remotes/origin/HEAD --short | sed 's|.*/
     git ls-remote --symref origin HEAD | sed -n 's|^ref: refs/heads/\([^[:space:]]*\).*|\1|p' 2> /dev/null)"
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
 
-cd "$SRC_TOP" || exit 1
+pushd "$SRC_TOP" || exit 1
 
 git pull --rebase origin "$CURRENT_BRANCH" 1> /dev/null
 
@@ -45,3 +45,5 @@ fi
 git push origin "$CURRENT_BRANCH"
 
 echo "Success"
+popd 1> /dev/null
+exit 0

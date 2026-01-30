@@ -1,0 +1,16 @@
+# mihomo
+
+<h1 align="center">
+  <img src="https://fastly.jsdelivr.net/gh/MetaCubeX/mihomo@Meta/Meta.png" alt="Meta Kennel" width="200" />
+</h1>
+
+[![GitHub Release](https://img.shields.io/github/v/release/MetaCubeX/mihomo.svg?logo=github)](https://github.com/MetaCubeX/mihomo/releases)
+[![GitHub Releases Stats](https://img.shields.io/github/downloads/MetaCubeX/mihomo/total.svg?label=downloads&logo=github)](https://somsubhra.github.io/github-release-stats/?username=XTLS&repository=Xray-core)
+
+```shell
+curl -O https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/client.yaml || wget -O ${_##*/} $_
+```
+
+```shell
+bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/mihomo.sh || wget -qO- $_)
+```

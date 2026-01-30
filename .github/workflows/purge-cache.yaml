@@ -37,4 +37,12 @@ jobs:
         working-directory: config/mihomo
         run: |
           set -eEuo pipefail
-          grep -hIor "https://[^\"']*jsdelivr\.net[^\"']*" . | sort -u | sed 's/https:\/\/[^/]*jsdelivr\.net/https:\/\/purge.jsdelivr.net/' | xargs -n 1 curl -Ls
+          JSDELIVR_URL="$(grep -hIor "https://[^\"']*jsdelivr\.net[^\"']*" . | sort -u)"
+          [ -n "$JSDELIVR_URL" ] || exit 0
+          echo "Purge CDN cache"
+          sed 's/https:\/\/[^/]*jsdelivr\.net/https:\/\/purge.jsdelivr.net/' <<< "$JSDELIVR_URL" | xargs -n 1 curl -Ls -o /dev/null -w "%{http_code} %{url_effective}\n"
+          echo "Warming CDN resources"
+          while read -r URL; do
+            curl -Ls -o /dev/null "$URL"
+            curl -Ls -o /dev/null -w "%{http_code} %{url_effective}\n" "$URL"
+          done <<< "$JSDELIVR_URL"

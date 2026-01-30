@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "Purge changed scripts from CDN"
+      - name: "Purge script CDN cache"
         run: |
           set -eEuxo pipefail
           CHANGED_FILES="$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.sh$' || true)"
@@ -31,3 +31,10 @@ jobs:
           echo "$CHANGED_FILES" | while IFS= read -r FILE; do
             curl -fLsS "https://purge.jsdelivr.net/gh/$GITHUB_REPOSITORY@${GITHUB_REF##*/}/$FILE"
           done
+
+      - name: "Purge routing ruleset CDN cache"
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        working-directory: config/mihomo
+        run: |
+          set -eEuxo pipefail
+          grep -hIor "https://[^\"']*jsdelivr\.net[^\"']*" . | sort -u | sed 's/https:\/\/[^/]*jsdelivr\.net/https:\/\/purge.jsdelivr.net/' | xargs -n 1 curl -Ls

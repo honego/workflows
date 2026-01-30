@@ -128,4 +128,4 @@ check_arch
 
 VERSION="$(curl -Ls "https://api.github.com/repos/${GITHUB_REPO}/releases/latest" 2>&1 | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')"
 
-curl -L -O "$DOWNLOAD_URL/download/$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-$VERSION.gz" || die "NextTrace download failed."
+curl -L -O "$RELEASES_URL/download/$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-$VERSION.gz" || die "NextTrace download failed."

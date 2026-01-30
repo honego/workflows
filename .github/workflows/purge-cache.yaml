@@ -3,9 +3,11 @@ name: "Purge cdn cache"
 
 on:
   push:
-    branches: [master]
+    branches: [master, release]
     paths:
       - "**/*.sh"
+  schedule:
+    - cron: "0 22 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -24,12 +26,13 @@ jobs:
           fetch-depth: 0
 
       - name: "Purge script CDN cache"
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
           set -eEuo pipefail
           CHANGED_FILES="$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.sh$' || true)"
           [ -n "$CHANGED_FILES" ] || exit 0
-          echo "$CHANGED_FILES" | while IFS= read -r FILE; do
-            curl -fLsS "https://purge.jsdelivr.net/gh/$GITHUB_REPOSITORY@${GITHUB_REF##*/}/$FILE"
+          echo "$CHANGED_FILES" | while IFS= read -r CHANGED_FILE; do
+            curl -Ls "https://purge.jsdelivr.net/gh/$GITHUB_REPOSITORY@${GITHUB_REF##*/}/$CHANGED_FILE"
           done
 
       - name: "Purge routing ruleset CDN cache"

@@ -25,7 +25,7 @@ jobs:
 
       - name: "Purge script CDN cache"
         run: |
-          set -eEuxo pipefail
+          set -eEuo pipefail
           CHANGED_FILES="$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.sh$' || true)"
           [ -n "$CHANGED_FILES" ] || exit 0
           echo "$CHANGED_FILES" | while IFS= read -r FILE; do
@@ -36,5 +36,5 @@ jobs:
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         working-directory: config/mihomo
         run: |
-          set -eEuxo pipefail
+          set -eEuo pipefail
           grep -hIor "https://[^\"']*jsdelivr\.net[^\"']*" . | sort -u | sed 's/https:\/\/[^/]*jsdelivr\.net/https:\/\/purge.jsdelivr.net/' | xargs -n 1 curl -Ls

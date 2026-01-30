@@ -123,9 +123,15 @@ check_arch() {
     fi
 }
 
-check_sys
-check_arch
+do_install() {
+    local VERSION
 
-VERSION="$(curl -Ls "https://api.github.com/repos/${GITHUB_REPO}/releases/latest" 2>&1 | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')"
+    check_sys
+    check_arch
 
-curl -L -O "$RELEASES_URL/download/v$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" || die "NextTrace download failed."
+    [ -n "$VERSION" ] || VERSION="$(curl -Ls "https://api.github.com/repos/${GITHUB_REPO}/releases/latest" 2>&1 | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')"
+    curl -L -O "$RELEASES_URL/download/v$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" || die "$PROJECT_NAME download failed."
+    gzip -cdf "$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" > "$PROJECT_NAME"
+}
+
+do_install

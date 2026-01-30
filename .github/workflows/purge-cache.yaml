@@ -26,14 +26,14 @@ jobs:
           fetch-depth: 0
 
       - name: "Purge script CDN cache"
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'push'
         run: |
           set -eEuo pipefail
           CHANGED_FILES="$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.sh$' || true)"
           [ -n "$CHANGED_FILES" ] || exit 0
-          echo "$CHANGED_FILES" | while IFS= read -r CHANGED_FILE; do
+          while IFS= read -r CHANGED_FILE; do
             curl -Ls "https://purge.jsdelivr.net/gh/$GITHUB_REPOSITORY@${GITHUB_REF##*/}/$CHANGED_FILE"
-          done
+          done <<< "$CHANGED_FILES"
 
       - name: "Purge routing ruleset CDN cache"
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

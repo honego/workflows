@@ -7,7 +7,8 @@
   "dns": {
     "servers": [
       {
-        "type": "local"
+        "type": "local",
+        "tag": "local"
       }
     ],
     "strategy": "prefer_ipv4"

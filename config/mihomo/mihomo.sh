@@ -26,6 +26,11 @@ _err_msg() {
 : "${DOWNLOAD_URL:="https://github.com/$GITHUB_REPO"}"
 : "${RELEASES_URL:="$DOWNLOAD_URL/releases"}"
 
+die() {
+    _err_msg >&2 "$(_red "$@")"
+    exit 1
+}
+
 get_cmd_path() {
     # -f: 忽略shell内置命令和函数, 只考虑外部命令
     # -p: 只输出外部命令的完整路径
@@ -76,11 +81,6 @@ curl() {
             sleep 1
         fi
     done
-}
-
-die() {
-    _err_msg >&2 "$(_red "$@")"
-    exit 1
 }
 
 is_darwin() {

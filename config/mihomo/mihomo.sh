@@ -23,7 +23,7 @@ _err_msg() {
 # 各变量默认值
 : "${GITHUB_REPO:="MetaCubeX/mihomo"}"
 : "${PROJECT_NAME:="${GITHUB_REPO##*/}"}"
-: "${DOWNLOAD_URL:="https://github.com/MetaCubeX/$GITHUB_REPO"}"
+: "${DOWNLOAD_URL:="https://github.com/$GITHUB_REPO"}"
 : "${RELEASES_URL:="$DOWNLOAD_URL/releases"}"
 
 get_cmd_path() {

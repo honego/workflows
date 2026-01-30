@@ -2,6 +2,7 @@
 # Copyright (c) 2026 honeok <i@honeok.com>
 #
 # References:
+# https://github.com/MetaCubeX/mihomo/blob/Meta/docs/config.yaml
 # https://www.nodeseek.com/post-491837-1
 
 ## 全局配置
@@ -112,7 +113,8 @@ rules:
 
 rule-anchor:
   class: &class { type: http, interval: 86400, behavior: classical, format: text }
+  yaml: &yaml { type: http, interval: 86400, behavior: classical, format: yaml }
 
 rule-providers:
-  ai: { <<: *class, url:"https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.list" }
-  netflix: { <<: *class, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.list" }
+  ai: { <<: *yaml, url:"https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.yaml" }
+  netflix: { <<: *class, url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Netflix/Netflix.list" }

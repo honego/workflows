@@ -8,9 +8,5 @@
 [![GitHub Releases Stats](https://img.shields.io/github/downloads/MetaCubeX/mihomo/total.svg?label=downloads&logo=github)](https://somsubhra.github.io/github-release-stats/?username=MetaCubeX&repository=mihomo)
 
 ```shell
-curl -O https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/client.yaml || wget -O ${_##*/} $_
-```
-
-```shell
 bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/scripts/install.sh || wget -qO- $_)
 ```

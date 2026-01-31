@@ -12,5 +12,5 @@ curl -O https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/client.
 ```
 
 ```shell
-bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/script/install.sh || wget -qO- $_)
+bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/scripts/install.sh || wget -qO- $_)
 ```

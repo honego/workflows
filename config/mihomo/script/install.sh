@@ -44,7 +44,7 @@ clear() {
 die() {
     local RC
     RC="${2:-"169"}"
-    _err_msg >&2 "$(_red "$@")"
+    _err_msg >&2 "$(_red "$1")"
     exit "$RC"
 }
 
@@ -83,8 +83,6 @@ install_pkg() {
         elif is_have_cmd apt-get; then
             apt-get update
             apt-get install -y -q "$pkg"
-        elif is_have_cmd apk; then
-            apk add --no-cache "$pkg"
         elif is_have_cmd pacman; then
             pacman -S --noconfirm --needed "$pkg"
         else

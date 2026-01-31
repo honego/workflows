@@ -83,8 +83,8 @@ listeners:
     listen: "::"
     users:
       - name: "7uL6RJ" # openssl rand -base64 6 | tr -cd 'A-Za-z0-9' | head -c 6
-        uuid: "9d0cb9d0-964f-4ef6-897d-6c6b3ccf9e68" # cat /proc/sys/kernel/random/uuid
-        flow: xtls-rprx-vision
+        uuid: "9d0cb9d0-964f-4ef6-897d-6c6b3ccf9e68" # mihomo generate uuid
+        flow: "xtls-rprx-vision"
     # 如果填写reality-config则开启reality (注意不可与certificate和private-key同时填写)
     reality-config:
       dest: example.com:443

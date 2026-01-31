@@ -4,7 +4,8 @@
 # Description:
 # Copyright (c) 2026 honeok <i@honeok.com>
 
-# grep -hIor --exclude="*.md" "https://[^\"']*jsdelivr\.net[^\"']*" . | sort -u
+# References:
+# https://github.com/MetaCubeX/Meta-Docs
 
 set -eE
 
@@ -161,26 +162,12 @@ check_arch() {
 do_install_service() {
     curl -Ls https://fastly.jsdelivr.net/gh/MetaCubeX/Meta-Docs@main/docs/startup/service/index.md |
         awk '
-/^\[Unit\]/ && !started {
-    started=1
-}
-started {
-    buf = buf $0 ORS
-}
-/^\[Install\]/ && started {
-    done=1
-    exit
-}
-END {
-    if (!done) exit 10
-    if (buf !~ /^\[Service\]/m) exit 11
-    if (buf !~ /^\[Install\]/m) exit 12
-    printf "%s", buf
-}
+/^```ini/ { IN_CODE=1; next }
+/^```/ && IN_CODE { IN_CODE=0; exit }
+IN_CODE { print }
 ' > mihomo.service
 
     install -m 0644 mihomo.service /etc/systemd/system/mihomo.service
-
     systemctl daemon-reload
     systemctl enable mihomo --now
 }

@@ -16,6 +16,10 @@ _red() {
     printf "\033[31m%b\033[0m\n" "$*"
 }
 
+_yellow() {
+    printf "\033[33m%b\033[0m\n" "$*"
+}
+
 _err_msg() {
     printf "\033[41m\033[1mError\033[0m %b\n" "$*"
 }
@@ -25,11 +29,39 @@ _err_msg() {
 : "${PROJECT_NAME:="${GITHUB_REPO##*/}"}"
 : "${DOWNLOAD_URL:="https://github.com/$GITHUB_REPO"}"
 : "${RELEASES_URL:="$DOWNLOAD_URL/releases"}"
+TEMP_DIR="$(mktemp -d)"
 
-die() {
-    _err_msg >&2 "$(_red "$@")"
-    exit 1
+trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
+
+VERSION="${VERSION#v}"
+
+clear() {
+    [ -t 1 ] && tput clear 2> /dev/null || printf "\033[2J\033[H" || command clear
 }
+
+# https://unix.stackexchange.com/questions/604260/best-range-for-custom-exit-code-in-linux
+die() {
+    local RC
+    RC="${2:-"169"}"
+    _err_msg >&2 "$(_red "$@")"
+    exit "$RC"
+}
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+    --debug)
+        set -x
+        ;;
+    --version)
+        VERSION="${2#v}"
+        shift
+        ;;
+    --*)
+        _yellow "Illegal option $1"
+        ;;
+    esac
+    shift $(($# > 0 ? 1 : 0))
+done
 
 get_cmd_path() {
     # -f: 忽略shell内置命令和函数, 只考虑外部命令
@@ -119,13 +151,14 @@ check_arch() {
         case "$(uname -m 2> /dev/null || arch 2> /dev/null)" in
         amd64 | x86_64) OS_ARCH="amd64" ;;
         arm64 | armv8 | aarch64) OS_ARCH="arm64" ;;
+        *) die "Architecture is not supported." ;;
         esac
+    else
+        die "Architecture is not supported."
     fi
 }
 
 do_install() {
-    local VERSION
-
     check_sys
     check_arch
 
@@ -133,5 +166,7 @@ do_install() {
     curl -L -O "$RELEASES_URL/download/v$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" || die "$PROJECT_NAME download failed."
     gzip -cdf "$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" > "$PROJECT_NAME"
 }
+
+pushd "$TEMP_DIR" > /dev/null 2>&1 || die "Can't access temporary work dir."
 
 do_install

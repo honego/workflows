@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: "Mirror to gitgud"
-        uses: honeok/git-mirror-repository-action@v1
+        uses: yesolutions/mirror-action@master
         with:
           REMOTE: git@gitgud.io:${{ github.repository }}.git
           GIT_SSH_PRIVATE_KEY: ${{ secrets.SYNC_PRIVATE_KEY }}

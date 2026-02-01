@@ -12,6 +12,10 @@ pushd "$SRC_TOP" || exit 1
 
 git pull --rebase origin "$CURRENT_BRANCH" 1> /dev/null
 
+git rebase "$CURRENT_BRANCH" "$MERGE_BRANCH"
+
+git checkout "$CURRENT_BRANCH" 1> /dev/null
+
 git merge --ff-only "$MERGE_BRANCH"
 
 git push origin "$CURRENT_BRANCH"

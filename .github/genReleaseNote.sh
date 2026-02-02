@@ -1,13 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 honeok <i@honeok.com>
 
 set -eEuxo pipefail
 
 PREVIOUS_VERSION="$1"
 CURRENT_VERSION="$2"
 
+((BASH_VERSINFO[0] > 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] >= 4))) ||
+    {
+        echo >&2 "Error: bash >= 4.4 required."
+        exit 69
+    }
+
 [ -n "$PREVIOUS_VERSION" ] && [ -n "$CURRENT_VERSION" ] || {
     echo "Usage: $0 <PREVIOUS_VERSION> <CURRENT_VERSION>"
-    exit 91
+    exit 64
 }
 
 generate_notes() {

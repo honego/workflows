@@ -101,7 +101,7 @@ jobs:
             type=raw,value=${{ needs.check.outputs.mihomo_version }}
             type=raw,value=latest
           labels: |
-            org.opencontainers.image.description=Mihomo (formerly Clash.Meta) is a high-performance, cross-platform rule-based tunnel core supporting modern protocols like VLESS, Hysteria2, and TUIC.
+            org.opencontainers.image.description=Mihomo is a high-performance, cross-platform rule-based tunnel core supporting modern protocols like VLESS, Hysteria2, and TUIC.
             org.opencontainers.image.source=https://github.com/MetaCubeX/mihomo
             org.opencontainers.image.title=mihomo
             org.opencontainers.image.url=https://wiki.metacubex.one
@@ -171,7 +171,7 @@ jobs:
             type=raw,value=${{ needs.check.outputs.mihomo_version }}
             type=raw,value=latest
           labels: |
-            org.opencontainers.image.description=Mihomo (formerly Clash.Meta) is a high-performance, cross-platform rule-based tunnel core supporting modern protocols like VLESS, Hysteria2, and TUIC.
+            org.opencontainers.image.description=Mihomo is a high-performance, cross-platform rule-based tunnel core supporting modern protocols like VLESS, Hysteria2, and TUIC.
             org.opencontainers.image.source=https://github.com/MetaCubeX/mihomo
             org.opencontainers.image.title=mihomo
             org.opencontainers.image.url=https://wiki.metacubex.one

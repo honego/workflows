@@ -78,6 +78,15 @@ jobs:
           PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< ${{ matrix.platform }})
           echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
+      - name: "Download geodat"
+        working-directory: ${{ env.WORK_DIR }}
+        run: |
+          set -eEuxo pipefail
+          curl -L -O https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
+          curl -L -O https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
+          curl -L -O https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb
+          curl -L -O https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb
+
       - name: "Set up Docker QEMU"
         uses: docker/setup-qemu-action@v3
 

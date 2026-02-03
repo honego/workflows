@@ -23,6 +23,7 @@ jobs:
     name: "Build image"
     runs-on: ubuntu-latest
     env:
+      TZ: Asia/Shanghai
       WORK_DIR: bi/base
       DOCKERHUB_REPO: registry.cn-chengdu.aliyuncs.com/jdsgame/bi-base
 

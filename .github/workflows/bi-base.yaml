@@ -34,7 +34,9 @@ jobs:
 
       - name: "Prepare tags"
         id: version
-        run: tag="$(awk -F. '{printf("%d.%d.%d", substr($1,3), $2, $3)}' <<< "$(date +%Y.%m.%d)")"
+        run: |
+          TAG="$(awk -F. '{printf("%d.%d.%d", substr($1,3), $2, $3)}' <<< "$(date +%Y.%m.%d)")"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: "Set up Docker QEMU"
         uses: docker/setup-qemu-action@v3

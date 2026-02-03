@@ -78,9 +78,6 @@ jobs:
           PLATFORM_PAIR="$(awk -F/ '{print $1"-"$2$3}' <<< ${{ matrix.platform }})"
           echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
-      # - name: "Set up Docker QEMU"
-      #   uses: docker/setup-qemu-action@v3
-
       - name: "Setup Docker Buildx"
         uses: docker/setup-buildx-action@v3
 

@@ -9,21 +9,21 @@ set -eu
 WORK_DIR="/app"
 MUST_CMD="envsubst aerich"
 
-: "${DB_USER?error: DB_USER missing}"
-: "${DB_PASSWORD?error: DB_PASSWORD missing}"
-: "${DB_HOST?error: DB_HOST missing}"
-: "${DB_PORT?error: DB_PORT missing}"
-: "${DB_DATABASE?error: DB_DATABASE missing}"
+: "${DB_USER:?"Error: DB_USER missing"}"
+: "${DB_PASSWORD:?"Error: DB_PASSWORD missing"}"
+: "${DB_HOST:?"Error: DB_HOST missing"}"
+: "${DB_PORT:?"Error: DB_PORT missing"}"
+: "${DB_DATABASE:?"Error: DB_DATABASE missing"}"
 
 for _cmd in $MUST_CMD; do
     if ! command -v "$_cmd" > /dev/null 2>&1; then
-        echo "ERROR: $_cmd command not found!"
+        echo "Error: $_cmd command not found!"
         exit 1
     fi
 done
 
-cd "$WORK_DIR" || {
-    echo "error: Failed to enter work path!"
+cd "$WORK_DIR" > /dev/null 2>&1 || {
+    echo "Error: Failed to enter work path!"
     exit 1
 }
 

@@ -6,7 +6,6 @@
 
 FROM python:3.9.25-alpine@sha256:c99b6eb43b3ac4d750db3d6e8b22268d5ea9a99deead7218ce3deda7f2ca029c
 COPY . .
-ENV TZ=Asia/Shanghai
 ENV PIP_ROOT_USER_ACTION=ignore
 RUN set -ex \
     && apk add --no-cache --update \

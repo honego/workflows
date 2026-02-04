@@ -7,7 +7,7 @@
 # Evan Wies <evan@neomantra.net>
 # teddysun <i@teddysun.com>
 
-set -eE
+# set -eE
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"

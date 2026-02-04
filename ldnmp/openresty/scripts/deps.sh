@@ -9,8 +9,8 @@
 
 set -eE
 
-SCRIPT="$(realpath "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)/$(basename "${BASH_SOURCE:-$0}")")"
-SCRIPT_DIR="$(dirname "$(realpath "$SCRIPT")")"
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 
 curl() {

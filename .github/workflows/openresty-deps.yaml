@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: "Update dependencies"
-        working-directory: ldnmp/scripts
+        working-directory: ldnmp/openresty/scripts
         run: |
           chmod +x deps.sh
           ./deps.sh

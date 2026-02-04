@@ -8,8 +8,7 @@ FROM python:3.9.25-alpine@sha256:c99b6eb43b3ac4d750db3d6e8b22268d5ea9a99deead721
 COPY . .
 ENV TZ=Asia/Shanghai
 ENV PIP_ROOT_USER_ACTION=ignore
-RUN --mount=type=cache,target=/root/.cache/pip \
-    set -ex \
+RUN set -ex \
     && apk add --no-cache --update \
         gcc \
         gettext-envsubst \
@@ -17,6 +16,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         musl-dev \
         python3-dev \
         tzdata \
-    && python3 -m pip install -r requirements.txt \
+    && python3 -m pip install --no-cache-dir -r requirements.txt \
     && rm -f requirements.txt \
     && rm -rf /var/cache/apk/*

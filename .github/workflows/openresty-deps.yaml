@@ -5,12 +5,12 @@ on:
   push:
     branches: [master, release]
     paths:
-      - "ldnmp/scripts/deps.sh"
+      - "ldnmp/openresty/scripts/deps.sh"
       - ".github/workflows/openresty-deps.yaml"
   pull_request:
     types: [opened, reopened, synchronize]
     paths:
-      - "ldnmp/scripts/deps.sh"
+      - "ldnmp/openresty/scripts/deps.sh"
       - ".github/workflows/openresty-deps.yaml"
   schedule:
     - cron: "0 16 * * *"

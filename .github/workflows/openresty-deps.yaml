@@ -35,8 +35,7 @@ jobs:
       - name: "Update dependencies"
         working-directory: ldnmp/openresty/scripts
         run: |
-          chmod +x deps.sh
-          ./deps.sh
+          bash -x deps.sh
 
       - name: "Ready to submit"
         run: |

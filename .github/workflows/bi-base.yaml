@@ -70,6 +70,7 @@ jobs:
           tags: type=raw,value=${{ steps.prepare.outputs.build_tag }}
 
       - name: "Build image"
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: ${{ env.WORK_DIR }}
@@ -127,7 +128,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.DOCKERHUB_REPO }}
-          tags: type=raw,value=${{ steps.build.outputs.build_tag }}
+          tags: type=raw,value=${{ needs.build.outputs.build_tag }}
 
       - name: "Create manifest list and push"
         working-directory: /tmp/digests

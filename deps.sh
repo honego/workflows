@@ -1,10 +1,38 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 honeok <i@honeok.com>
+#                           <honeok7@gmail.com>
+# Thanks:
+# agentzh <agentzh@gmail.com>
+# Evan Wies <evan@neomantra.net>
+# teddysun <i@teddysun.com>
 
 set -eE
 
 SCRIPT="$(realpath "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)/$(basename "${BASH_SOURCE:-$0}")")"
 SCRIPT_DIR="$(dirname "$(realpath "$SCRIPT")")"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
+curl() {
+    local RC
+
+    # --fail             4xx/5xx返回非0
+    # --insecure         兼容旧平台证书问题
+    # --connect-timeout  连接超时保护
+    # CentOS7 无法使用 --retry-connrefused 和 --retry-all-errors 因此手动 retry
+    for ((i = 1; i <= 5; i++)); do
+        if ! command curl --connect-timeout 10 --fail --insecure "$@"; then
+            RC="$?"
+            # 403 404 错误或达到重试次数
+            if [ "$RC" -eq 22 ] || [ "$i" -eq 5 ]; then
+                return "$RC"
+            fi
+            sleep 1
+        else
+            return
+        fi
+    done
+}
 
 # 官方稳定版
 # https://github.com/openresty/docker-openresty
@@ -13,7 +41,7 @@ bump_stable() {
 
     OFFICIAL="$(curl -Ls https://raw.githubusercontent.com/openresty/docker-openresty/master/alpine/Dockerfile)"
 
-    cd stable > /dev/null 2>&1 || exit 169
+    cd stable > /dev/null 2>&1 || exit 1
     for VAR in \
         RESTY_OPENSSL_VERSION \
         RESTY_OPENSSL_PATCH_VERSION \
@@ -32,7 +60,7 @@ bump_stable() {
 bump_edge() {
     local EDGE_OPENSSL_VERSION LOCAL_OPENSSL_VERSION EDGE_PCRE2_VERSION LOCAL_PCRE2_VERSION PCRE_SHA512
 
-    cd edge > /dev/null 2>&1 || exit 169
+    cd edge > /dev/null 2>&1 || exit 1
 
     EDGE_OPENSSL_VERSION="$(curl -Ls https://api.github.com/repos/teddysun/openresty/contents/patches | grep '"name"' | cut -d '"' -f4 | grep '^openssl' | sort -V | tail -n1 | cut -d- -f2)"
     LOCAL_OPENSSL_VERSION="$(grep -o 'RESTY_OPENSSL_VERSION="[^"]*"' Dockerfile | head -n1 | cut -d'"' -f2)"
@@ -49,13 +77,13 @@ bump_edge() {
         # 更新SHA512
         curl -Ls -O "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$EDGE_PCRE2_VERSION/pcre2-$EDGE_PCRE2_VERSION.tar.gz"
         PCRE_SHA512="$(sha512sum "pcre2-$EDGE_PCRE2_VERSION.tar.gz" | awk '{print $1}')"
-        rm -f "pcre2-$EDGE_PCRE2_VERSION.tar.gz" || exit 169
-        sed -i "s#RESTY_PCRE_SHA512=\"[^\"]*\"#RESTY_PCRE_SHA512=\"$PCRE_SHA512\"#" Dockerfile
+        rm -f "pcre2-$EDGE_PCRE2_VERSION.tar.gz" || exit 1
+        sed -i "s#^ARG RESTY_PCRE_SHA512=\"[^\"]*\"#ARG RESTY_PCRE_SHA512=\"$PCRE_SHA512\"#" Dockerfile
     fi
 
     cd ..
 }
 
-cd "$PARENT_DIR" > /dev/null 2>&1 || exit 169
+cd "$PARENT_DIR" > /dev/null 2>&1 || exit 1
 bump_stable
 bump_edge

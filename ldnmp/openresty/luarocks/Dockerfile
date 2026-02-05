@@ -10,10 +10,10 @@
 
 FROM honeok/openresty:1.27.1.2-alpine@sha256:7ca20c7d1f097339411aab9e0f51e8d0ca7301860689d31fe9a13a5b270f8ead AS dist
 
-ARG RESTY_LUAROCKS_VERSION="3.12.2"
+ARG RESTY_LUAROCKS_VERSION="3.12.0"
 
-LABEL maintainer="Evan Wies <evan@neomantra.net>"
-LABEL maintainer="honeok <i@honeok.com>"
+LABEL org.opencontainers.image.authors="Evan Wies <evan@neomantra.net>"
+LABEL org.opencontainers.image.authors="honeok <i@honeok.com>"
 
 RUN set -ex \
     && apk add --update --no-cache --virtual .build-deps \

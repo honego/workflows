@@ -52,9 +52,9 @@ curl() {
 bump_stable() {
     local OFFICIAL VAR OFFICIAL_VALUE LOCAL_VALUE
 
-    OFFICIAL="$(curl -Ls https://raw.githubusercontent.com/openresty/docker-openresty/master/alpine/Dockerfile)"
-
     cd stable > /dev/null 2>&1 || exit 1
+
+    OFFICIAL="$(curl -Ls https://raw.githubusercontent.com/openresty/docker-openresty/master/alpine/Dockerfile)"
     for VAR in \
         RESTY_OPENSSL_VERSION \
         RESTY_OPENSSL_PATCH_VERSION \

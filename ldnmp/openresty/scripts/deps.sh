@@ -2,16 +2,29 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 honeok <i@honeok.com>
 #                           <honeok7@gmail.com>
+#
 # Thanks:
 # agentzh <agentzh@gmail.com>
 # Evan Wies <evan@neomantra.net>
 # teddysun <i@teddysun.com>
 
-# set -eE
+set -eEuo pipefail
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+    --debug)
+        set -x
+        ;;
+    --*)
+        _yellow "Illegal option $1"
+        ;;
+    esac
+    shift $(($# > 0 ? 1 : 0))
+done
 
 curl() {
     local RC
@@ -29,7 +42,7 @@ curl() {
             fi
             sleep 1
         else
-            return
+            return 0
         fi
     done
 }
@@ -50,8 +63,9 @@ bump_stable() {
         OFFICIAL_VALUE="$(grep -o "$VAR=\"[^\"]*\"" <<< "$OFFICIAL" | cut -d'"' -f2)"
         LOCAL_VALUE="$(grep -o "$VAR=\"[^\"]*\"" Dockerfile | cut -d'"' -f2)"
 
-        [ "$OFFICIAL_VALUE" = "$LOCAL_VALUE" ] && continue
-        sed -i "s/$VAR=\"$LOCAL_VALUE\"/$VAR=\"$OFFICIAL_VALUE\"/" Dockerfile
+        if [ "$OFFICIAL_VALUE" != "$LOCAL_VALUE" ]; then
+            sed -i "s/$VAR=\"$LOCAL_VALUE\"/$VAR=\"$OFFICIAL_VALUE\"/" Dockerfile
+        fi
     done
 
     cd ..

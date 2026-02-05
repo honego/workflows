@@ -40,7 +40,8 @@ jobs:
       - name: "Update dependencies"
         working-directory: ldnmp/openresty/scripts
         run: |
-          bash -x deps.sh
+          chmod +x deps.sh
+          ./deps.sh --debug
 
       - name: "Ready to submit"
         run: |
@@ -60,3 +61,6 @@ jobs:
 
             ${{ env.COMMIT_DIFF }}
           commit_options: "--no-verify --signoff"
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>

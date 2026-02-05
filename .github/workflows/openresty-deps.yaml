@@ -41,9 +41,7 @@ jobs:
           fetch-depth: 0
 
       - name: "Update dependencies"
-        run: |
-          chmod +x *.sh
-          ./deps.sh --debug
+        run: bash deps.sh --debug
 
       - name: "Ready to submit"
         run: |
@@ -51,7 +49,7 @@ jobs:
             echo "IS_RENEW=1" >> "$GITHUB_ENV"
 
             echo "COMMIT_MSG<<EOF" >> "$GITHUB_ENV"
-            ./deps-commit-msg.sh >> "$GITHUB_ENV"
+            bash deps-commit-msg.sh >> "$GITHUB_ENV"
             echo "EOF" >> "$GITHUB_ENV"
           fi
 

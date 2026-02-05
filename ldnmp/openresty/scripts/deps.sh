@@ -8,7 +8,7 @@
 # Evan Wies <evan@neomantra.net>
 # teddysun <i@teddysun.com>
 
-set -eEuo pipefail
+set -eEo pipefail
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
@@ -47,7 +47,6 @@ curl() {
     done
 }
 
-# 官方稳定版
 # https://github.com/openresty/docker-openresty
 bump_stable() {
     local OFFICIAL VAR OFFICIAL_VALUE LOCAL_VALUE
@@ -67,6 +66,21 @@ bump_stable() {
             sed -i "s/$VAR=\"$LOCAL_VALUE\"/$VAR=\"$OFFICIAL_VALUE\"/" Dockerfile
         fi
     done
+
+    cd ..
+}
+
+bump_stable_luarocks() {
+    local OFFICIAL
+
+    cd luarocks > /dev/null 2>&1 || exit 1
+
+    OFFICIAL="$(curl -Ls https://raw.githubusercontent.com/openresty/docker-openresty/master/alpine/Dockerfile.fat)"
+    OFFICIAL_LUAROCKS_VERSION="$(grep -o 'RESTY_LUAROCKS_VERSION="[^"]*"' <<< "$OFFICIAL" | cut -d'"' -f2)"
+    LOCAL_LUAROCKS_VERSION="$(grep -o 'RESTY_LUAROCKS_VERSION="[^"]*"' Dockerfile | cut -d'"' -f2)"
+    if [ -n "$OFFICIAL_LUAROCKS_VERSION" ] && [ "$OFFICIAL_LUAROCKS_VERSION" != "$LOCAL_LUAROCKS_VERSION" ]; then
+        sed -i "s/RESTY_LUAROCKS_VERSION=\"$LOCAL_LUAROCKS_VERSION\"/RESTY_LUAROCKS_VERSION=\"$OFFICIAL_LUAROCKS_VERSION\"/" Dockerfile
+    fi
 
     cd ..
 }
@@ -100,4 +114,5 @@ bump_edge() {
 
 cd "$PARENT_DIR" > /dev/null 2>&1 || exit 1
 bump_stable
+bump_stable_luarocks
 bump_edge

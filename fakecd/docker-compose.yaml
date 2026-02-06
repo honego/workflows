@@ -1,0 +1,15 @@
+---
+services:
+  fakecd:
+    image: honeok/fakecd:v0.1.0
+    container_name: fakecd
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    environment:
+      - AUTH_TOKEN=dI7DwPklJsVU76feF4AKN2Ob
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../nginx:/app/nginx
+      - ../redis:/app/redis
+    network_mode: bridge

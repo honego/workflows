@@ -142,13 +142,13 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 	// 找到镜像但Tag一样
 	if actualUpdated == 0 {
 		log.Printf("Image %s:%s matches %d projects, but already the latest version. Skipped.", deployRequest.ImageRepo, deployRequest.NewTag, totalMatched)
-		sendJSONResponse(responseWriter, http.StatusOK, "skipped", responseData)
+		sendJSONResponse(responseWriter, http.StatusOK, "Skipped", responseData)
 		return
 	}
 
 	log.Printf("Successfully updated projects. Matched: %d, Updated: %d | Image: %s:%s", totalMatched, actualUpdated, deployRequest.ImageRepo, deployRequest.NewTag)
 
-	sendJSONResponse(responseWriter, http.StatusOK, "success", responseData)
+	sendJSONResponse(responseWriter, http.StatusOK, "Success", responseData)
 }
 
 // 扫描当前目录下的所有文件夹

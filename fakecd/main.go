@@ -53,8 +53,7 @@ func main() {
 	}
 
 	// 启动日志
-	workingDirectory, _ := os.Getwd()
-	log.Printf("FakeCD started | Port: %s | WorkDir: %s | Mode: Global Upgrade (up -d)", serverPort, workingDirectory)
+	log.Println("FakeCD started")
 
 	// 注册路由
 	http.HandleFunc("/deploy", authenticationMiddleware(handleDeploy))

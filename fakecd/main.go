@@ -197,6 +197,7 @@ func scanAndProcessAllDirectories(targetImageRepository, newTag string) (int, in
 			if isMatched {
 				matchedCount++
 			}
+
 			if isUpdated {
 				updatedCount++
 			}

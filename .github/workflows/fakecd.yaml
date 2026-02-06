@@ -1,0 +1,90 @@
+---
+name: "Build fakecd"
+
+on:
+  push:
+    branches: [master, release]
+    paths:
+      - "fakecd/VERSION"
+      - "!fakecd/*.md"
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - "fakecd/**"
+      - "!fakecd/*.md"
+      - ".github/workflows/fakecd.yaml"
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TZ: Asia/Shanghai
+  WORK_DIR: fakecd
+  ALIYUN_REGISTRY: registry.cn-chengdu.aliyuncs.com
+  ALIYUN_REGISTRY_NAMESPACE: ${{ github.repository_owner }}
+  ALIYUN_REGISTRY_IMAGE: fakecd
+
+jobs:
+  release:
+    name: "Build binary"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { goos: linux, goarch: "386", platform: "linux/386" }
+          - { goos: linux, goarch: amd64, platform: "linux/amd64" }
+          - { goos: linux, goarch: arm, goarm: "6", platform: "linux/arm/v6" }
+          - { goos: linux, goarch: arm, goarm: "7", platform: "linux/arm/v7" }
+          - { goos: linux, goarch: arm64, platform: "linux/arm64" }
+          - { goos: linux, goarch: ppc64le, platform: "linux/ppc64le" }
+          - { goos: linux, goarch: riscv64, platform: "linux/riscv64" }
+          - { goos: linux, goarch: s390x, platform: "linux/s390x" }
+    env:
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+      GOARM: ${{ matrix.goarm }}
+      CGO_ENABLED: 0
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: "Prepare"
+        run: |
+          PLATFORM_PAIR="$(awk -F/ '{print $1"-"$2$3}' <<< ${{ matrix.platform }})"
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
+
+      - name: "Setup Go"
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ${{ env.WORK_DIR }}/go.mod
+          check-latest: true
+          cache-dependency-path: ${{ env.WORK_DIR }}/go.sum
+
+      - name: "Download gomod"
+        working-directory: ${{ env.WORK_DIR }}
+        run: go mod download
+
+      - name: "Build binary"
+        working-directory: ${{ env.WORK_DIR }}
+        run: |
+          set -eEuxo pipefail
+          echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM"
+          BINARY_NAME="fakecd-${{ env.PLATFORM_PAIR }}"
+          go build -v -trimpath -o "$BINARY_NAME" -ldflags="-s -w -buildid="
+
+      - name: "Upload artifact"
+        uses: actions/upload-artifact@v6
+        with:
+          name: fakecd-${{ env.PLATFORM_PAIR }}
+          path: ${{ env.WORK_DIR }}/fakecd-${{ env.PLATFORM_PAIR }}
+          if-no-files-found: error
+          retention-days: 1

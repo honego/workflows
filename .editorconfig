@@ -13,7 +13,7 @@ max_line_length = 120
 indent_style = tab
 indent_size = 4
 
-[{*.{awk,c,cpp,h,ini,java,php,pl,py,rs},*[Dd]ockerfile*,Jenkinsfile}]
+[{*.{awk,c,cpp,h,ini,java,php,pl,py,rs},*[Dd]ockerfile*}]
 indent_style = space
 indent_size = 4
 
@@ -22,7 +22,7 @@ indent_style = space
 indent_size = 4
 space_redirects = true
 
-[*.{css,html,js,j2,json,lua,proto,ts,tsx,toml,vue,xml,yaml}]
+[*.{css,html,j2,Jenkinsfile,js,json,lua,proto,toml,ts,tsx,vue,xml,yaml}]
 indent_style = space
 indent_size = 2
 

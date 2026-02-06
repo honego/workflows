@@ -91,7 +91,9 @@ func sendJSONResponse(responseWriter http.ResponseWriter, statusCode int, messag
 		Data:    data,
 	}
 
-	json.NewEncoder(responseWriter).Encode(response)
+	if err := json.NewEncoder(responseWriter).Encode(response); err != nil {
+		log.Printf("Error sending JSON response: %v", err)
+	}
 }
 
 // 处理部署请求的主逻辑

@@ -53,7 +53,7 @@ func main() {
 	}
 
 	// 启动日志
-	log.Printf("FakeCD started: Port: %s", serverPort)
+	log.Println("FakeCD started")
 
 	// 注册路由
 	http.HandleFunc("/deploy", authenticationMiddleware(handleDeploy))
@@ -118,7 +118,7 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 	defer fileMutex.Unlock()
 
 	// 扫描并处理当前目录下的所有子文件夹
-	matchedProjects, err := scanAndProcessAllDirectories(deployRequest.ImageRepo, deployRequest.NewTag)
+	totalMatched, actualUpdated, err := scanAndProcessAllDirectories(deployRequest.ImageRepo, deployRequest.NewTag)
 	if err != nil {
 		log.Printf("Process error: %v", err)
 		sendJSONResponse(responseWriter, http.StatusInternalServerError, fmt.Sprintf("Process Error: %v", err), nil)
@@ -126,14 +126,12 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 	}
 
 	// 不包含镜像
-	if matchedProjects == 0 {
+	if totalMatched == 0 {
 		errorMessage := fmt.Sprintf("No service found using image '%s'", deployRequest.ImageRepo)
 		log.Println("[Warn] " + errorMessage)
 		sendJSONResponse(responseWriter, http.StatusNotFound, errorMessage, nil)
 		return
 	}
-
-	log.Printf("Request processed for image: %s:%s | Projects Matched: %d", deployRequest.ImageRepo, deployRequest.NewTag, matchedProjects)
 
 	// 构造成功响应数据
 	responseData := SuccessData{
@@ -141,17 +139,27 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 		NewTag:      deployRequest.NewTag,    // 返回传入的Tag
 	}
 
+	// 找到镜像但Tag一样
+	if actualUpdated == 0 {
+		log.Printf("Image %s:%s matches %d projects, but already the latest version. Skipped.", deployRequest.ImageRepo, deployRequest.NewTag, totalMatched)
+		sendJSONResponse(responseWriter, http.StatusOK, "skipped", responseData)
+		return
+	}
+
+	log.Printf("Successfully updated projects. Matched: %d, Updated: %d | Image: %s:%s", totalMatched, actualUpdated, deployRequest.ImageRepo, deployRequest.NewTag)
+
 	sendJSONResponse(responseWriter, http.StatusOK, "success", responseData)
 }
 
 // 扫描当前目录下的所有文件夹
-func scanAndProcessAllDirectories(targetImageRepository, newTag string) (int, error) {
+func scanAndProcessAllDirectories(targetImageRepository, newTag string) (int, int, error) {
 	matchedCount := 0
+	updatedCount := 0
 
 	// 读取当前目录下的文件列表
 	entries, err := os.ReadDir(".")
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	for _, entry := range entries {
@@ -164,20 +172,24 @@ func scanAndProcessAllDirectories(targetImageRepository, newTag string) (int, er
 				continue
 			}
 
-			isMatched, err := processProjectUpdate(directoryName, composeFilePath, targetImageRepository, newTag)
+			// 读取指定YAML文件查找匹配的镜像并更新
+			isMatched, isUpdated, err := processProjectUpdate(directoryName, composeFilePath, targetImageRepository, newTag)
 			if err != nil {
-				// 拉取失败
-				log.Printf("Error processing project %s: %v", directoryName, err)
-				return matchedCount, err
+				log.Printf("Error processing %s: %v", composeFilePath, err)
+				return matchedCount, updatedCount, err
 			}
 
 			if isMatched {
 				matchedCount++
 			}
+
+			if isUpdated {
+				updatedCount++
+			}
 		}
 	}
 
-	return matchedCount, nil
+	return matchedCount, updatedCount, nil
 }
 
 // 在指定目录下寻找docker-compose文件
@@ -195,20 +207,20 @@ func findComposeFileInDir(dir string) string {
 	return ""
 }
 
-func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bool, error) {
+func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bool, bool, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
 
 	var yamlRootMap map[string]interface{}
 	if err := yaml.Unmarshal(fileData, &yamlRootMap); err != nil {
-		return false, err
+		return false, false, err
 	}
 
 	servicesMap, ok := yamlRootMap["services"].(map[string]interface{})
 	if !ok {
-		return false, nil
+		return false, false, nil
 	}
 
 	newFullImageString := fmt.Sprintf("%s:%s", targetImageRepo, newTag)
@@ -239,37 +251,37 @@ func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bo
 
 	// 镜像不存在
 	if !foundTargetRepo {
-		return false, nil
+		return false, false, nil
 	}
 
 	// 找到了镜像但是Tag一样
 	if !needsUpdate {
-		log.Printf("Project [%s] already on version %s, skipping update.", workDir, newTag)
-		return true, nil
+		return true, false, nil
 	}
 
-	log.Printf("Project [%s] needs update to %s. Starting update sequence...", workDir, newTag)
+	log.Printf("Project [%s] needs update to %s. Starting update sequence.", workDir, newTag)
 
-	// docker pull 这一步如果不通过返回Error
+	// Pull失败返回Error
 	if err := runDockerPull(workDir, newFullImageString); err != nil {
-		return true, fmt.Errorf("pull failed for %s: %v", newFullImageString, err)
+		return true, false, fmt.Errorf("pull failed for %s: %v", newFullImageString, err)
 	}
 
 	// 写入文件
 	newFileData, err := yaml.Marshal(&yamlRootMap)
 	if err != nil {
-		return true, fmt.Errorf("yaml marshal failed: %v", err)
+		return true, false, fmt.Errorf("yaml marshal failed: %v", err)
 	}
 	if err := os.WriteFile(filePath, newFileData, 0644); err != nil {
-		return true, fmt.Errorf("write file failed: %v", err)
+		return true, false, fmt.Errorf("write file failed: %v", err)
 	}
 
+	// 更新项目
 	if err := runDockerUp(workDir, filePath); err != nil {
-		return true, fmt.Errorf("docker up failed: %v", err)
+		return true, true, fmt.Errorf("docker up failed: %v", err)
 	}
 
 	log.Printf("Project [%s] updated successfully.", workDir)
-	return true, nil
+	return true, true, nil
 }
 
 func getRepositoryFromImage(fullImageString string) string {
@@ -292,16 +304,15 @@ func runDockerPull(workingDirectory, fullImage string) error {
 	return cmd.Run()
 }
 
-// 重启项目
+// 更新项目
 func runDockerUp(workingDirectory string, composeFilePath string) error {
 	fileName := filepath.Base(composeFilePath)
 	dockerArguments := []string{"compose", "-f", fileName, "up", "-d"}
 
 	log.Printf("Executing up in [%s]: docker %v", workingDirectory, strings.Join(dockerArguments, " "))
-
-	cmd := exec.Command("docker", dockerArguments...)
-	cmd.Dir = workingDirectory
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	dockerCommand := exec.Command("docker", dockerArguments...)
+	dockerCommand.Dir = workingDirectory
+	dockerCommand.Stdout = os.Stdout
+	dockerCommand.Stderr = os.Stderr
+	return dockerCommand.Run()
 }

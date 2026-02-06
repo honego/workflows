@@ -39,8 +39,8 @@ type StandardResponse struct {
 
 // 成功时JSON返回
 type SuccessData struct {
-	NewTag      string   `json:"newTag"`
-	UpdateImage []string `json:"updateImage"`
+	UpdateImage string `json:"updateImage"`
+	NewTag      string `json:"newTag"`
 }
 
 func main() {
@@ -138,11 +138,11 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 
 	// 构造成功响应数据
 	responseData := SuccessData{
-		NewTag:      deployRequest.NewTag,
-		UpdateImage: updatedProjects,
+		UpdateImage: deployRequest.ImageRepo, // 返回传入的镜像名
+		NewTag:      deployRequest.NewTag,    // 返回传入的Tag
 	}
 
-	sendJSONResponse(responseWriter, http.StatusOK, "Deploy success", responseData)
+	sendJSONResponse(responseWriter, http.StatusOK, "success", responseData)
 }
 
 // 扫描当前目录下的所有文件夹

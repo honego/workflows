@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -17,41 +18,43 @@ import (
 
 // 全局配置变量
 var (
-	dockerComposeFilePath string
-	serverPort            string
-	authenticationToken   string
-	fileMutex             sync.Mutex                                    // 文件锁
-	inputValidator        = regexp.MustCompile(`^[a-zA-Z0-9_\-\.\/]+$`) // 防止Shell注入
+	serverPort          string
+	authenticationToken string
+	fileMutex           sync.Mutex                                    // 文件操作锁
+	inputValidator      = regexp.MustCompile(`^[a-zA-Z0-9_\-\.\/]+$`) // 防止Shell注入正则
 )
 
-// 请求体结构
+// 请求结构体
 type DeployRequest struct {
 	ImageRepo string `json:"image"`
 	NewTag    string `json:"tag"`
 }
 
+// 统一标准响应结构
+type StandardResponse struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+// 成功时JSON返回
+type SuccessData struct {
+	NewTag      string   `json:"newTag"`
+	UpdateImage []string `json:"updateImage"`
+}
+
 func main() {
-	flag.StringVar(&dockerComposeFilePath, "file", "", "docker-compose 文件路径")
 	flag.StringVar(&serverPort, "port", "5000", "监听端口")
 	flag.Parse()
 
-	// 检查环境变量中的Token
-	authenticationToken = os.Getenv("FAKECD_TOKEN")
+	authenticationToken = os.Getenv("AUTH_TOKEN")
 	if authenticationToken == "" {
-		log.Fatal("Startup failed: Please set FAKECD_TOKEN environment variable")
+		log.Fatal("Startup failed: Please set AUTH_TOKEN environment variable")
 	}
 
-	if dockerComposeFilePath == "" {
-		if _, err := os.Stat("docker-compose.yaml"); err == nil {
-			dockerComposeFilePath = "docker-compose.yaml"
-		} else if _, err := os.Stat("docker-compose.yml"); err == nil {
-			dockerComposeFilePath = "docker-compose.yml"
-		} else {
-			log.Fatal("Startup failed: docker-compose file not found")
-		}
-	}
-
-	log.Printf("FakeCD started | Port: %s | File: %s", serverPort, dockerComposeFilePath)
+	// 启动日志
+	workingDirectory, _ := os.Getwd()
+	log.Printf("FakeCD started | Port: %s | WorkDir: %s | Mode: Global Upgrade (up -d)", serverPort, workingDirectory)
 
 	// 注册路由
 	http.HandleFunc("/deploy", authenticationMiddleware(handleDeploy))
@@ -68,72 +71,137 @@ func authenticationMiddleware(nextHandler http.HandlerFunc) http.HandlerFunc {
 		// 比对Token
 		if tokenHeader != authenticationToken {
 			log.Printf("Auth failed: %s", httpRequest.RemoteAddr)
-			http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+			sendJSONResponse(responseWriter, http.StatusUnauthorized, "Unauthorized", nil)
 			return
 		}
 		nextHandler(responseWriter, httpRequest)
 	}
 }
 
+// 统一发送JSON响应
+func sendJSONResponse(responseWriter http.ResponseWriter, statusCode int, message string, data interface{}) {
+	responseWriter.Header().Set("Content-Type", "application/json")
+	// HTTP状态码
+	responseWriter.WriteHeader(statusCode)
+
+	// 构造响应体
+	response := StandardResponse{
+		Code:    statusCode,
+		Message: message,
+		Data:    data,
+	}
+
+	json.NewEncoder(responseWriter).Encode(response)
+}
+
 // 处理部署请求的主逻辑
 func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request) {
 	if httpRequest.Method != http.MethodPost {
-		http.Error(responseWriter, "Method Not Allowed", http.StatusMethodNotAllowed)
+		sendJSONResponse(responseWriter, http.StatusMethodNotAllowed, "Method Not Allowed", nil)
 		return
 	}
 
 	var deployRequest DeployRequest
 	if err := json.NewDecoder(httpRequest.Body).Decode(&deployRequest); err != nil {
-		http.Error(responseWriter, "JSON parse error", http.StatusBadRequest)
+		sendJSONResponse(responseWriter, http.StatusBadRequest, "JSON parse error", nil)
 		return
 	}
 
 	// 检查输入字符是否合法
 	if !inputValidator.MatchString(deployRequest.ImageRepo) || !inputValidator.MatchString(deployRequest.NewTag) {
-		http.Error(responseWriter, "Invalid input characters", http.StatusBadRequest)
+		sendJSONResponse(responseWriter, http.StatusBadRequest, "Invalid input characters", nil)
 		return
 	}
 
 	fileMutex.Lock()
 	defer fileMutex.Unlock()
 
-	// 更新文件
-	updatedServiceNames, err := updateImageInFile(deployRequest.ImageRepo, deployRequest.NewTag)
+	// 扫描并处理当前目录下的所有子文件夹
+	updatedProjects, err := scanAndProcessAllDirectories(deployRequest.ImageRepo, deployRequest.NewTag)
 	if err != nil {
-		log.Printf("File update error: %v", err)
-		http.Error(responseWriter, fmt.Sprintf("File Error: %v", err), http.StatusInternalServerError)
+		log.Printf("Process error: %v", err)
+		sendJSONResponse(responseWriter, http.StatusInternalServerError, fmt.Sprintf("Process Error: %v", err), nil)
 		return
 	}
 
-	// 没有找到匹配的服务
-	if len(updatedServiceNames) == 0 {
-		errorMessage := fmt.Sprintf("No service found using image '%s'", deployRequest.ImageRepo)
+	// 没有项目被更新
+	if len(updatedProjects) == 0 {
+		errorMessage := fmt.Sprintf("No service found using image '%s' in any subdirectory", deployRequest.ImageRepo)
 		log.Println("[Warn] " + errorMessage)
-		http.Error(responseWriter, errorMessage, http.StatusNotFound)
+		sendJSONResponse(responseWriter, http.StatusNotFound, errorMessage, nil)
 		return
 	}
 
-	// 重启服务
-	if err := runDockerRestart(updatedServiceNames); err != nil {
-		log.Printf("Docker execution error: %v", err)
-		http.Error(responseWriter, "Docker restart failed", http.StatusInternalServerError)
-		return
+	log.Printf("Successfully updated projects: %v | Image: %s:%s", updatedProjects, deployRequest.ImageRepo, deployRequest.NewTag)
+
+	// 构造成功响应数据
+	responseData := SuccessData{
+		NewTag:      deployRequest.NewTag,
+		UpdateImage: updatedProjects,
 	}
 
-	log.Printf("Successfully updated services: %v | Image: %s:%s", updatedServiceNames, deployRequest.ImageRepo, deployRequest.NewTag)
-
-	// 返回成功响应
-	responseWriter.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(responseWriter).Encode(map[string]interface{}{
-		"message":          "Deploy success",
-		"updated_services": updatedServiceNames,
-		"new_tag":          deployRequest.NewTag,
-	})
+	sendJSONResponse(responseWriter, http.StatusOK, "Deploy success", responseData)
 }
 
-// 读取YAML查找匹配的镜像并更新
-func updateImageInFile(targetImageRepository, newTag string) ([]string, error) {
-	fileData, err := os.ReadFile(dockerComposeFilePath)
+// 扫描当前目录下的所有文件夹
+func scanAndProcessAllDirectories(targetImageRepository, newTag string) ([]string, error) {
+	var successfullyUpdatedProjects []string
+
+	// 读取当前目录下的文件列表
+	entries, err := os.ReadDir(".")
+	if err != nil {
+		return nil, err
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			directoryName := entry.Name()
+
+			// 检查文件夹下是否有docker-compose
+			composeFilePath := findComposeFileInDir(directoryName)
+			if composeFilePath == "" {
+				continue
+			}
+
+			// 更新镜像
+			updatedServices, err := updateImageInFile(composeFilePath, targetImageRepository, newTag)
+			if err != nil {
+				log.Printf("Error processing %s: %v", composeFilePath, err)
+				continue
+			}
+
+			if len(updatedServices) > 0 {
+				log.Printf("Found match in project: %s | Services: %v", directoryName, updatedServices)
+
+				if err := runDockerUp(directoryName, composeFilePath); err != nil {
+					log.Printf("Docker restart failed for %s: %v", directoryName, err)
+					return nil, err
+				}
+
+				successfullyUpdatedProjects = append(successfullyUpdatedProjects, directoryName)
+			}
+		}
+	}
+
+	return successfullyUpdatedProjects, nil
+}
+
+// 在指定目录下寻找docker-compose文件
+func findComposeFileInDir(dir string) string {
+	pathYaml := filepath.Join(dir, "docker-compose.yaml")
+	if _, err := os.Stat(pathYaml); err == nil {
+		return pathYaml
+	}
+	pathYml := filepath.Join(dir, "docker-compose.yml")
+	if _, err := os.Stat(pathYml); err == nil {
+		return pathYml
+	}
+	return ""
+}
+
+// 读取指定YAML文件查找匹配的镜像并更新
+func updateImageInFile(filePath, targetImageRepository, newTag string) ([]string, error) {
+	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +213,7 @@ func updateImageInFile(targetImageRepository, newTag string) ([]string, error) {
 
 	servicesMap, ok := yamlRootMap["services"].(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("format error: 'services' key not found")
+		return nil, nil
 	}
 
 	var updatedServiceNames []string
@@ -163,14 +231,12 @@ func updateImageInFile(targetImageRepository, newTag string) ([]string, error) {
 			continue
 		}
 
-		// 解析镜像名
 		currentRepository := getRepositoryFromImage(currentImageString)
 
 		// 匹配成功
 		if currentRepository == targetImageRepository {
-			// 更新内存中的数据
+			// 更新配置
 			serviceConfiguration["image"] = newFullImageString
-			// 记录被修改的服务名
 			updatedServiceNames = append(updatedServiceNames, serviceName)
 		}
 	}
@@ -180,8 +246,7 @@ func updateImageInFile(targetImageRepository, newTag string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-
-		if err := os.WriteFile(dockerComposeFilePath, newFileData, 0644); err != nil {
+		if err := os.WriteFile(filePath, newFileData, 0644); err != nil {
 			return nil, err
 		}
 	}
@@ -197,14 +262,19 @@ func getRepositoryFromImage(fullImageString string) string {
 	return fullImageString[:lastColonIndex]
 }
 
-// 重启服务
-func runDockerRestart(serviceNames []string) error {
-	dockerArguments := []string{"compose", "-f", dockerComposeFilePath, "up", "-d"}
-	dockerArguments = append(dockerArguments, serviceNames...)
+// 更新项目
+func runDockerUp(workingDirectory string, composeFilePath string) error {
+	fileName := filepath.Base(composeFilePath)
 
-	log.Printf("Executing command: docker %v", strings.Join(dockerArguments, " "))
+	dockerArguments := []string{"compose", "-f", fileName, "up", "-d"}
+
+	log.Printf("Executing command in [%s]: docker %v", workingDirectory, strings.Join(dockerArguments, " "))
 
 	dockerCommand := exec.Command("docker", dockerArguments...)
+
+	// 设置工作目录为子项目文件夹
+	dockerCommand.Dir = workingDirectory
+
 	dockerCommand.Stdout = os.Stdout
 	dockerCommand.Stderr = os.Stderr
 	return dockerCommand.Run()

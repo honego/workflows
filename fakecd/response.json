@@ -1,8 +1,0 @@
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "updateImage": "corentinth/it-tools",
-    "newTag": "2024.5.13-a0bc346"
-  }
-}

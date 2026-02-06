@@ -1,15 +1,15 @@
 ---
 services:
   fakecd:
-    image: fakecd
+    image: registry.cn-chengdu.aliyuncs.com/jdsgame/fakecd
     container_name: fakecd
     restart: unless-stopped
     ports:
       - 5000:5000
     environment:
-      - AUTH_TOKEN=K0N7NRjAC3HriVXFoHotjOClTqsJ5z7k # tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32
+      - AUTH_TOKEN=THETOKEN # tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ../nginx:/app/nginx
-      - ../redis:/app/redis
+      - /data/nginx:/app/nginx
+      - /data/redis:/app/redis
     network_mode: bridge

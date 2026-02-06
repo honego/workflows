@@ -53,7 +53,7 @@ func main() {
 	}
 
 	// 启动日志
-	log.Println("FakeCD started")
+	log.Printf("FakeCD started: Port: %s", serverPort)
 
 	// 注册路由
 	http.HandleFunc("/deploy", authenticationMiddleware(handleDeploy))
@@ -118,22 +118,22 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 	defer fileMutex.Unlock()
 
 	// 扫描并处理当前目录下的所有子文件夹
-	updatedProjects, err := scanAndProcessAllDirectories(deployRequest.ImageRepo, deployRequest.NewTag)
+	matchedProjects, err := scanAndProcessAllDirectories(deployRequest.ImageRepo, deployRequest.NewTag)
 	if err != nil {
 		log.Printf("Process error: %v", err)
 		sendJSONResponse(responseWriter, http.StatusInternalServerError, fmt.Sprintf("Process Error: %v", err), nil)
 		return
 	}
 
-	// 没有项目被更新
-	if len(updatedProjects) == 0 {
-		errorMessage := fmt.Sprintf("No service found using image '%s' in any subdirectory", deployRequest.ImageRepo)
+	// 不包含镜像
+	if matchedProjects == 0 {
+		errorMessage := fmt.Sprintf("No service found using image '%s'", deployRequest.ImageRepo)
 		log.Println("[Warn] " + errorMessage)
 		sendJSONResponse(responseWriter, http.StatusNotFound, errorMessage, nil)
 		return
 	}
 
-	log.Printf("Successfully updated projects: %v | Image: %s:%s", updatedProjects, deployRequest.ImageRepo, deployRequest.NewTag)
+	log.Printf("Request processed for image: %s:%s | Projects Matched: %d", deployRequest.ImageRepo, deployRequest.NewTag, matchedProjects)
 
 	// 构造成功响应数据
 	responseData := SuccessData{
@@ -145,13 +145,13 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 }
 
 // 扫描当前目录下的所有文件夹
-func scanAndProcessAllDirectories(targetImageRepository, newTag string) ([]string, error) {
-	var successfullyUpdatedProjects []string
+func scanAndProcessAllDirectories(targetImageRepository, newTag string) (int, error) {
+	matchedCount := 0
 
 	// 读取当前目录下的文件列表
 	entries, err := os.ReadDir(".")
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	for _, entry := range entries {
@@ -164,27 +164,20 @@ func scanAndProcessAllDirectories(targetImageRepository, newTag string) ([]strin
 				continue
 			}
 
-			// 更新镜像
-			updatedServices, err := updateImageInFile(composeFilePath, targetImageRepository, newTag)
+			isMatched, err := processProjectUpdate(directoryName, composeFilePath, targetImageRepository, newTag)
 			if err != nil {
-				log.Printf("Error processing %s: %v", composeFilePath, err)
-				continue
+				// 拉取失败
+				log.Printf("Error processing project %s: %v", directoryName, err)
+				return matchedCount, err
 			}
 
-			if len(updatedServices) > 0 {
-				log.Printf("Found match in project: %s | Services: %v", directoryName, updatedServices)
-
-				if err := runDockerUp(directoryName, composeFilePath); err != nil {
-					log.Printf("Docker restart failed for %s: %v", directoryName, err)
-					return nil, err
-				}
-
-				successfullyUpdatedProjects = append(successfullyUpdatedProjects, directoryName)
+			if isMatched {
+				matchedCount++
 			}
 		}
 	}
 
-	return successfullyUpdatedProjects, nil
+	return matchedCount, nil
 }
 
 // 在指定目录下寻找docker-compose文件
@@ -193,66 +186,90 @@ func findComposeFileInDir(dir string) string {
 	if _, err := os.Stat(pathYaml); err == nil {
 		return pathYaml
 	}
+
 	pathYml := filepath.Join(dir, "docker-compose.yml")
 	if _, err := os.Stat(pathYml); err == nil {
 		return pathYml
 	}
+
 	return ""
 }
 
-// 读取指定YAML文件查找匹配的镜像并更新
-func updateImageInFile(filePath, targetImageRepository, newTag string) ([]string, error) {
+func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bool, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
 	var yamlRootMap map[string]interface{}
 	if err := yaml.Unmarshal(fileData, &yamlRootMap); err != nil {
-		return nil, err
+		return false, err
 	}
 
 	servicesMap, ok := yamlRootMap["services"].(map[string]interface{})
 	if !ok {
-		return nil, nil
+		return false, nil
 	}
 
-	var updatedServiceNames []string
-	newFullImageString := fmt.Sprintf("%s:%s", targetImageRepository, newTag)
+	newFullImageString := fmt.Sprintf("%s:%s", targetImageRepo, newTag)
+	foundTargetRepo := false
+	needsUpdate := false
 
-	// 遍历所有服务
-	for serviceName, serviceData := range servicesMap {
-		serviceConfiguration, ok := serviceData.(map[string]interface{})
+	// 检查状态
+	for _, serviceData := range servicesMap {
+		serviceConfig, ok := serviceData.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		currentImageStr, ok := serviceConfig["image"].(string)
 		if !ok {
 			continue
 		}
 
-		currentImageString, ok := serviceConfiguration["image"].(string)
-		if !ok {
-			continue
-		}
-
-		currentRepository := getRepositoryFromImage(currentImageString)
-
-		// 匹配成功
-		if currentRepository == targetImageRepository {
-			// 更新配置
-			serviceConfiguration["image"] = newFullImageString
-			updatedServiceNames = append(updatedServiceNames, serviceName)
+		// 检查Repo是否匹配
+		if getRepositoryFromImage(currentImageStr) == targetImageRepo {
+			foundTargetRepo = true
+			// 检查Tag是否不同
+			if currentImageStr != newFullImageString {
+				needsUpdate = true
+				serviceConfig["image"] = newFullImageString
+			}
 		}
 	}
 
-	if len(updatedServiceNames) > 0 {
-		newFileData, err := yaml.Marshal(&yamlRootMap)
-		if err != nil {
-			return nil, err
-		}
-		if err := os.WriteFile(filePath, newFileData, 0644); err != nil {
-			return nil, err
-		}
+	// 镜像不存在
+	if !foundTargetRepo {
+		return false, nil
 	}
 
-	return updatedServiceNames, nil
+	// 找到了镜像但是Tag一样
+	if !needsUpdate {
+		log.Printf("Project [%s] already on version %s, skipping update.", workDir, newTag)
+		return true, nil
+	}
+
+	log.Printf("Project [%s] needs update to %s. Starting update sequence...", workDir, newTag)
+
+	// docker pull 这一步如果不通过返回Error
+	if err := runDockerPull(workDir, newFullImageString); err != nil {
+		return true, fmt.Errorf("pull failed for %s: %v", newFullImageString, err)
+	}
+
+	// 写入文件
+	newFileData, err := yaml.Marshal(&yamlRootMap)
+	if err != nil {
+		return true, fmt.Errorf("yaml marshal failed: %v", err)
+	}
+	if err := os.WriteFile(filePath, newFileData, 0644); err != nil {
+		return true, fmt.Errorf("write file failed: %v", err)
+	}
+
+	if err := runDockerUp(workDir, filePath); err != nil {
+		return true, fmt.Errorf("docker up failed: %v", err)
+	}
+
+	log.Printf("Project [%s] updated successfully.", workDir)
+	return true, nil
 }
 
 func getRepositoryFromImage(fullImageString string) string {
@@ -263,20 +280,28 @@ func getRepositoryFromImage(fullImageString string) string {
 	return fullImageString[:lastColonIndex]
 }
 
-// 更新项目
+// 拉取镜像
+func runDockerPull(workingDirectory, fullImage string) error {
+	log.Printf("Executing pull in [%s]: docker pull %s", workingDirectory, fullImage)
+
+	cmd := exec.Command("docker", "pull", fullImage)
+	cmd.Dir = workingDirectory
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
+}
+
+// 重启项目
 func runDockerUp(workingDirectory string, composeFilePath string) error {
 	fileName := filepath.Base(composeFilePath)
-
 	dockerArguments := []string{"compose", "-f", fileName, "up", "-d"}
 
-	log.Printf("Executing command in [%s]: docker %v", workingDirectory, strings.Join(dockerArguments, " "))
+	log.Printf("Executing up in [%s]: docker %v", workingDirectory, strings.Join(dockerArguments, " "))
 
-	dockerCommand := exec.Command("docker", dockerArguments...)
-
-	// 设置工作目录为子项目文件夹
-	dockerCommand.Dir = workingDirectory
-
-	dockerCommand.Stdout = os.Stdout
-	dockerCommand.Stderr = os.Stderr
-	return dockerCommand.Run()
+	cmd := exec.Command("docker", dockerArguments...)
+	cmd.Dir = workingDirectory
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

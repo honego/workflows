@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -12,6 +14,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -56,9 +59,19 @@ func main() {
 	log.Println("FakeCD started")
 
 	// 注册路由
-	http.HandleFunc("/deploy", authenticationMiddleware(handleDeploy))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/deploy", authenticationMiddleware(handleDeploy))
 
-	if err := http.ListenAndServe(":"+serverPort, nil); err != nil {
+	// 使用自定义Server设置超时
+	server := &http.Server{
+		Addr:         ":" + serverPort,
+		Handler:      mux,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -69,7 +82,7 @@ func authenticationMiddleware(nextHandler http.HandlerFunc) http.HandlerFunc {
 		tokenHeader := httpRequest.Header.Get("Authorization")
 
 		// 比对Token
-		if tokenHeader != authenticationToken {
+		if subtle.ConstantTimeCompare([]byte(tokenHeader), []byte(authenticationToken)) != 1 {
 			log.Printf("Auth failed: %s", httpRequest.RemoteAddr)
 			sendJSONResponse(responseWriter, http.StatusUnauthorized, "Unauthorized", nil)
 			return
@@ -208,44 +221,55 @@ func findComposeFileInDir(dir string) string {
 	return ""
 }
 
+// 防止注释丢失和格式错乱
 func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bool, bool, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		return false, false, err
 	}
 
-	var yamlRootMap map[string]interface{}
-	if err := yaml.Unmarshal(fileData, &yamlRootMap); err != nil {
+	var rootNode yaml.Node
+	if err := yaml.Unmarshal(fileData, &rootNode); err != nil {
 		return false, false, err
 	}
 
-	servicesMap, ok := yamlRootMap["services"].(map[string]interface{})
-	if !ok {
+	if len(rootNode.Content) == 0 {
 		return false, false, nil
 	}
+	docNode := rootNode.Content[0]
 
 	newFullImageString := fmt.Sprintf("%s:%s", targetImageRepo, newTag)
 	foundTargetRepo := false
 	needsUpdate := false
 
-	// 检查状态
-	for _, serviceData := range servicesMap {
-		serviceConfig, ok := serviceData.(map[string]interface{})
-		if !ok {
-			continue
+	var servicesNode *yaml.Node
+	for i := 0; i < len(docNode.Content); i += 2 {
+		if docNode.Content[i].Value == "services" {
+			servicesNode = docNode.Content[i+1]
+			break
 		}
-		currentImageStr, ok := serviceConfig["image"].(string)
-		if !ok {
-			continue
-		}
+	}
 
-		// 检查Repo是否匹配
-		if getRepositoryFromImage(currentImageStr) == targetImageRepo {
-			foundTargetRepo = true
-			// 检查Tag是否不同
-			if currentImageStr != newFullImageString {
-				needsUpdate = true
-				serviceConfig["image"] = newFullImageString
+	if servicesNode != nil {
+		// 遍历所有服务
+		for i := 0; i < len(servicesNode.Content); i += 2 {
+			serviceConfig := servicesNode.Content[i+1]
+
+			// 遍历查找imageName
+			for j := 0; j < len(serviceConfig.Content); j += 2 {
+				if serviceConfig.Content[j].Value == "image" {
+					imageNode := serviceConfig.Content[j+1]
+					currentImageStr := imageNode.Value
+
+					if getRepositoryFromImage(currentImageStr) == targetImageRepo {
+						foundTargetRepo = true
+						if currentImageStr != newFullImageString {
+							needsUpdate = true
+							imageNode.Value = newFullImageString
+						}
+					}
+					break
+				}
 			}
 		}
 	}
@@ -260,20 +284,24 @@ func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bo
 		return true, false, nil
 	}
 
-	log.Printf("Project [%s] needs update to %s. Starting update sequence.", workDir, newTag)
+	log.Printf("Project %s needs update to %s. Starting update sequence.", workDir, newTag)
 
 	// Pull失败返回Error
 	if err := runDockerPull(workDir, newFullImageString); err != nil {
 		return true, false, fmt.Errorf("pull failed for %s: %v", newFullImageString, err)
 	}
 
-	// 写入文件
-	newFileData, err := yaml.Marshal(&yamlRootMap)
+	// 写入文件时保留结构
+	file, err := os.Create(filePath)
 	if err != nil {
-		return true, false, fmt.Errorf("yaml marshal failed: %v", err)
+		return true, false, fmt.Errorf("create file failed: %v", err)
 	}
-	if err := os.WriteFile(filePath, newFileData, 0644); err != nil {
-		return true, false, fmt.Errorf("write file failed: %v", err)
+	defer file.Close()
+
+	encoder := yaml.NewEncoder(file)
+	encoder.SetIndent(2) // YAML标准缩进
+	if err := encoder.Encode(&rootNode); err != nil {
+		return true, false, fmt.Errorf("yaml encode failed: %v", err)
 	}
 
 	// 更新项目
@@ -281,7 +309,7 @@ func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bo
 		return true, true, fmt.Errorf("docker up failed: %v", err)
 	}
 
-	log.Printf("Project [%s] updated successfully.", workDir)
+	log.Printf("Project %s updated successfully.", workDir)
 	return true, true, nil
 }
 
@@ -295,9 +323,13 @@ func getRepositoryFromImage(fullImageString string) string {
 
 // 拉取镜像
 func runDockerPull(workingDirectory, fullImage string) error {
-	log.Printf("Executing pull in [%s]: docker pull %s", workingDirectory, fullImage)
+	// 设置10分钟超时
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
 
-	cmd := exec.Command("docker", "pull", fullImage)
+	log.Printf("Executing pull in %s: docker pull %s", workingDirectory, fullImage)
+
+	cmd := exec.CommandContext(ctx, "docker", "pull", fullImage)
 	cmd.Dir = workingDirectory
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -307,14 +339,19 @@ func runDockerPull(workingDirectory, fullImage string) error {
 
 // 更新项目
 func runDockerUp(workingDirectory string, composeFilePath string) error {
+	// 设置5分钟超时
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
 	fileName := filepath.Base(composeFilePath)
 	dockerArguments := []string{"compose", "-f", fileName, "up", "-d"}
 
-	log.Printf("Executing up in [%s]: docker %v", workingDirectory, strings.Join(dockerArguments, " "))
-	dockerCommand := exec.Command("docker", dockerArguments...)
-	dockerCommand.Dir = workingDirectory
-	dockerCommand.Stdout = os.Stdout
-	dockerCommand.Stderr = os.Stderr
+	log.Printf("Executing up in %s: docker %v", workingDirectory, strings.Join(dockerArguments, " "))
 
-	return dockerCommand.Run()
+	cmd := exec.CommandContext(ctx, "docker", dockerArguments...)
+	cmd.Dir = workingDirectory
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
 }

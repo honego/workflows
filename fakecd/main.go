@@ -67,12 +67,14 @@ func main() {
 func authenticationMiddleware(nextHandler http.HandlerFunc) http.HandlerFunc {
 	return func(responseWriter http.ResponseWriter, httpRequest *http.Request) {
 		tokenHeader := httpRequest.Header.Get("Authorization")
+
 		// 比对Token
 		if tokenHeader != authenticationToken {
 			log.Printf("Auth failed: %s", httpRequest.RemoteAddr)
 			sendJSONResponse(responseWriter, http.StatusUnauthorized, "Unauthorized", nil)
 			return
 		}
+
 		nextHandler(responseWriter, httpRequest)
 	}
 }
@@ -80,6 +82,7 @@ func authenticationMiddleware(nextHandler http.HandlerFunc) http.HandlerFunc {
 // 统一发送JSON响应
 func sendJSONResponse(responseWriter http.ResponseWriter, statusCode int, message string, data interface{}) {
 	responseWriter.Header().Set("Content-Type", "application/json")
+
 	// HTTP状态码
 	responseWriter.WriteHeader(statusCode)
 
@@ -147,7 +150,6 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 	}
 
 	log.Printf("Successfully updated projects. Matched: %d, Updated: %d | Image: %s:%s", totalMatched, actualUpdated, deployRequest.ImageRepo, deployRequest.NewTag)
-
 	sendJSONResponse(responseWriter, http.StatusOK, "Success", responseData)
 }
 
@@ -182,7 +184,6 @@ func scanAndProcessAllDirectories(targetImageRepository, newTag string) (int, in
 			if isMatched {
 				matchedCount++
 			}
-
 			if isUpdated {
 				updatedCount++
 			}
@@ -314,5 +315,6 @@ func runDockerUp(workingDirectory string, composeFilePath string) error {
 	dockerCommand.Dir = workingDirectory
 	dockerCommand.Stdout = os.Stdout
 	dockerCommand.Stderr = os.Stderr
+
 	return dockerCommand.Run()
 }

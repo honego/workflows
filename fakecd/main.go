@@ -165,7 +165,7 @@ func handleDeploy(responseWriter http.ResponseWriter, httpRequest *http.Request)
 	}(deployRequest.ImageRepo, deployRequest.NewTag)
 
 	// 立即返回响应
-	sendJSONResponse(responseWriter, http.StatusOK, "Deployment triggered in background", responseData)
+	sendJSONResponse(responseWriter, http.StatusOK, "Deploy task scheduled", responseData)
 }
 
 // 扫描当前目录下的所有文件夹
@@ -244,6 +244,7 @@ func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bo
 	newFullImageString := fmt.Sprintf("%s:%s", targetImageRepo, newTag)
 	foundTargetRepo := false
 	needsUpdate := false
+	var oldImageToDelete string // 存储旧镜像Tag
 
 	var servicesNode *yaml.Node
 	for i := 0; i < len(docNode.Content); i += 2 {
@@ -268,6 +269,7 @@ func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bo
 						foundTargetRepo = true
 						if currentImageStr != newFullImageString {
 							needsUpdate = true
+							oldImageToDelete = currentImageStr
 							imageNode.Value = newFullImageString
 						}
 					}
@@ -312,6 +314,16 @@ func processProjectUpdate(workDir, filePath, targetImageRepo, newTag string) (bo
 		return true, true, fmt.Errorf("docker up failed: %v", err)
 	}
 
+	// 删除旧镜像
+	if oldImageToDelete != "" {
+		if err := runDockerRmi(workDir, oldImageToDelete); err != nil {
+			// 删除镜像失败日志
+			log.Printf("Failed to remove old image %s: %v", oldImageToDelete, err)
+		} else {
+			log.Printf("Removed old image: %s", oldImageToDelete)
+		}
+	}
+
 	log.Printf("Project %s updated successfully.", workDir)
 	return true, true, nil
 }
@@ -352,6 +364,22 @@ func runDockerUp(workingDirectory string, composeFilePath string) error {
 	log.Printf("Executing up in %s: docker %v", workingDirectory, strings.Join(dockerArguments, " "))
 
 	cmd := exec.CommandContext(ctx, "docker", dockerArguments...)
+	cmd.Dir = workingDirectory
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
+}
+
+// 删除镜像
+func runDockerRmi(workingDirectory, fullImage string) error {
+	// 设置1分钟超时
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+
+	log.Printf("Executing rmi in %s: docker rmi %s", workingDirectory, fullImage)
+
+	cmd := exec.CommandContext(ctx, "docker", "rmi", fullImage)
 	cmd.Dir = workingDirectory
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

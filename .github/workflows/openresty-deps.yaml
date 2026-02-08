@@ -37,7 +37,8 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@v6
         with:
-          ref: release
+          # ref: release
+          ref: master
           fetch-depth: 0
 
       - name: "Update dependencies"

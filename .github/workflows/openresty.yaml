@@ -267,7 +267,7 @@ jobs:
           labels: |
             org.opencontainers.image.description="High Performance Web Platform Based on Nginx and LuaJIT"
             org.opencontainers.image.licenses="BSD-2-Clause"
-            org.opencontainers.image.source="https://github.com/openresty/openresty"
+            org.opencontainers.image.source="https://github.com/teddysun/openresty"
             org.opencontainers.image.title="OpenResty"
             org.opencontainers.image.url="https://openresty.org"
 
@@ -333,7 +333,7 @@ jobs:
           labels: |
             org.opencontainers.image.description="High Performance Web Platform Based on Nginx and LuaJIT"
             org.opencontainers.image.licenses="BSD-2-Clause"
-            org.opencontainers.image.source="https://github.com/openresty/openresty"
+            org.opencontainers.image.source="https://github.com/teddysun/openresty"
             org.opencontainers.image.title="OpenResty"
             org.opencontainers.image.url="https://openresty.org"
 

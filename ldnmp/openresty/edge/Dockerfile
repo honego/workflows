@@ -59,16 +59,16 @@ FROM base AS dist
 ARG RESTY_VERSION=""
 
 # https://github.com/openresty/openresty-packaging/blob/master/alpine/openresty-openssl3/APKBUILD
-ARG RESTY_OPENSSL_VERSION="3.5.1"
-ARG RESTY_OPENSSL_PATCH_VERSION="3.5.1"
+ARG RESTY_OPENSSL_VERSION="3.5.5"
+ARG RESTY_OPENSSL_PATCH_VERSION="3.5.5"
 ARG RESTY_OPENSSL_URL_BASE="https://github.com/openssl/openssl/releases/download/openssl-${RESTY_OPENSSL_VERSION}"
 ARG RESTY_OPENSSL_BUILD_OPTIONS="enable-camellia enable-seed enable-rfc3779 enable-cms enable-md2 enable-rc5 \
     enable-weak-ssl-ciphers enable-ssl3 enable-ssl3-method enable-md2 enable-ktls enable-fips \
     "
 
 # https://github.com/openresty/openresty-packaging/blob/master/alpine/openresty-pcre2/APKBUILD
-ARG RESTY_PCRE_VERSION="10.40"
-ARG RESTY_PCRE_SHA512="1461a95f623fe70136b1a070847f317c56f9a31801181cc8fd7eef8077ae6cccd385d5ccb983f6e9b49245830535e7acddb10c6831c20afb9bdf4f9a45ae48eb"
+ARG RESTY_PCRE_VERSION="10.47"
+ARG RESTY_PCRE_SHA512="e461a95f623fe70136b1a070847f317c56f9a31801181cc8fd7eef8077ae6cccd385d5ccb983f6e9b49245830535e7acddb10c6831c20afb9bdf4f9a45ae48eb"
 ARG RESTY_PCRE_BUILD_OPTIONS="--enable-jit --enable-pcre2grep-jit --disable-bsr-anycrlf --disable-coverage --disable-ebcdic --disable-fuzz-support \
     --disable-jit-sealloc --disable-never-backslash-C --enable-newline-is-lf --enable-pcre2-8 --enable-pcre2-16 --enable-pcre2-32 \
     --enable-pcre2grep-callout --enable-pcre2grep-callout-fork --disable-pcre2grep-libbz2 --disable-pcre2grep-libz --disable-pcre2test-libedit \

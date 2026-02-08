@@ -78,11 +78,12 @@ jobs:
           PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")
           echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
-      - name: "Set permissions"
+      - name: "Stage build assets"
         working-directory: ${{ env.WORK_DIR }}/stable
         run: |
           set -eEuxo pipefail
-          find . -type f -name "*.sh" -exec chmod +x {} +
+          cp ../scripts/docker-entrypoint.sh .
+          cp ../conf/*.conf .
 
       - name: "Setup Docker Buildx"
         uses: docker/setup-buildx-action@v3
@@ -238,11 +239,12 @@ jobs:
           PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")
           echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
-      - name: "Set permissions"
+      - name: "Stage build assets"
         working-directory: ${{ env.WORK_DIR }}/edge
         run: |
           set -eEuxo pipefail
-          find . -type f -name "*.sh" -exec chmod +x {} +
+          cp ../scripts/docker-entrypoint.sh .
+          cp ../conf/*.conf .
 
       - name: "Setup Docker Buildx"
         uses: docker/setup-buildx-action@v3

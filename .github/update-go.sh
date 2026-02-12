@@ -50,7 +50,6 @@ OFFICIAL_VER="$(curl -Ls "https://$GO_MIRROR/dl/?mode=json" | grep -m1 '"version
 
 find "$PWD" -type f -name "go.mod" -not -path '*/.*' | while read -r f; do
     WORK_DIR="$(dirname "$f")"
-
     (
         cd "$WORK_DIR" || exit 1
 

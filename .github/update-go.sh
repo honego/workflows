@@ -50,12 +50,11 @@ OFFICIAL_VER="$(curl -Ls "https://$GO_MIRROR/dl/?mode=json" | awk '/"version"/ &
 
 find "$PWD" -type f -name "go.mod" -not -path '*/.*' | while read -r f; do
     WORK_DIR="$(dirname "$f")"
-    (
-        cd "$WORK_DIR" || exit 1
-        LOCAL_VER="$(awk '/^[[:space:]]*go[[:space:]]+[0-9]+\.[0-9]+(\.[0-9]+)?$/ {print $2; exit}' go.mod || true)" # 本地版本
-        if [ "$LOCAL_VER" != "$OFFICIAL_VER" ]; then
-            sed -i -E "s#^[[:space:]]*go[[:space:]]+[0-9]+\.[0-9]+(\.[0-9]+)?#go $OFFICIAL_VER#" go.mod
-            go mod tidy
-        fi
-    )
+
+    cd "$WORK_DIR" || exit 1
+    LOCAL_VER="$(awk '/^[[:space:]]*go[[:space:]]+[0-9]+\.[0-9]+(\.[0-9]+)?$/ {print $2; exit}' go.mod || true)" # 本地版本
+    if [ "$LOCAL_VER" != "$OFFICIAL_VER" ]; then
+        sed -i -E "s#^[[:space:]]*go[[:space:]]+[0-9]+\.[0-9]+(\.[0-9]+)?#go $OFFICIAL_VER#" go.mod
+        go mod tidy
+    fi
 done

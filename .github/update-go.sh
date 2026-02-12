@@ -46,7 +46,7 @@ else
 fi
 
 # 官方版本
-OFFICIAL_VER="$(curl -Ls "https://$GO_MIRROR/dl/?mode=json" | grep -m1 '"version"' | sed -E 's/.*"go([^"]+)".*/\1/')"
+OFFICIAL_VER="$(curl -Ls "https://$GO_MIRROR/dl/?mode=json" | awk '/"version"/ && !p { sub(/.*"go/, ""); sub(/".*/, ""); print; p=1 }')"
 
 find "$PWD" -type f -name "go.mod" -not -path '*/.*' | while read -r f; do
     WORK_DIR="$(dirname "$f")"

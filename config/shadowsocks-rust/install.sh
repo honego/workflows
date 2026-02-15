@@ -85,7 +85,7 @@ install_ss() {
     local OS_ARCH GLIBC
     local -a FILENAMES
 
-    [ -n "$VERSION" ] || VERSION="$(curl -Ls https://api.github.com/repos/$PROJECT_NAME/$CORE_NAME/releases | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')"
+    [ -n "$VERSION" ] || VERSION="$(curl -Ls https://api.github.com/repos/$PROJECT_NAME/$CORE_NAME/releases | grep -m1 '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')"
 
     case "$(uname -m 2> /dev/null)" in
     amd64 | x86_64) OS_ARCH="x86_64" ;;
@@ -99,12 +99,12 @@ install_ss() {
         GLIBC="gnu"
     fi
 
-    FILENAMES=("$PROJECT_NAME-$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz" "$PROJECT_NAME-$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz.sha256")
+    FILENAMES=("$PROJECT_NAME-v$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz" "$PROJECT_NAME-v$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz.sha256")
     for f in "${FILENAMES[@]}"; do
-        curl -Ls -O "https://github.com/$PROJECT_NAME/$CORE_NAME/releases/download/$VERSION/$f"
+        curl -Ls -O "https://github.com/$PROJECT_NAME/$CORE_NAME/releases/download/v$VERSION/$f"
     done
-    sha256sum -c "$PROJECT_NAME-$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz.sha256" > /dev/null 2>&1 || die "checksum verification failed."
-    tar fJx "$PROJECT_NAME-$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz"
+    sha256sum -c "$PROJECT_NAME-v$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz.sha256" > /dev/null 2>&1 || die "checksum verification failed."
+    tar fJx "$PROJECT_NAME-v$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz"
     chmod +x ss*
     mv -f ss* /usr/local/bin
 }

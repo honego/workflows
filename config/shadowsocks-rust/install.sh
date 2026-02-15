@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
-
-# https://1024.day/d/1967
+# SPDX-License-Identifier: GPL-2.0
+#
+# Description:
+# Copyright (c) 2026 honeok <i@honeok.com>
+#
+# References:
+# https://github.com/shadowsocks/shadowsocks-rust
 
 set -eE
 
@@ -50,20 +55,36 @@ install_ss() {
     sha256sum -c "shadowsocks-$SS_VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz.sha256" > /dev/null 2>&1 || die "checksum verification failed."
     tar fJx "shadowsocks-$SS_VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz"
     chmod +x ss*
-    mv -f ssserver /usr/local/bin
+    mv -f ss* /usr/local/bin
+}
+
+gen_cfg() {
+    mkdir -p "$CORE_DIR" || die "Unable to create directory."
+    tee > "$CORE_DIR/config.json" <<- EOF
+{
+  "server": "::",
+  "server_port": 8388,
+  "password": "password",
+  "timeout": 300,
+  "method": "chacha20-ietf-poly1305",
+  "mode": "tcp_and_udp"
+}
+EOF
 }
 
 install_service() {
     tee > /etc/systemd/system/shadowsocks.service <<- EOF
 [Unit]
-Description=Shadowsocks Rust Server
-Documentation=
+Description=Shadowsocks-rust Server Service
+Documentation=https://github.com/shadowsocks/shadowsocks-rust
 After=network.target
 
 [Service]
 Type=simple
-User=root
-ExecStart=/usr/local/bin/ssserver -c $CORE_DIR/config.json
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+DynamicUser=yes
+ExecStart=/usr/local/bin/ssservice server --log-without-time -c $CORE_DIR/config.json
 Restart=on-failure
 
 [Install]
@@ -76,4 +97,5 @@ EOF
 check_glibc
 
 install_ss
+gen_cfg
 install_service

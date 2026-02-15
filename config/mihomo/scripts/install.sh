@@ -158,13 +158,9 @@ check_arch() {
 }
 
 do_install_service() {
-    curl -Ls https://fastly.jsdelivr.net/gh/MetaCubeX/Meta-Docs@main/docs/startup/service/index.md |
-        awk '
-/^```ini/ { IN_CODE=1; next }
-/^```/ && IN_CODE { IN_CODE=0; exit }
-IN_CODE { print }
-' > mihomo.service
+    curl -Ls -O https://fastly.jsdelivr.net/gh/MetaCubeX/mihomo@Meta/.github/release/mihomo.service
 
+    sed -i 's#ExecStart=.*/mihomo -d /etc/mihomo#ExecStart=/usr/local/bin/mihomo -d /etc/mihomo#' mihomo.service
     install -m 0644 mihomo.service /etc/systemd/system/mihomo.service
     systemctl daemon-reload
     systemctl enable mihomo --now

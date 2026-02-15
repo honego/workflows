@@ -66,6 +66,7 @@ random_port() {
 
 random_char() {
     local LENGTH="$1"
+    local RANDOM_STRING
 
     RANDOM_STRING="$(LC_ALL=C tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w "$LENGTH" | head -n1)"
     echo "$RANDOM_STRING"

@@ -24,6 +24,27 @@ die() {
 
 cd "$TEMP_DIR" > /dev/null 2>&1 || die "Unable to enter the work path."
 
+curl() {
+    local RC
+
+    # 添加 --fail 不然404退出码也为0
+    # 32位cygwin已停止更新, 证书可能有问题, 添加 --insecure
+    # centos7 curl 不支持 --retry-connrefused --retry-all-errors 因此手动 retry
+    for ((i = 1; i <= 5; i++)); do
+        command curl --connect-timeout 10 --fail --insecure "$@"
+        RC="$?"
+        if [ "$RC" -eq 0 ]; then
+            return
+        else
+            # 403 404 错误或达到重试次数
+            if [ "$RC" -eq 22 ] || [ "$i" -eq 5 ]; then
+                return "$RC"
+            fi
+            sleep 0.5
+        fi
+    done
+}
+
 is_alpine() {
     [ -f /etc/alpine-release ]
 }
@@ -48,6 +69,14 @@ random_char() {
 
     RANDOM_STRING="$(LC_ALL=C tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w "$LENGTH" | head -n1)"
     echo "$RANDOM_STRING"
+}
+
+get_ip() {
+    local PUBLIC_IP
+
+    [ -n "$PUBLIC_IP" ] || PUBLIC_IP="$(curl -Ls -4 http://www.qualcomm.cn/cdn-cgi/trace | grep '^ip=' | cut -d= -f2 | grep .)"
+    [ -n "$PUBLIC_IP" ] || PUBLIC_IP="$(curl -Ls -4 ip.sb 2>&1)"
+    echo "$PUBLIC_IP"
 }
 
 check_glibc() {
@@ -81,20 +110,26 @@ install_ss() {
 }
 
 gen_cfg() {
+    local METHOD
+
     mkdir -p "$CORE_DIR" || die "Unable to create directory."
 
-    random_port # 生成随机端口
+    SERVER_PORT="$(random_port)" # 生成随机端口
+    PASSWORD="$(random_char 25)"
+    METHOD="chacha20-ietf-poly1305"
+    IP="$(get_ip)"
 
     tee > "$CORE_DIR/config.json" <<- EOF
 {
   "server": "::",
-  "server_port": $(random_port),
-  "password": "$(random_char 25)",
+  "server_port": $SERVER_PORT,
+  "password": "$PASSWORD",
   "timeout": 300,
-  "method": "chacha20-ietf-poly1305",
+  "method": "$METHOD",
   "mode": "tcp_and_udp"
 }
 EOF
+    echo -n "$METHOD:$PASSWORD@$IP:$SERVER_PORT" | base64 -w 0 | awk '{print "ss://"$0"#honeok@$IP"}'
 }
 
 install_service() {

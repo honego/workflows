@@ -9,6 +9,10 @@
 
 set -eE
 
+# MAJOR.MINOR.PATCH
+# shellcheck disable=SC2034
+readonly SCRIPT_VERSION='v1.0.0'
+
 # 各变量默认值
 TEMP_DIR="$(mktemp -d)"
 PROJECT_NAME="shadowsocks"
@@ -129,7 +133,7 @@ gen_cfg() {
   "mode": "tcp_and_udp"
 }
 EOF
-    echo -n "$METHOD:$PASSWORD@$IP:$SERVER_PORT" | base64 -w 0 | awk '{print "ss://"$0"#honeok@$IP"}'
+    echo "ss://$(printf '%s:%s' "$METHOD" "$PASSWORD" | base64 | tr -d '\n')@$IP:$SERVER_PORT#$PROJECT_NAME-honeok"
 }
 
 install_service() {

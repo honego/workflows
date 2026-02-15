@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0
 #
-# Description:
+# Description: The script is used to automate the installation and setup process of a Shadowsocks-Rust service environment.
 # Copyright (c) 2026 honeok <i@honeok.com>
 #
 # References:
 # https://github.com/shadowsocks/shadowsocks-rust
+# https://www.cdoblog.com/archives/100
+# https://skyao.net/learning-debian/docs/network/shadowsocks-rust
 
 set -eE
 
@@ -114,7 +116,7 @@ install_ss() {
 }
 
 gen_cfg() {
-    local METHOD
+    local SERVER_PORT PASSWORD METHOD IP
 
     mkdir -p "$CORE_DIR" || die "Unable to create directory."
 

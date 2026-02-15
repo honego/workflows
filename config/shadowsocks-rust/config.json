@@ -1,0 +1,10 @@
+{
+  "server": "::",
+  "server_port": 8382,
+  "password": "password",
+  "timeout": 600,
+  "method": "chacha20-ietf-poly1305",
+  "fast_open": true,
+  "nameserver": "8.8.8.8",
+  "mode": "tcp_and_udp"
+}

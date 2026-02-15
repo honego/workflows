@@ -28,6 +28,28 @@ is_alpine() {
     [ -f /etc/alpine-release ]
 }
 
+random_port() {
+    local EXIST_PORT TEMP_PORT PORT
+
+    EXIST_PORT="$(ss -tunlp | sed -n 's/.*:\([0-9]\+\).*/\1/p' | sort -nu)"
+    for ((i = 1; i <= 5; i++)); do
+        TEMP_PORT="$(shuf -i 20000-65535 -n 1)"
+        if ! grep -q "^$TEMP_PORT$" <<< "$EXIST_PORT"; then
+            PORT="$TEMP_PORT"
+            echo "$PORT"
+            break
+        fi
+    done
+    [ -n "$PORT" ] || die "Failed generate random port."
+}
+
+random_char() {
+    local LENGTH="$1"
+
+    RANDOM_STRING="$(LC_ALL=C tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w "$LENGTH" | head -n1)"
+    echo "$RANDOM_STRING"
+}
+
 check_glibc() {
     if is_alpine; then
         GLIBC="musl"
@@ -60,11 +82,14 @@ install_ss() {
 
 gen_cfg() {
     mkdir -p "$CORE_DIR" || die "Unable to create directory."
+
+    random_port # 生成随机端口
+
     tee > "$CORE_DIR/config.json" <<- EOF
 {
   "server": "::",
-  "server_port": 8388,
-  "password": "password",
+  "server_port": $(random_port),
+  "password": "$(random_char 25)",
   "timeout": 300,
   "method": "chacha20-ietf-poly1305",
   "mode": "tcp_and_udp"

@@ -146,7 +146,7 @@ gen_cfg() {
 }
 EOF
 
-    echo "$(separator 11) $PROJECT_NAME $(separator 11)"
+    echo "$(separator 9) $CORE_NAME $(separator 9)"
     printf "%-15s: %s\n" "Protocol" "$PROJECT_NAME"
     printf "%-15s: %s\n" "Address" "$IP"
     printf "%-15s: %s\n" "Port" "$SERVER_PORT"

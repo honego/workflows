@@ -27,6 +27,10 @@ _err_msg() {
     printf "\033[41m\033[1mError\033[0m %b\n" "$*"
 }
 
+_blue_bg() {
+    printf "\033[44;37m%b\033[0m\n" "$*"
+}
+
 # 各变量默认值
 TEMP_DIR="$(mktemp -d)"
 PROJECT_NAME="shadowsocks"
@@ -155,13 +159,13 @@ gen_cfg() {
 EOF
 
     echo "$(separator 9) $CORE_NAME $(separator 8)"
-    printf "%-15s: %s\n" "Protocol" "$PROJECT_NAME"
-    printf "%-15s: %s\n" "Address" "$IP"
-    printf "%-15s: %s\n" "Port" "$SERVER_PORT"
-    printf "%-15s: %s\n" "Password" "$PASSWORD"
-    printf "%-15s: %s\n" "Encryption" "$METHOD"
+    printf "%-25s: %s\n" "协议 (Protocol)" "$(_blue_bg "$PROJECT_NAME")"
+    printf "%-25s: %s\n" "地址 (Address)" "$(_blue_bg "$IP")"
+    printf "%-25s: %s\n" "端口 (Port)" "$(_blue_bg "$SERVER_PORT")"
+    printf "%-25s: %s\n" "密码 (Password)" "$(_blue_bg "$PASSWORD")"
+    printf "%-27s: %s\n" "加密方式 (Encryption)" "$(_blue_bg "$METHOD")"
     echo "$(separator) URL $(separator)"
-    echo "ss://$(printf '%s:%s' "$METHOD" "$PASSWORD" | base64 | tr -d '\n')@$IP:$SERVER_PORT#$PROJECT_NAME-honeok"
+    _blue_bg "ss://$(printf '%s:%s' "$METHOD" "$PASSWORD" | base64 | tr -d '\n')@$IP:$SERVER_PORT#$PROJECT_NAME-honeok"
     echo "$(separator) URL $(separator)"
 }
 

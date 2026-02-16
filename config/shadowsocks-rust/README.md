@@ -5,7 +5,7 @@
 
 ![Shadowsocks](https://fastly.jsdelivr.net/gh/teddysun/shadowsocks_install@master/shadowsocks.png)
 
-<span style="color: #00BFFF;">_The connection may be severed, but the blue paper plane flies forever._</span>
+**_The connection may be severed, but the blue paper plane flies forever._**
 
 This is a port of [shadowsocks][1].
 

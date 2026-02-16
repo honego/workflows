@@ -166,7 +166,7 @@ EOF
     printf "%-27s: %s\n" "加密方式 (Encryption)" "$(_blue_bg "$METHOD")"
     echo "$(separator) URL $(separator)"
     _blue_bg "ss://$(printf '%s:%s' "$METHOD" "$PASSWORD" | base64 | tr -d '\n')@$IP:$SERVER_PORT#$PROJECT_NAME-honeok"
-    echo "$(separator) URL $(separator)"
+    echo "$(separator) END $(separator)"
 }
 
 install_svc() {

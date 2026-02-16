@@ -13,7 +13,19 @@ set -eE
 
 # MAJOR.MINOR.PATCH
 # shellcheck disable=SC2034
-readonly SCRIPT_VERSION='v1.1.0'
+readonly SCRIPT_VERSION='v1.0.1'
+
+_red() {
+    printf "\033[31m%b\033[0m\n" "$*"
+}
+
+_yellow() {
+    printf "\033[33m%b\033[0m\n" "$*"
+}
+
+_err_msg() {
+    printf "\033[41m\033[1mError\033[0m %b\n" "$*"
+}
 
 # 各变量默认值
 TEMP_DIR="$(mktemp -d)"
@@ -35,7 +47,7 @@ clear() {
 }
 
 die() {
-    echo >&2 "Error: $*"
+    _err_msg >&2 "$(_red "$@")"
     exit 1
 }
 
@@ -107,6 +119,7 @@ install_ss() {
         GLIBC="gnu"
     fi
 
+    _yellow "Download $CORE_NAME."
     FILENAMES=("$PROJECT_NAME-v$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz" "$PROJECT_NAME-v$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz.sha256")
     for f in "${FILENAMES[@]}"; do
         curl -Ls -O "https://github.com/$PROJECT_NAME/$CORE_NAME/releases/download/v$VERSION/$f"
@@ -115,11 +128,14 @@ install_ss() {
     tar fJx "$PROJECT_NAME-v$VERSION.$OS_ARCH-unknown-linux-$GLIBC.tar.xz"
     chmod +x ss*
     mv -f ss* /usr/local/bin
+
+    clear
 }
 
 gen_cfg() {
     local SERVER_PORT PASSWORD METHOD IP
 
+    _yellow "Generate config."
     mkdir -p "$CORE_DIR" || die "Unable to create directory."
 
     SERVER_PORT="$(random_port)" # 生成随机端口

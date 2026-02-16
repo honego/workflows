@@ -143,11 +143,11 @@ gen_cfg() {
 EOF
 
     echo "$(separator 11) $CORE_NAME $(separator 11)"
-    echo "Protocol: $PROJECT_NAME"
-    echo "Address: $IP"
-    echo "Port: $SERVER_PORT"
-    echo "Password: $PASSWORD"
-    echo "Encryption: $METHOD"
+    printf "%-15s: %s\n" "Protocol" "$PROJECT_NAME"
+    printf "%-15s: %s\n" "Address" "$IP"
+    printf "%-15s: %s\n" "Port" "$SERVER_PORT"
+    printf "%-15s: %s\n" "Password" "$PASSWORD"
+    printf "%-15s: %s\n" "Encryption" "$METHOD"
     echo "$(separator) URL $(separator)"
     echo "ss://$(printf '%s:%s' "$METHOD" "$PASSWORD" | base64 | tr -d '\n')@$IP:$SERVER_PORT#$PROJECT_NAME-honeok"
     echo "$(separator) URL $(separator)"

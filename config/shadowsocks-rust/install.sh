@@ -30,6 +30,10 @@ separator() {
     printf "%-${LENGTH}s\n" "-" | sed 's/\s/-/g'
 }
 
+clear() {
+    [ -t 1 ] && tput clear 2> /dev/null || printf "\033[2J\033[H" || command clear
+}
+
 die() {
     echo >&2 "Error: $*"
     exit 1
@@ -153,7 +157,7 @@ EOF
     echo "$(separator) URL $(separator)"
 }
 
-install_service() {
+install_svc() {
     tee > /etc/systemd/system/$PROJECT_NAME.service <<- EOF
 [Unit]
 Description=Shadowsocks-rust Server Service
@@ -175,6 +179,7 @@ EOF
     systemctl enable --now "$PROJECT_NAME.service"
 }
 
+clear
 install_ss
 gen_cfg
-install_service
+install_svc

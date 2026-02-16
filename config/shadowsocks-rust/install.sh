@@ -24,6 +24,12 @@ CORE_DIR="/etc/$CORE_NAME"
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
+# 分隔符
+separator() {
+    local LENGTH="${1:-15}"
+    printf "%-${LENGTH}s\n" "-" | sed 's/\s/-/g'
+}
+
 die() {
     echo >&2 "Error: $*"
     exit 1
@@ -135,7 +141,16 @@ gen_cfg() {
   "mode": "tcp_and_udp"
 }
 EOF
+
+    echo "$(separator) $CORE_NAME $(separator)"
+    echo "Protocol: $PROJECT_NAME"
+    echo "Address: $IP"
+    echo "Port: $SERVER_PORT"
+    echo "Password: $PASSWORD"
+    echo "Encryption: $METHOD"
+    echo "$(separator) URL $(separator)"
     echo "ss://$(printf '%s:%s' "$METHOD" "$PASSWORD" | base64 | tr -d '\n')@$IP:$SERVER_PORT#$PROJECT_NAME-honeok"
+    echo "$(separator) URL $(separator)"
 }
 
 install_service() {

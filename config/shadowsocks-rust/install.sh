@@ -142,7 +142,7 @@ gen_cfg() {
 }
 EOF
 
-    echo "$(separator) $CORE_NAME $(separator)"
+    echo "$(separator 11) $CORE_NAME $(separator 11)"
     echo "Protocol: $PROJECT_NAME"
     echo "Address: $IP"
     echo "Port: $SERVER_PORT"

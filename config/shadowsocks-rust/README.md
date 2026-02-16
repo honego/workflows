@@ -5,6 +5,8 @@
 
 ![Shadowsocks](https://fastly.jsdelivr.net/gh/teddysun/shadowsocks_install@master/shadowsocks.png)
 
+_The connection may be severed, but the blue paper plane flies forever._
+
 This is a port of [shadowsocks][1].
 
 shadowsocks is a fast tunnel proxy that helps you bypass firewalls.
@@ -37,8 +39,6 @@ For detailed configuration files, please refer to the official [documentation][2
 ```shell
 bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/shadowsocks-rust/remove.sh)
 ```
-
-**The connection may be severed, but the blue paper plane flies forever.**
 
 [1]: https://github.com/shadowsocks/shadowsocks
 [2]: https://github.com/shadowsocks/shadowsocks-rust

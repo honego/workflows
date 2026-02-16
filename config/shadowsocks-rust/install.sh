@@ -59,7 +59,7 @@ is_alpine() {
 random_port() {
     local EXIST_PORT TEMP_PORT PORT
 
-    EXIST_PORT="$(ss -tunlp | sed -n 's/.*:\([0-9]\+\).*/\1/p' | sort -nu)"
+    EXIST_PORT="$(ss -lnptu | sed -n 's/.*:\([0-9]\+\).*/\1/p' | sort -nu)"
     for ((i = 1; i <= 5; i++)); do
         TEMP_PORT="$(shuf -i 20000-65535 -n 1)"
         if ! grep -q "^$TEMP_PORT$" <<< "$EXIST_PORT"; then

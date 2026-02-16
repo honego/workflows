@@ -13,7 +13,7 @@ set -eE
 
 # MAJOR.MINOR.PATCH
 # shellcheck disable=SC2034
-readonly SCRIPT_VERSION='v1.0.0'
+readonly SCRIPT_VERSION='v1.1.0'
 
 # 各变量默认值
 TEMP_DIR="$(mktemp -d)"
@@ -81,14 +81,6 @@ random_port() {
     [ -n "$PORT" ] || die "Failed generate random port."
 }
 
-random_char() {
-    local LENGTH="$1"
-    local RANDOM_STRING
-
-    RANDOM_STRING="$(LC_ALL=C tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w "$LENGTH" | head -n1)"
-    echo "$RANDOM_STRING"
-}
-
 get_ip() {
     local PUBLIC_IP
 
@@ -131,8 +123,8 @@ gen_cfg() {
     mkdir -p "$CORE_DIR" || die "Unable to create directory."
 
     SERVER_PORT="$(random_port)" # 生成随机端口
-    PASSWORD="$(random_char 25)"
     METHOD="chacha20-ietf-poly1305"
+    PASSWORD="$(ssservice genkey -m "$METHOD")"
     IP="$(get_ip)"
 
     tee > "$CORE_DIR/config.json" <<- EOF

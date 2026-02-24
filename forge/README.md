@@ -1,7 +1,6 @@
 <div align="center">
   <img src="https://fastly.jsdelivr.net/gh/jglovier/dotfiles-logo@main/dotfiles-logo.png" alt="Logo" width="400" />
 </div>
-<h1 align="center">Dotfiles</h1>
 
 ## .bashrc
 
@@ -11,7 +10,7 @@ Description: This file is used to enhance the default .bashrc, add custom parame
 cp ~/.bashrc{,.bak}
 ```
 
-**Debian Series**
+Debian Series
 
 ```
 curl -Ls https://github.com/honeok/config/raw/master/dotfiles/.debian_bashrc -o ~/.bashrc

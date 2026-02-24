@@ -10,9 +10,8 @@ Description: This file is used to enhance the default .bashrc, add custom parame
 cp ~/.bashrc{,.bak}
 ```
 
-Debian Series
-
 ```
+# Debian
 curl -Ls https://github.com/honeok/config/raw/master/dotfiles/.debian_bashrc -o ~/.bashrc
 ```
 

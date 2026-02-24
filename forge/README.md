@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://fastly.jsdelivr.net/gh/jglovier/dotfiles-logo@main/dotfiles-logo.png" alt="Logo" width="250" />
+  <img src="https://fastly.jsdelivr.net/gh/jglovier/dotfiles-logo@main/dotfiles-logo.png" alt="Logo" width="400" />
 </div>
 <h1 align="center">Dotfiles</h1>
 

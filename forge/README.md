@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://fastly.jsdelivr.net/gh/jglovier/dotfiles-logo@main/dotfiles-logo.png" alt="Logo" width="500" />
+  <img src="https://fastly.jsdelivr.net/gh/jglovier/dotfiles-logo@main/dotfiles-logo.png" alt="Logo" width="450" />
 </div>
 
 ## .bashrc

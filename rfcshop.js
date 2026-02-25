@@ -1,3 +1,4 @@
+// ==UserScript==
 // @name         RFCShop 抢购推土机版 v6.5
 // @namespace    http://tampermonkey.net
 // @version      6.5.1
@@ -7,6 +8,7 @@
 // @match        *://my.rfchost.com/index.php?rp=/store/*
 // @grant        GM_notification
 // @grant        window.focus
+// ==/UserScript==
 
 (function () {
   "use strict";

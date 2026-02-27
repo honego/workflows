@@ -40,6 +40,18 @@ function getOffset(timeZone) {
   }
 }
 
+// 获取 WARP 状态
+async function getWarp() {
+  try {
+    const traceReq = await fetch("https://1.1.1.1/cdn-cgi/trace");
+    const traceText = await traceReq.text();
+    const warpMatch = traceText.match(/warp=(on|plus|off)/);
+    return warpMatch ? warpMatch[1] : "off";
+  } catch (e) {
+    return "unknown";
+  }
+}
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -57,18 +69,6 @@ export default {
 
     // JSON 返回详细信息
     if (path === "/json") {
-      let warpStatus = "off";
-      try {
-        const traceReq = await fetch("https://1.1.1.1/cdn-cgi/trace");
-        const traceText = await traceReq.text();
-        const warpMatch = traceText.match(/warp=(on|plus|off)/);
-        if (warpMatch) {
-          warpStatus = warpMatch[1];
-        }
-      } catch (e) {
-        warpStatus = "unknown";
-      }
-
       const data = {
         ip: request.headers.get("CF-Connecting-IP"),
         emoji: getEmoji(request.cf.country),
@@ -85,7 +85,7 @@ export default {
         regionCode: request.cf.regionCode,
         asn: request.cf.asn,
         org: request.cf.asOrganization,
-        warp: warpStatus,
+        warp: await getWarp(),
         offset: getOffset(request.cf.timezone),
         timezone: request.cf.timezone,
       };

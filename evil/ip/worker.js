@@ -1,3 +1,32 @@
+const EMOJI_FLAG_UNICODE_STARTING_POSITION = 127397;
+
+// 国旗转换
+function getEmoji(countryCode) {
+  const regex = new RegExp("^[A-Z]{2}$").test(countryCode);
+  if (!countryCode || !regex) return undefined;
+  try {
+    return String.fromCodePoint(
+      ...countryCode.split("").map((char) => EMOJI_FLAG_UNICODE_STARTING_POSITION + char.charCodeAt(0)),
+    );
+  } catch (error) {
+    return undefined;
+  }
+}
+
+// 获取 Emoji 的 Unicode 字符串
+function getEmojiUnicode(countryCode) {
+  const regex = new RegExp("^[A-Z]{2}$").test(countryCode);
+  if (!countryCode || !regex) return undefined;
+  try {
+    return countryCode
+      .split("")
+      .map((char) => "U+" + (EMOJI_FLAG_UNICODE_STARTING_POSITION + char.charCodeAt(0)).toString(16).toUpperCase())
+      .join(" ");
+  } catch (error) {
+    return undefined;
+  }
+}
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -15,47 +44,43 @@ export default {
 
     // JSON 返回详细信息
     if (path === "/json") {
+      let warpStatus = "off";
+      try {
+        const traceReq = await fetch("https://1.1.1.1/cdn-cgi/trace");
+        const traceText = await traceReq.text();
+        const warpMatch = traceText.match(/warp=(on|plus|off)/);
+        if (warpMatch) {
+          warpStatus = warpMatch[1];
+        }
+      } catch (e) {
+        warpStatus = "unknown";
+      }
+
       const data = {
-        Method: request.method,
-        Url: request.url,
-        CF: {
-          Colo: request.cf.colo,
-          Continent: request.cf.continent,
-          Country: request.cf.country,
-          IsEU: request.cf.isEUCountry,
-          City: request.cf.city,
-          Latitude: request.cf.latitude,
-          Longitude: request.cf.longitude,
-          PostalCode: request.cf.postalCode,
-          MetroCode: request.cf.metroCode,
-          Region: request.cf.region,
-          RegionCode: request.cf.regionCode,
-          ASN: request.cf.asn,
-          ASOrganization: request.cf.asOrganization,
-          Timezone: request.cf.timezone,
-          HttpProtocol: request.cf.httpProtocol,
-          TLSVersion: request.cf.tlsVersion,
-        },
-        Headers: {
-          XRealIP: request.headers.get("x-real-ip"),
-          IP: request.headers.get("CF-Connecting-IP"),
-          IPv6: request.headers.get("CF-Connecting-IPv6"),
-          Authorization: request.headers.get("Authorization"),
-          From: request.headers.get("From"),
-          UA: request.headers.get("User-Agent"),
-          Referer: request.headers.get("Referer"),
-          Cookie: request.headers.get("Cookie"),
-          Accept: request.headers.get("Accept"),
-          XFF: request.headers.get("X-Forwarded-For"),
-          XHF: request.headers.get("X-Forwarded-Host"),
-          XFP: request.headers.get("X-Forwarded-Proto"),
-        },
+        ip: request.headers.get("CF-Connecting-IP"),
+        emoji: getEmoji(request.cf.country),
+        emoji_unicode: getEmojiUnicode(request.cf.country),
+        colo: request.cf.colo,
+        continent: request.cf.continent,
+        country: request.cf.country,
+        city: request.cf.city,
+        latitude: request.cf.latitude,
+        longitude: request.cf.longitude,
+        postalCode: request.cf.postalCode,
+        metroCode: request.cf.metroCode,
+        region: request.cf.region,
+        regionCode: request.cf.regionCode,
+        asn: request.cf.asn,
+        org: request.cf.asOrganization,
+        warp: warpStatus,
+        timezone: request.cf.timezone,
       };
 
-      var dataJson = JSON.stringify(data, null, 4);
+      var dataJson = JSON.stringify(data, null, 2);
       return new Response(dataJson, {
         headers: {
           "Content-Type": "application/json;charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
         },
       });
     }

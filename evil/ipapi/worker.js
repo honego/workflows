@@ -28,15 +28,10 @@ function getEmojiUnicode(countryCode) {
 }
 
 // 获取 WARP 状态
-async function getWarp() {
-  try {
-    const traceReq = await fetch("https://1.1.1.1/cdn-cgi/trace");
-    const traceText = await traceReq.text();
-    const warpMatch = traceText.match(/warp=(on|plus|off)/);
-    return warpMatch ? warpMatch[1] : "off";
-  } catch (e) {
-    return "unknown";
-  }
+function getWarp(asn) {
+  if (!asn) return "off";
+  const warpASNs = [13335, 209242];
+  return warpASNs.includes(Number(asn)) ? "on" : "off";
 }
 
 // 获取时区偏移量
@@ -44,9 +39,9 @@ function getOffset(timeZone) {
   if (!timeZone) return undefined;
   try {
     const now = new Date();
-    const utcDate = new Date(now.toLocaleString("en-US", { timeZone: "UTC" }));
-    const tzDate = new Date(now.toLocaleString("en-US", { timeZone: timeZone }));
-    return (tzDate.getTime() - utcDate.getTime()) / 1000;
+    const utcDate = new Date(now.toLocaleString("en-US", { timeZone: "UTC", hour12: false }));
+    const tzDate = new Date(now.toLocaleString("en-US", { timeZone: timeZone, hour12: false }));
+    return Math.round((tzDate.getTime() - utcDate.getTime()) / 1000);
   } catch (error) {
     return undefined;
   }
@@ -85,7 +80,7 @@ export default {
         metroCode: request.cf.metroCode,
         latitude: request.cf.latitude,
         longitude: request.cf.longitude,
-        warp: await getWarp(),
+        warp: getWarp(request.cf.asn),
         offset: getOffset(request.cf.timezone),
         timezone: request.cf.timezone,
       };

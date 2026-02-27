@@ -1,17 +1,5 @@
 const EMOJI_FLAG_UNICODE_STARTING_POSITION = 127397;
 
-// 获取 WARP 状态
-async function getWarp() {
-  try {
-    const traceReq = await fetch("https://1.1.1.1/cdn-cgi/trace");
-    const traceText = await traceReq.text();
-    const warpMatch = traceText.match(/warp=(on|plus|off)/);
-    return warpMatch ? warpMatch[1] : "off";
-  } catch (e) {
-    return "unknown";
-  }
-}
-
 // 国旗转换
 function getEmoji(countryCode) {
   const regex = new RegExp("^[A-Z]{2}$").test(countryCode);
@@ -36,6 +24,18 @@ function getEmojiUnicode(countryCode) {
       .join(" ");
   } catch (error) {
     return undefined;
+  }
+}
+
+// 获取 WARP 状态
+async function getWarp() {
+  try {
+    const traceReq = await fetch("https://1.1.1.1/cdn-cgi/trace");
+    const traceText = await traceReq.text();
+    const warpMatch = traceText.match(/warp=(on|plus|off)/);
+    return warpMatch ? warpMatch[1] : "off";
+  } catch (e) {
+    return "unknown";
   }
 }
 
@@ -76,6 +76,8 @@ export default {
         colo: request.cf.colo,
         continent: request.cf.continent,
         country: request.cf.country,
+        emoji: getEmoji(request.cf.country),
+        emoji_unicode: getEmojiUnicode(request.cf.country),
         region: request.cf.region,
         regionCode: request.cf.regionCode,
         city: request.cf.city,
@@ -84,8 +86,6 @@ export default {
         latitude: request.cf.latitude,
         longitude: request.cf.longitude,
         warp: await getWarp(),
-        emoji: getEmoji(request.cf.country),
-        emoji_unicode: getEmojiUnicode(request.cf.country),
         offset: getOffset(request.cf.timezone),
         timezone: request.cf.timezone,
       };

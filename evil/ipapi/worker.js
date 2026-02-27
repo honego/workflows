@@ -57,7 +57,7 @@ export default {
       const clientIP = request.headers.get("CF-Connecting-IP");
       return new Response(clientIP, {
         headers: {
-          "Content-Type": "text/plain;charset=UTF-8",
+          "Content-Type": "text/plain;charset=utf-8",
         },
       });
     }

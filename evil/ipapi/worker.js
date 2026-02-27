@@ -88,7 +88,7 @@ export default {
       var dataJson = JSON.stringify(data, null, 2);
       return new Response(dataJson, {
         headers: {
-          "Content-Type": "application/json;charset=UTF-8",
+          "Content-Type": "application/json;charset=utf-8",
           "Access-Control-Allow-Origin": "*",
         },
       });

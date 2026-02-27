@@ -27,6 +27,19 @@ function getEmojiUnicode(countryCode) {
   }
 }
 
+// 获取时区偏移量
+function getOffset(timeZone) {
+  if (!timeZone) return undefined;
+  try {
+    const now = new Date();
+    const utcDate = new Date(now.toLocaleString("en-US", { timeZone: "UTC" }));
+    const tzDate = new Date(now.toLocaleString("en-US", { timeZone: timeZone }));
+    return (tzDate.getTime() - utcDate.getTime()) / 1000;
+  } catch (error) {
+    return undefined;
+  }
+}
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -73,6 +86,7 @@ export default {
         asn: request.cf.asn,
         org: request.cf.asOrganization,
         warp: warpStatus,
+        offset: getOffset(request.cf.timezone),
         timezone: request.cf.timezone,
       };
 

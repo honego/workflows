@@ -30,8 +30,39 @@
   }
 </style>
 
+<style>
+  .dark .bg-card {
+    font-family: "Roboto", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #ffffff; /* 白色 高对比度 */
+    position: relative; /* 设置元素为相对定位 */
+    background-color: rgba(0, 0, 0, 0.3); /* 设置背景颜色为半透明的黑色 */
+    backdrop-filter: blur(5px); /* 应用毛玻璃效果 模糊度为 5 像素 */
+    border-radius: 15px; /* 设置边框圆角为 15 像素 */
+    /* box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); 添加阴影效果 */
+    /* overflow: hidden;  确保内容不会溢出容器 */
+  }
+
+  .dark .bg-card h1,
+  .dark .bg-card h2,
+  .dark .bg-card h3 {
+    color: #ffffff; /* 保持标题的高对比度 */
+  }
+
+  .dark .bg-card p {
+    color: #eeeeee; /* 段落文本稍微柔和一些 */
+  }
+</style>
+
 <script>
+  // 用户前端
+  // window.CustomBackgroundImage =
+  //   "https://fastly.jsdelivr.net/gh/honeokX/homepage@dev-next/public/avatar.png"; /* 自定义背景图 */
+  // window.CustomMobileBackgroundImage =
+  //   "https://fastly.jsdelivr.net/gh/honeokX/homepage@dev-next/public/avatar.png"; /* 自定义手机端背景图 */
+  window.CustomLogo = "https://fastly.jsdelivr.net/gh/honeokX/homepage@dev-next/public/logo.png"; /* 自定义 Logo */
+  window.CustomDesc = "一个无趣者的自我放逐之地"; /* 自定义描述 */
   window.ShowNetTransfer = "true"; /* 卡片显示上下行流量 */
   window.DisableAnimatedMan = "true"; /* 关掉动画人物插图 */
-  window.CustomDesc = "一个无趣者的自我放逐之地"; /* 自定义描述 */
+  window.CustomLinks = '[{\"link\":\"https://www.honeok.com/\",\"name\":\"HomePage🚲\"}]'; /* 自定义外链 */
+  window.ForceUseSvgFlag = "true"; /* 强制使用 SVG 旗帜 */
 </script>

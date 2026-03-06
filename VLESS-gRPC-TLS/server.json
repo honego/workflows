@@ -1,0 +1,37 @@
+{
+  "inbounds": [
+    {
+      "port": 443,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "84db89cf-2898-4d05-887f-9ada819477ee"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "alpn": ["h2", "http/1.1"],
+          "certificates": [
+            {
+              "certificateFile": "/etc/xray/fullchain.cer",
+              "keyFile": "/etc/xray/private.key"
+            }
+          ]
+        },
+        "grpcSettings": {
+          "serviceName": "grpc.telemetry.v1"
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls", "quic"],
+        "routeOnly": true
+      }
+    }
+  ]
+}

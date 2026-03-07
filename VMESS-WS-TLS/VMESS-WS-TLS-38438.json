@@ -1,21 +1,22 @@
 {
   "inbounds": [
     {
-      "port": 443,
-      "protocol": "vless",
+      "tag": "VMESS-WS-TLS-38438.json",
+      "port": 38438,
+      "listen": "::",
+      "protocol": "vmess",
       "settings": {
         "clients": [
           {
-            "id": "84db89cf-2898-4d05-887f-9ada819477ee"
+            "id": "84db89cf-2898-4d05-887f-9ada819477ee",
+            "alterId": 0
           }
-        ],
-        "decryption": "none"
+        ]
       },
       "streamSettings": {
-        "network": "grpc",
+        "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/etc/xray/fullchain.cer",
@@ -23,8 +24,8 @@
             }
           ]
         },
-        "grpcSettings": {
-          "serviceName": "grpc.telemetry.v1"
+        "wsSettings": {
+          "path": "/x8k9m2p5q1w4e7r3t6y8u0i2o9p"
         }
       },
       "sniffing": {

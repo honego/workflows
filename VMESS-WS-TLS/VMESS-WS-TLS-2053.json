@@ -1,8 +1,8 @@
 {
   "inbounds": [
     {
-      "tag": "VMESS-WS-TLS-38438.json",
-      "port": 38438,
+      "tag": "VMESS-WS-TLS-2053.json",
+      "port": 2053,
       "listen": "::",
       "protocol": "vmess",
       "settings": {

@@ -1,0 +1,9 @@
+{% for vhost in nginx_vhost %}
+server {
+    listen {{ vhost.listen }};
+    {% if vhost.server_name is defined %}
+    server_name {{ vhost.server_name }};
+    {% endif %}
+    root {{ vhost.root }};
+}
+{% endfor %}

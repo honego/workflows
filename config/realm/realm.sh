@@ -147,7 +147,8 @@ check_arch() {
 install_realm() {
     local VERSION GLIBC
 
-    VERSION="$(curl -L "${GITHUB_PROXY}https://api.github.com/repos/$GITHUB_REPO/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+    VERSION="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/$GITHUB_REPO/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+    _yellow "Download realm $VERSION."
 
     if is_glibc; then
         GLIBC="gnu"
@@ -161,15 +162,13 @@ install_realm() {
 
 # 生成配置文件
 gen_cfg() {
-    local
-
     _yellow "Generate config."
     mkdir -p "$REALM_CONFDIR" > /dev/null 2>&1 || die "Unable to create directory."
 
     tee "/etc/systemd/system/$PROJECT_NAME.service" > /dev/null << EOF
 [Unit]
 Description=Realm Proxy Service
-Documentation=https://github.com/zhboner/realm
+Documentation=https://github.com/$GITHUB_REPO
 Wants=network-online.target systemd-networkd-wait-online.service
 After=network-online.target
 

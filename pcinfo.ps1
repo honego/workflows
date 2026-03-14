@@ -1,6 +1,10 @@
 ﻿# SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 honeok <i@honeok.com>
 
+# 系统信息提取
+$os = Get-CimInstance Win32_OperatingSystem
+Write-Host "系统版本   : $($os.Caption) ($($os.OSArchitecture))" -ForegroundColor Cyan
+
 # CPU 信息
 $c = Get-CimInstance Win32_Processor
 Write-Host "CPU 型号   : $($c.Name)" -ForegroundColor Cyan
@@ -23,5 +27,5 @@ $g = Get-CimInstance Win32_VideoController | Where-Object {
     $_.Name -notmatch "Intel|Virtual|Microsoft|Basic|UHD|Iris"
 }
 foreach ($card in $g) {
-    Write-Host "GPU 型号   : $($card.Name) (显存 $([math]::Round($card.AdapterRAM / 1GB, 2)) GB)" -ForegroundColor Cyan
+    Write-Host "GPU 型号   : $($card.Name) ($([math]::Round($card.AdapterRAM / 1GB, 2)) GB 显存)" -ForegroundColor Cyan
 }

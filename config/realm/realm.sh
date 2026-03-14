@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0
 #
-# Description:
+# Description: The script is an automated one-click deploy tool for install and configuring the realm proxy.
 # Copyright (c) 2026 honeok <i@honeok.com>
 #
 # References:
@@ -11,19 +11,30 @@
 set -eE
 
 # MAJOR.MINOR.PATCH
-# shellcheck disable=SC2034
-readonly SCRIPT_VERSION='v1.1.0'
+readonly SCRIPT_VERSION='v1.1.1'
 
 _red() {
     printf "\033[31m%b\033[0m\n" "$*"
+}
+
+_green() {
+    printf "\033[32m%b\033[0m\n" "$*"
 }
 
 _yellow() {
     printf "\033[33m%b\033[0m\n" "$*"
 }
 
+_cyan() {
+    printf "\033[36m%b\033[0m\n" "$*"
+}
+
 _err_msg() {
     printf "\033[41m\033[1mError\033[0m %b\n" "$*"
+}
+
+_italic() {
+    printf "\033[3m%b\033[23m\n" "$*"
 }
 
 # 各变量默认值
@@ -37,6 +48,10 @@ GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://hub.glowp.xyz/' 'https://p
 
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
+
+clear() {
+    [ -t 1 ] && tput clear 2> /dev/null || printf "\033[2J\033[H" || command clear
+}
 
 die() {
     _err_msg >&2 "$(_red "$@")"
@@ -72,6 +87,24 @@ is_darwin() {
 
 is_linux() {
     [ "$(uname -s 2> /dev/null)" = "Linux" ]
+}
+
+print_msg() {
+    _before() {
+        clear
+        _italic "$(_cyan "Script Version: $SCRIPT_VERSION")"
+    }
+
+    _after() {
+        printf "\n"
+        printf "%s %s\n" "$(_yellow "$(_italic "Configuration File Path:")")" "$(_italic "$REALM_CONFIG")"
+        _green "$(_italic "Realm has been install and started success.")"
+    }
+
+    case "$1" in
+    before) _before ;;
+    after) _after ;;
+    esac
 }
 
 # 生成随机端口号
@@ -148,7 +181,7 @@ install_realm() {
     local VERSION GLIBC
 
     VERSION="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/$GITHUB_REPO/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
-    _yellow "Download realm $VERSION."
+    _yellow "$(_italic "Download realm: $VERSION")"
 
     if is_glibc; then
         GLIBC="gnu"
@@ -162,7 +195,7 @@ install_realm() {
 
 # 生成配置文件
 gen_cfg() {
-    _yellow "Generate config."
+    _yellow "$(_italic "Generate config")"
     mkdir -p "$REALM_CONFDIR" > /dev/null 2>&1 || die "Unable to create directory."
 
     tee "/etc/systemd/system/$PROJECT_NAME.service" > /dev/null << EOF
@@ -205,9 +238,11 @@ run_realm() {
     systemctl enable --now "$PROJECT_NAME.service"
 }
 
+print_msg before
 check_cdn
 check_sys
 check_arch
 install_realm
 gen_cfg
 run_realm
+print_msg after

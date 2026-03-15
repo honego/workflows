@@ -39,7 +39,7 @@ _italic() {
 
 # 各变量默认值
 TEMP_DIR="$(mktemp -d 2> /dev/null)"
-GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
+GITHUB_PROXYS=('' 'https://github.akams.cn/' 'https://v6.gh-proxy.org/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 : "${GITHUB_REPO:="zhboner/realm"}"
 : "${PROJECT_NAME:="${GITHUB_REPO##*/}"}"

@@ -146,6 +146,7 @@ rules:
 
   # 应用分流
   - RULE-SET,apple_domain,🍎 Apple
+  - RULE-SET,applecn_domain,🍎 Apple
   - RULE-SET,google_domain,🍀 Google
   - RULE-SET,googlecn_domain,🍀 Google
   - RULE-SET,ai_domain,🤖 AI
@@ -193,6 +194,7 @@ rule-providers:
   ad_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt" }
   ai_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs" }
   apple_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs" }
+  applecn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple-cn.mrs" }
   bilibili_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs" }
   direct_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt" }
   docker_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/docker.mrs" }

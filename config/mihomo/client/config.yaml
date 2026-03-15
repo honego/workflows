@@ -243,7 +243,7 @@ rules:
   # - RULE-SET,antiAd_domain,REJECT
   - RULE-SET,awaAd_domain,REJECT
 
-  - RULE-SET,meituan_domain,DIRECT
+  - RULE-SET,meituan_list,DIRECT
 
   # 应用分流
   - RULE-SET,apple_domain,🍎 Apple
@@ -265,15 +265,15 @@ rules:
   - RULE-SET,paypal_domain,💶 PayPal
   - RULE-SET,speedtest_domain,✈️ Speedtest
 
-  - RULE-SET,cn_ip,🎯 全球直连
-  - RULE-SET,cn_domain,🎯 全球直连
   - RULE-SET,geolocation-!cn,🚀 默认代理
+  - RULE-SET,cn_domain,🎯 全球直连
 
   - RULE-SET,apple_ip,🍎 Apple,no-resolve
   - RULE-SET,google_ip,🍀 Google,no-resolve
   - RULE-SET,netflix_ip,🎥 NETFLIX,no-resolve
   - RULE-SET,telegram_ip,📲 Telegram,no-resolve
   - RULE-SET,twitter_ip,🐦 Twitter,no-resolve
+  - RULE-SET,cn_ip,🎯 全球直连
 
   # 兜底规则
   - MATCH,🎣 漏网之鱼
@@ -287,7 +287,7 @@ rule-anchor:
 
 ## 规则
 rule-providers:
-  meituan_domain: { <<: *class, url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Shadowrocket/MeiTuan/MeiTuan.list" }
+  meituan_list: { <<: *class, url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Shadowrocket/MeiTuan/MeiTuan.list" }
 
   ai_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs" }
   # antiAd_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/privacy-protection-tools/anti-ad.github.io@master/docs/mihomo.mrs" }

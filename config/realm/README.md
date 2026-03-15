@@ -3,6 +3,10 @@
 [![GitHub Release](https://img.shields.io/github/v/release/zhboner/realm.svg?logo=github)](https://github.com/zhboner/realm/releases)
 [![GitHub Releases Stats](https://img.shields.io/github/downloads/zhboner/realm/total.svg?&logo=github)](https://somsubhra.github.io/github-release-stats/?username=zhboner&repository=realm)
 
+A simple, high performance relay server written in rust.
+
+<img src="https://fastly.jsdelivr.net/gh/zhboner/realm@master/assets/realm.png" />
+
 ```shell
 bash <(curl -Ls https://github.com/honeok/cross/raw/master/config/realm/realm.sh)
 ```

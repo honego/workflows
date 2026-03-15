@@ -1,1 +1,1 @@
-DOMAIN-SUFFIX,account-cn.alibabacloud.com
+DOMAIN-REGEX,.*cn.*\.alibabacloud\.com$

@@ -13,37 +13,17 @@ A simple, high performance relay server written in rust.
 - Concurrency. Bidirectional concurrent traffic leads to high performance.
 - Low resources cost.
 
-## Configuration
-
-TOML Example
-
-```toml
-[log]
-level = "warn"
-output = "realm.log"
-
-[network]
-no_tcp = false
-use_udp = true
-
-[[endpoints]]
-listen = "0.0.0.0:5000"
-remote = "1.1.1.1:443"
-
-[[endpoints]]
-listen = "0.0.0.0:10000"
-remote = "www.google.com:443"
-```
-
 ## Install
 
-Install
+You can install realm using either the direct github link or a cdn link.
+
+Direct Link
 
 ```shell
 bash <(curl -Ls https://github.com/honeok/cross/raw/master/config/realm/realm.sh)
 ```
 
-Use CDN
+CDN Link
 
 ```shell
 bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/realm/realm.sh)

@@ -9,13 +9,6 @@ skip-auth-prefixes:
   - ::1/128
 find-process-mode: strict
 mode: rule
-geox-url:
-  geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
-  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
-  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb"
-  asn: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
-geo-auto-update: true
-geo-update-interval: 24
 log-level: warning
 ipv6: false
 unified-delay: true
@@ -71,7 +64,6 @@ dns:
     "rule-set:private_domain,direct_domain":
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
-    "geosite:category-ads-all": rcode://success
 
 ## 机场通用配置模板
 airport_conf: &airport_conf

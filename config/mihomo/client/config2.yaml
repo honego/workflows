@@ -61,7 +61,7 @@ dns:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
   nameserver-policy:
-    "rule-set:private_domain,direct_domain":
+    "rule-set:direct_domain,private_domain":
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
 

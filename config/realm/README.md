@@ -28,3 +28,27 @@ CDN Link
 ```shell
 bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/realm/realm.sh)
 ```
+
+## Configuration
+
+TOML Example
+
+```toml
+[log]
+level = "warn"
+output = "realm.log"
+
+[network]
+no_tcp = false
+use_udp = true
+
+[[endpoints]]
+listen = "0.0.0.0:5000"
+remote = "1.1.1.1:443"
+
+[[endpoints]]
+listen = "0.0.0.0:10000"
+remote = "www.google.com:443"
+```
+
+[See more examples here](https://github.com/zhboner/realm/tree/master/examples)

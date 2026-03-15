@@ -170,7 +170,8 @@ rules:
   # 广告拦截
   - RULE-SET,ad_domain,REJECT
 
-  - RULE-SET,meituan_domain,DIRECT
+  - RULE-SET,direct_list,DIRECT
+  - RULE-SET,meituan_list,DIRECT
 
   # 应用分流
   - RULE-SET,apple_domain,🍎 Apple
@@ -216,7 +217,8 @@ rule-anchor:
 
 ## 规则集订阅
 rule-providers:
-  meituan_domain: { <<: *class, url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Shadowrocket/MeiTuan/MeiTuan.list" }
+  direct_list: { <<: *class, url: "https://v6.gh-proxy.org/https://github.com/honego/workflows/raw/master/config/mihomo/rules/direct.list" }
+  meituan_list: { <<: *class, url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Shadowrocket/MeiTuan/MeiTuan.list" }
 
   ad_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/reject.mrs" }
   ai_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs" }

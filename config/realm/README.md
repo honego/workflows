@@ -51,4 +51,6 @@ listen = "0.0.0.0:10000"
 remote = "www.google.com:443"
 ```
 
-[See more examples here](https://github.com/zhboner/realm/tree/master/examples)
+[See more examples here][1]
+
+[1]: https://github.com/zhboner/realm/tree/master/examples

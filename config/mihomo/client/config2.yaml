@@ -182,6 +182,7 @@ rules:
   - RULE-SET,gitlab_domain,🦊 GitLab
   - RULE-SET,docker_domain, 🐳 Docker
   - RULE-SET,microsoft_domain,🪟 Microsoft
+  - RULE-SET,microsoftcn_domain,🪟 Microsoft
   - RULE-SET,onedrive_domain,🐬 OneDrive
   - RULE-SET,telegram_domain,📲 Telegram
   - RULE-SET,twitter_domain,🐦 Twitter
@@ -211,44 +212,43 @@ rules:
 rule-anchor:
   class: &class { type: http, interval: 86400, behavior: classical, format: text }
   domain: &domain { type: http, interval: 86400, behavior: domain, format: mrs }
-  domain_yaml: &domain_yaml { type: http, interval: 86400, behavior: domain, format: yaml }
   ip: &ip { type: http, interval: 86400, behavior: ipcidr, format: mrs }
-  ip_yaml: &ip_yaml { type: http, interval: 86400, behavior: ipcidr, format: yaml }
 
 ## 规则集订阅
 rule-providers:
   meituan_domain: { <<: *class, url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Shadowrocket/MeiTuan/MeiTuan.list" }
 
-  ad_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt" }
+  ad_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/reject.mrs" }
   ai_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs" }
   apple_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs" }
-  applecn_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt" }
-  bilibili_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs" }
-  direct_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt" }
+  applecn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/apple.mrs" }
+  bilibili_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/bilibili.mrs" }
+  direct_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/direct.mrs" }
   docker_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/docker.mrs" }
   fakeip_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs" }
-  gfw_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt" }
+  gfw_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/gfw.mrs" }
   github_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs" }
   gitlab_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gitlab.mrs" }
   google_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs" }
-  googlecn_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt" }
+  googlecn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/google.mrs" }
   microsoft_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs" }
-  netflix_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs" }
+  microsoftcn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/microsoft-cn.mrs" }
+  netflix_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/netflix.mrs" }
   onedrive_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/onedrive.mrs" }
   paypal_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/paypal.mrs" }
-  private_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt" }
-  proxy_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt" }
+  private_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/private.mrs" }
+  proxy_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/proxy.mrs" }
   speedtest_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/speedtest.mrs" }
-  spotify_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/spotify.mrs" }
+  spotify_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/spotify.mrs" }
   telegram_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs" }
-  tiktok_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs" }
-  tldnotcn_domain: { <<: *domain_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt" }
+  tiktok_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/tiktok.mrs" }
+  tldnotcn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/tld-not-cn.mrs" }
   twitter_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs" }
 
   apple_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/apple.mrs" }
-  cn_ip: { <<: *ip_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt" }
+  cn_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/cncidr.mrs" }
   google_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.mrs" }
-  netflix_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/netflix.mrs" }
-  private_ip: { <<: *ip_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt" }
-  telegram_ip: { <<: *ip_yaml, url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt" }
+  netflix_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/netflixip.mrs" }
+  private_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/lancidr.mrs" }
+  telegram_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/telegramcidr.mrs" }
   twitter_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/twitter.mrs" }

@@ -238,7 +238,7 @@ rules:
   # 广告拦截
   - RULE-SET,ad_domain,REJECT
   # QUIC
-  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,cn)))),REJECT
+  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
 
   - RULE-SET,direct_list,DIRECT
   - RULE-SET,meituan_list,DIRECT

@@ -251,7 +251,7 @@ rules:
   - RULE-SET,ai_domain,🤖 AI
   - RULE-SET,github_domain,👨‍💻 GitHub
   - RULE-SET,gitlab_domain,🦊 GitLab
-  - RULE-SET,docker_domain, 🐳 Docker
+  - RULE-SET,docker_domain,🐳 Docker
   - RULE-SET,microsoft_domain,🪟 Microsoft
   - RULE-SET,onedrive_domain,🐬 OneDrive
   - RULE-SET,telegram_domain,📲 Telegram

@@ -10,11 +10,18 @@ skip-auth-prefixes:
   - ::1/128
 find-process-mode: strict
 mode: rule
+geox-url:
+  geoip: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-geodata/geoip-all.dat"
+  geosite: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-geodata/geosite-all.dat"
+  mmdb: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-geodata/Country-all.mmdb"
+  asn: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-geodata/Country-ASN-all.mmdb"
+geodata-mode: true
+geo-auto-update: true
+geo-update-interval: 24
 log-level: warning
 ipv6: false
 unified-delay: true
 tcp-concurrent: true
-global-client-fingerprint: firefox
 disable-keep-alive: false
 keep-alive-idle: 600
 keep-alive-interval: 1800
@@ -33,7 +40,7 @@ ntp:
 
 ## Tun配置
 tun:
-  enable: false
+  enable: true
   stack: mixed
   dns-hijack:
     - "any:53"
@@ -41,23 +48,42 @@ tun:
   auto-route: true
   auto-detect-interface: true
 
+## 域名嗅探
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: false
+  sniff:
+    QUIC:
+      ports: [1-65535]
+    TLS:
+      ports: [1-65535]
+    HTTP:
+      ports: [1-65535]
+  skip-domain:
+    - "Mijia Cloud"
+
 ## DNS模块
 dns:
   cache-algorithm: arc
   enable: true
-  listen: :53
+  listen: :1053
   default-nameserver:
-    - tls://1.12.12.12:853
-    - tls://223.5.5.5:853
+    - https://119.29.29.29/dns-query
+    - https://223.5.5.5/dns-query
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
-    - rule-set:fakeip_domain
-  fake-ip-filter-mode: blacklist
+    - RULE-SET,fakeip_domain,fake-ip
+    - RULE-SET,direct_domain,real-ip
+    - RULE-SET,private_domain,real-ip
+    - MATCH,fake-ip
+  fake-ip-filter-mode: rule
   respect-rules: true
   nameserver:
-    - https://one.one.one.one/dns-query
-    - https://dns.google/dns-query
+    - https://one.one.one.one/dns-query#🚀 默认代理
+    - https://dns.google/dns-query#🚀 默认代理
   proxy-server-nameserver:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
@@ -99,17 +125,20 @@ airport_conf: &airport_conf
   interval: 3600
   proxy: DIRECT
   lazy: true
+  client-fingerprint: firefox
   health-check:
     enable: true
     interval: 300
     url: "http://www.gstatic.com/generate_204"
     expected-status: 204
 
+# 策略组引用列表
 Airports: &airports
   use:
     - Airport1
     - Airport2
 
+# 机场订阅合集
 proxy-providers:
   Airport1:
     <<: *airport_conf
@@ -169,6 +198,8 @@ rules:
 
   # 广告拦截
   - RULE-SET,ad_domain,REJECT
+  # QUIC
+  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,cn)))),REJECT
 
   - RULE-SET,direct_list,DIRECT
   - RULE-SET,meituan_list,DIRECT
@@ -183,7 +214,6 @@ rules:
   - RULE-SET,gitlab_domain,🦊 GitLab
   - RULE-SET,docker_domain, 🐳 Docker
   - RULE-SET,microsoft_domain,🪟 Microsoft
-  - RULE-SET,microsoftcn_domain,🪟 Microsoft
   - RULE-SET,onedrive_domain,🐬 OneDrive
   - RULE-SET,telegram_domain,📲 Telegram
   - RULE-SET,twitter_domain,🐦 Twitter
@@ -204,7 +234,7 @@ rules:
   - RULE-SET,netflix_ip,🎥 NETFLIX,no-resolve
   - RULE-SET,telegram_ip,📲 Telegram,no-resolve
   - RULE-SET,twitter_ip,🐦 Twitter,no-resolve
-  - RULE-SET,cn_ip,🎯 全球直连
+  - GEOIP,CN,🎯 全球直连
 
   # 兜底规则
   - MATCH,🎣 漏网之鱼
@@ -217,10 +247,10 @@ rule-anchor:
 
 ## 规则集订阅
 rule-providers:
-  direct_list: { <<: *class, url: "https://v6.gh-proxy.org/https://github.com/honego/workflows/raw/master/config/mihomo/rules/direct.list" }
+  direct_list: { <<: *class, url: "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/rules/direct.list" }
   meituan_list: { <<: *class, url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Shadowrocket/MeiTuan/MeiTuan.list" }
 
-  ad_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/reject.mrs" }
+  ad_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.mrs" }
   ai_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs" }
   apple_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs" }
   applecn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/apple.mrs" }
@@ -234,7 +264,6 @@ rule-providers:
   google_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs" }
   googlecn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/google.mrs" }
   microsoft_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs" }
-  microsoftcn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/microsoft-cn.mrs" }
   netflix_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/netflix.mrs" }
   onedrive_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/onedrive.mrs" }
   paypal_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/paypal.mrs" }
@@ -248,7 +277,6 @@ rule-providers:
   twitter_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs" }
 
   apple_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo-lite/geoip/apple.mrs" }
-  cn_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/cncidr.mrs" }
   google_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.mrs" }
   netflix_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/netflixip.mrs" }
   private_ip: { <<: *ip, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/lancidr.mrs" }

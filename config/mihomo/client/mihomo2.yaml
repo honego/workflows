@@ -33,9 +33,16 @@ log-level: warning # 日志等级silent/error/warning/info/debug
 
 ipv6: false # IPv6总开关, 关闭阻断所有IPv6链接和屏蔽DNS请求AAAA记录
 
+external-controller: 0.0.0.0:9090 # RESTful API 监听地址
+
 unified-delay: true # 统一延迟时会计算RTT以消除连接握手等带来的不同类型节点的延迟差异
 
 tcp-concurrent: true # TCP并发连接所有IP 将使用最快握手的TCP
+
+external-ui: "ui" # WEB UI 目录
+external-ui-name: "zashboard"
+# 目前支持下载 zip tgz 格式的压缩包
+external-ui-url: "https://v6.gh-proxy.org/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
 
 # TCP保持活动间隔
 disable-keep-alive: false # 目前在android端强制为true

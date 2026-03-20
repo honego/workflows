@@ -67,6 +67,7 @@ ntp:
 ## Tun配置
 # https://github.com/mihomo-party-org/clash-party/issues/453
 # https://blog.csdn.net/weixin_63094916/article/details/143966897
+# https://www.youtube.com/watch?v=Sa5i1CCaZ34
 tun:
   enable: true
   stack: mixed # system/gvisor/mixed

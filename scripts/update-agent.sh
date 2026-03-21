@@ -13,6 +13,9 @@ GITHUB_PROXY="https://v6.gh-proxy.org/"
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
+# shellcheck source=/dev/null
+. /etc/os-release
+
 cd "$TEMP_DIR" > /dev/null 2>&1 || exit 1
 
 check_root() {
@@ -113,8 +116,10 @@ update_core() {
 restart_agent() {
     local RESTART_CMD
 
-    if [ -f /etc/alpine-release ]; then
+    if [ "$ID" = "alpine" ]; then
         RESTART_CMD="rc-service nezha-agent restart"
+    elif [ "$ID" = "openwrt" ] || [ "$ID" = "immortalwrt" ]; then
+        RESTART_CMD="/etc/init.d/nezha-agent restart"
     else
         RESTART_CMD="systemctl restart nezha-agent.service --quiet"
     fi

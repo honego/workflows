@@ -85,7 +85,7 @@ check_cdn() {
 update_core() {
     local LATEST_VER CURRENT_VER
 
-    LATEST_VER="$(curl -Ls https://api.github.com/repos/nezhahq/agent/releases | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+    LATEST_VER="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/nezhahq/agent/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
     CURRENT_VER="$(eval "$CORE_DIR/$CORE_NAME" -v | awk '{print $3}')"
 
     if [[ "$(printf '%s\n%s\n' "$LATEST_VER" "$CURRENT_VER" | sort -V | head -n1)" == "$LATEST_VER" ]]; then

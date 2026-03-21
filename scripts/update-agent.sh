@@ -8,7 +8,7 @@ set -eE
 TEMP_DIR="$(mktemp -d 2> /dev/null)"
 CORE_DIR="/opt/nezha/agent"
 CORE_NAME="nezha-agent"
-GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://proxy.zzwsec.com' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
+GITHUB_PROXY="https://v6.gh-proxy.org/"
 
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
@@ -50,6 +50,20 @@ is_linux() {
     [ "$(uname -s 2> /dev/null)" = "Linux" ]
 }
 
+is_in_china() {
+    if [ -z "$COUNTRY" ]; then
+        # www.cloudflare.com/dash.cloudflare.com 国内访问的是美国服务器 而且部分地区被墙
+        # www.prologis.cn
+        # www.autodesk.com.cn
+        # www.keysight.com.cn
+        if ! COUNTRY="$(curl -L http://www.qualcomm.cn/cdn-cgi/trace | grep '^loc=' | cut -d= -f2 | grep .)"; then
+            exit 1
+        fi
+        echo >&2 "Location: $COUNTRY"
+    fi
+    [ "$COUNTRY" = CN ]
+}
+
 check_sys() {
     if is_linux; then
         OS_NAME="linux"
@@ -69,16 +83,12 @@ check_arch() {
     esac
 }
 
-# 检测是否需要启用Github CDN如能直接连通则不使用
 check_cdn() {
-    # GITHUB_PROXYS数组第一个元素为空相当于直连
-    local CHECK_URL STATUS_CODE
-
-    for PROXY_URL in "${GITHUB_PROXYS[@]}"; do
-        CHECK_URL="${PROXY_URL}https://github.com/nezhahq/agent/raw/main/README.md"
-        STATUS_CODE="$(command curl --connect-timeout 3 --fail --insecure -Ls --output /dev/null --write-out "%{http_code}" "$CHECK_URL")"
-        [ "$STATUS_CODE" = "200" ] && GITHUB_PROXY="$PROXY_URL" && break
-    done
+    if is_in_china; then
+        return
+    else
+        GITHUB_PROXY=""
+    fi
 }
 
 # 更新内核

@@ -2,12 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 honeok <i@honeok.com>
 
-set -eEu
+set -eE
 
 # 各变量默认值
 TEMP_DIR="$(mktemp -d 2> /dev/null)"
 CORE_DIR="/opt/nezha/agent"
 CORE_NAME="nezha-agent"
+GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
@@ -68,6 +69,18 @@ check_arch() {
     esac
 }
 
+# 检测是否需要启用Github CDN如能直接连通则不使用
+check_cdn() {
+    # GITHUB_PROXYS数组第一个元素为空相当于直连
+    local CHECK_URL STATUS_CODE
+
+    for PROXY_URL in "${GITHUB_PROXYS[@]}"; do
+        CHECK_URL="${PROXY_URL}https://github.com/nezhahq/agent/raw/main/README.md"
+        STATUS_CODE="$(command curl --connect-timeout 3 --fail --insecure -Ls --output /dev/null --write-out "%{http_code}" "$CHECK_URL")"
+        [ "$STATUS_CODE" = "200" ] && GITHUB_PROXY="$PROXY_URL" && break
+    done
+}
+
 # 更新内核
 update_core() {
     local LATEST_VER CURRENT_VER
@@ -79,8 +92,8 @@ update_core() {
         return
     fi
 
-    curl -L -O "https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip"
-    curl -L -O "https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/checksums.txt"
+    curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip"
+    curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/checksums.txt"
     sha256sum --ignore-missing -c checksums.txt > /dev/null 2>&1 || exit 1
 
     unzip -qo "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" -d "$CORE_DIR"
@@ -111,5 +124,6 @@ restart_agent() {
 check_root
 check_sys
 check_arch
+check_cdn
 update_core
 restart_agent

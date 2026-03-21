@@ -81,7 +81,9 @@ check_arch() {
     case "$(uname -m 2> /dev/null)" in
     386 | i*86) OS_ARCH="386" ;;
     amd64 | x86_64) OS_ARCH="amd64" ;;
-    arm64 | armv8 | aarch64) OS_ARCH="arm" ;;
+    arm64 | armv8 | aarch64) OS_ARCH="arm64" ;;
+    riscv64) OS_ARCH="riscv64" ;;
+    s390x) OS_ARCH="s390x" ;;
     *) exit 1 ;;
     esac
 }

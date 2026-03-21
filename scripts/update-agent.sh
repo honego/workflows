@@ -107,7 +107,7 @@ update_core() {
 
     curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip"
     curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/checksums.txt"
-    sha256sum --ignore-missing -c checksums.txt > /dev/null 2>&1 || exit 1
+    grep "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" checksums.txt | sha256sum -c -
 
     unzip -qo "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" -d "$CORE_DIR"
     chmod +x "$CORE_DIR/$CORE_NAME" > /dev/null 2>&1

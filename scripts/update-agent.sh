@@ -8,7 +8,7 @@ set -eE
 TEMP_DIR="$(mktemp -d 2> /dev/null)"
 CORE_DIR="/opt/nezha/agent"
 CORE_NAME="nezha-agent"
-GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
+GITHUB_PROXYS=('' 'https://v6.gh-proxy.org/' 'https://proxy.zzwsec.com' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT

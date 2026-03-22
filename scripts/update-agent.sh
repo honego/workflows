@@ -13,9 +13,6 @@ GITHUB_PROXY="https://v6.gh-proxy.org/"
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
 
-# shellcheck source=/dev/null
-. /etc/os-release
-
 cd "$TEMP_DIR" > /dev/null 2>&1 || exit 1
 
 check_root() {
@@ -100,7 +97,13 @@ check_cdn() {
 update_core() {
     local LATEST_VER CURRENT_VER
 
-    LATEST_VER="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/nezhahq/agent/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+    for ((i = 1; i <= 5; i++)); do
+        LATEST_VER="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/nezhahq/agent/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+        if grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+' <<< "$LATEST_VER"; then
+            break
+        fi
+        sleep 0.5
+    done
     CURRENT_VER="$(eval "$CORE_DIR/$CORE_NAME" -v | awk '{print $3}')"
 
     if [[ "$(printf '%s\n%s\n' "$LATEST_VER" "$CURRENT_VER" | sort -V | head -n1)" == "$LATEST_VER" ]]; then
@@ -109,7 +112,7 @@ update_core() {
 
     curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip"
     curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/checksums.txt"
-    grep "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" checksums.txt | sha256sum -c -
+    grep "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" checksums.txt | sha256sum -c - > /dev/null 2>&1
 
     unzip -qo "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" -d "$CORE_DIR"
     chmod +x "$CORE_DIR/$CORE_NAME" > /dev/null 2>&1
@@ -118,12 +121,15 @@ update_core() {
 restart_agent() {
     local RESTART_CMD
 
+    # shellcheck source=/dev/null
+    . /etc/os-release
+
     if [ "$ID" = "alpine" ]; then
-        RESTART_CMD="rc-service nezha-agent restart"
+        RESTART_CMD="rc-service $CORE_NAME restart"
     elif [ "$ID" = "openwrt" ] || [ "$ID" = "immortalwrt" ]; then
-        RESTART_CMD="/etc/init.d/nezha-agent restart"
+        RESTART_CMD="/etc/init.d/$CORE_NAME restart"
     else
-        RESTART_CMD="systemctl restart nezha-agent.service --quiet"
+        RESTART_CMD="systemctl restart $CORE_NAME.service --quiet"
     fi
 
     for ((i = 1; i <= 3; i++)); do

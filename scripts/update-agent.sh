@@ -135,9 +135,7 @@ restart_agent() {
     # shellcheck source=/dev/null
     . /etc/os-release
 
-    if [ "$ID" = "alpine" ]; then
-        RESTART_CMD="rc-service $CORE_NAME restart"
-    elif [ "$ID" = "openwrt" ] || [ "$ID" = "immortalwrt" ]; then
+    if [ "$ID" = "alpine" ] || [ "$ID" = "immortalwrt" ] || [ "$ID" = "openwrt" ]; then
         RESTART_CMD="/etc/init.d/$CORE_NAME restart"
     else
         RESTART_CMD="systemctl restart $CORE_NAME.service --quiet"

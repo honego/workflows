@@ -6,9 +6,10 @@ set -eE
 
 # 各变量默认值
 TEMP_DIR="$(mktemp -d 2> /dev/null)"
+GITHUB_REPO="nezhahq/agent"
+GITHUB_PROXY="https://v6.gh-proxy.org/"
 CORE_DIR="/opt/nezha/agent"
 CORE_NAME="nezha-agent"
-GITHUB_PROXY="https://v6.gh-proxy.org/"
 
 # 终止信号捕获
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
@@ -64,6 +65,14 @@ is_in_china() {
     [ "$COUNTRY" = CN ]
 }
 
+has_ipv4() {
+    ip -4 route get 151.101.65.1 > /dev/null 2>&1
+}
+
+has_ipv6() {
+    ip -6 route get 2a04:4e42:200::485 > /dev/null 2>&1
+}
+
 check_sys() {
     if is_linux; then
         OS_NAME="linux"
@@ -88,6 +97,8 @@ check_arch() {
 check_cdn() {
     if is_in_china; then
         return
+    elif ! has_ipv4 && has_ipv6; then
+        return
     else
         GITHUB_PROXY=""
     fi
@@ -98,7 +109,7 @@ update_core() {
     local LATEST_VER CURRENT_VER
 
     for ((i = 1; i <= 5; i++)); do
-        LATEST_VER="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/nezhahq/agent/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+        LATEST_VER="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/$GITHUB_REPO/releases" | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
         if grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+' <<< "$LATEST_VER"; then
             break
         fi
@@ -110,8 +121,8 @@ update_core() {
         return
     fi
 
-    curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip"
-    curl -L -O "${GITHUB_PROXY}https://github.com/nezhahq/agent/releases/download/v$LATEST_VER/checksums.txt"
+    curl -L -O "${GITHUB_PROXY}https://github.com/$GITHUB_REPO/releases/download/v$LATEST_VER/${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip"
+    curl -L -O "${GITHUB_PROXY}https://github.com/$GITHUB_REPO/releases/download/v$LATEST_VER/checksums.txt"
     grep "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" checksums.txt | sha256sum -c - > /dev/null 2>&1
 
     unzip -qo "${CORE_NAME}_${OS_NAME}_${OS_ARCH}.zip" -d "$CORE_DIR"

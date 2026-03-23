@@ -132,7 +132,7 @@ update_core() {
 restart_agent() {
     local RESTART_CMD
 
-    # shellcheck source=/dev/null
+    # shellcheck disable=SC1091
     . /etc/os-release
 
     if [ "$ID" = "alpine" ] || [ "$ID" = "immortalwrt" ] || [ "$ID" = "openwrt" ]; then

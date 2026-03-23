@@ -53,7 +53,6 @@ is_linux() {
 
 is_in_china() {
     if [ -z "$COUNTRY" ]; then
-        # www.cloudflare.com/dash.cloudflare.com 国内访问的是美国服务器 而且部分地区被墙
         # www.prologis.cn
         # www.autodesk.com.cn
         # www.keysight.com.cn

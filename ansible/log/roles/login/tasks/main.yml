@@ -1,12 +1,23 @@
-- name: "Login path validation"
+---
+- name: "Check login directory"
+  ansible.builtin.find:
+    depth: 1
+    file_type: directory
+    paths: "{{ base_path }}"
+    patterns: "^login*"
+    use_regex: true
+  register: login_dir
+  ignore_errors: true
+
+# 确保日志路径存在
+- name: "Check login log directory"
   ansible.builtin.stat:
-    path: "{{ log_dir }}"
+    path: "{{ item.path }}/log"
+  loop: "{{ login_dir.files | default([]) }}"
   register: log_dir_stat
 
-- name: "Clean login logs"
-  ansible.builtin.command:
-    chdir: "{{ log_dir }}"
-    cmd: find . -maxdepth 1 -type f -name "*.log" {{ log_retention_args }} -print -delete
-  register: clean_result
-  when: log_dir_stat.stat.exists and log_dir_stat.stat.isdir
-  changed_when: (clean_result.stdout_lines | default([])) | length > 0
+- ansible.builtin.include_role:
+    name: public
+  when:
+    - log_dir_stat.results is defined
+    - log_dir_stat.results | length > 0

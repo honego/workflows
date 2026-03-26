@@ -18,7 +18,6 @@
 
 - ansible.builtin.include_role:
     name: public
-    tasks_from: main.yml
   when:
     - log_dir_stat.results is defined
     - log_dir_stat.results | length > 0

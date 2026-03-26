@@ -16,7 +16,8 @@
   loop: "{{ game_dir.files | default([]) }}"
   register: log_dir_stat
 
-- ansible.builtin.include_tasks: clean.yml
+- ansible.builtin.include_role:
+    name: public
   when:
     - log_dir_stat.results is defined
     - log_dir_stat.results | length > 0

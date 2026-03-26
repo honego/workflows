@@ -1,6 +1,6 @@
 {
   // workbench
-  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.colorTheme": "Dark Modern",
   "workbench.iconTheme": "vscode-icons",
 
   "explorer.compactFolders": false,

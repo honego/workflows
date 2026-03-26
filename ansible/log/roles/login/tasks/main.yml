@@ -1,0 +1,22 @@
+- name: "Login path validation"
+  ansible.builtin.stat:
+    path: "{{ log_dir }}"
+  register: log_dir_stat
+
+- name: "Find expired login logs"
+  ansible.builtin.find:
+    paths: "{{ login_logDir }}"
+    patterns: "*.log"
+    age: "{{ log_retention_days }}d"
+    age_stamp: mtime
+    recurse: false
+    file_type: file
+  register: login_expired_logs
+  when: log_dir_stat.stat.exists and log_dir_stat.stat.isdir
+
+- name: "Delete login logs"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ login_expired_logs.files }}"
+  when: log_dir_stat.stat.exists and log_dir_stat.stat.isdir

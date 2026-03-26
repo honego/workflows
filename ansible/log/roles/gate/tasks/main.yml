@@ -1,0 +1,12 @@
+- name: "Gate path validation"
+  ansible.builtin.stat:
+    path: "{{ log_dir }}"
+  register: log_dir_stat
+
+- name: "Clean login logs"
+  ansible.builtin.command:
+    chdir: "{{ log_dir }}"
+    cmd: find . -maxdepth 1 -type f -name "*.log" {{ log_retention_args }} -print -delete
+  register: clean_result
+  when: log_dir_stat.stat.exists and log_dir_stat.stat.isdir
+  changed_when: (clean_result.stdout_lines | default([])) | length > 0

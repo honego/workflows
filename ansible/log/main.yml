@@ -8,3 +8,4 @@
   # login -> gate -> game -> cross -> gm -> global -> log -> zk -> api
   roles:
     - login
+    - gate

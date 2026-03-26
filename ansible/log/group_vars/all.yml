@@ -1,2 +1,3 @@
+base_path: /data
 # log_retention_args: "-mtime +7"
 log_retention_args: "-mmin +1"

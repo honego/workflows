@@ -3,20 +3,10 @@
     path: "{{ log_dir }}"
   register: log_dir_stat
 
-- name: "Find expired login logs"
-  ansible.builtin.find:
-    paths: "{{ login_logDir }}"
-    patterns: "*.log"
-    age: "{{ log_retention_days }}d"
-    age_stamp: mtime
-    recurse: false
-    file_type: file
-  register: login_expired_logs
-  when: log_dir_stat.stat.exists and log_dir_stat.stat.isdir
-
-- name: "Delete login logs"
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    state: absent
-  loop: "{{ login_expired_logs.files }}"
+- name: "Clean login logs"
+  ansible.builtin.command:
+    chdir: "{{ log_dir }}"
+    cmd: find . -maxdepth 1 -type f -name "*.log" -mtime +{{ log_retention_days }} -print -delete
+  register: clean_result
+  changed_when: clean_result.stdout_lines | length > 0
   when: log_dir_stat.stat.exists and log_dir_stat.stat.isdir

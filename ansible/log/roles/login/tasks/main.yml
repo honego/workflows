@@ -8,5 +8,5 @@
     chdir: "{{ log_dir }}"
     cmd: find . -maxdepth 1 -type f -name "*.log" -mtime +{{ log_retention_days }} -print -delete
   register: clean_result
-  changed_when: clean_result.stdout_lines | length > 0
   when: log_dir_stat.stat.exists and log_dir_stat.stat.isdir
+  changed_when: clean_result.stdout_lines | length > 0

@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025 honeok <i@honeok.com>
-
-# set -eEuxo pipefail
 
 # shellcheck disable=all
 
@@ -11,7 +9,7 @@ systemctl stop docker.service
 systemctl stop containerd.service
 
 apt-get purge -y docker-ce docker-ce-cli docker-ce-rootless-extras docker-buildx-plugin docker-compose-plugin containerd.io runc
-apt-get autoremove -y
+apt-get autoremove -y --remove
 
 umount -f /var/lib/docker/overlay2/*/merged
 
@@ -27,12 +25,12 @@ ip link show docker0 > /dev/null 2>&1 && ip link delete docker0
 which iptables > /dev/null 2>&1 && {
     iptables -F
     iptables -t nat -F
-    iptables -X DOCKER 2> /dev/null
-    iptables -X DOCKER-BRIDGE 2> /dev/null
-    iptables -X DOCKER-CT 2> /dev/null
-    iptables -X DOCKER-FORWARD 2> /dev/null
-    iptables -X DOCKER-INTERNAL 2> /dev/null
-    iptables -X DOCKER-USER 2> /dev/null
-    iptables -t nat -X DOCKER 2> /dev/null
-    iptables -t nat -D POSTROUTING -s 172.17.0.0/16 -j MASQUERADE 2> /dev/null
+    iptables -X DOCKER > /dev/null 2>&1
+    iptables -X DOCKER-BRIDGE > /dev/null 2>&1
+    iptables -X DOCKER-CT > /dev/null 2>&1
+    iptables -X DOCKER-FORWARD > /dev/null 2>&1
+    iptables -X DOCKER-INTERNAL > /dev/null 2>&1
+    iptables -X DOCKER-USER > /dev/null 2>&1
+    iptables -t nat -X DOCKER > /dev/null 2>&1
+    iptables -t nat -D POSTROUTING -s 172.17.0.0/16 -j MASQUERADE > /dev/null 2>&1
 }

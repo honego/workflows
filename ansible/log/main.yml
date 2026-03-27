@@ -1,9 +1,48 @@
+# 根据停服顺序删除
+# login -> gate -> game -> cross -> gm -> global -> log -> zk -> api
+
 ---
-- name: "Clean p8 app runtime logs"
-  hosts: all
+- hosts: login
   remote_user: root
   gather_facts: False
+  roles: [login]
 
-  # 根据停服顺序删除
-  # login -> gate -> game -> cross -> gm -> global -> log -> zk -> api
-  roles: [login, gate, game, cross, gm, global, log, zk, api]
+- hosts: gate
+  remote_user: root
+  gather_facts: False
+  roles: [gate]
+
+- hosts: game
+  remote_user: root
+  gather_facts: False
+  roles: [game]
+
+- hosts: cross
+  remote_user: root
+  gather_facts: False
+  roles: [cross]
+
+- hosts: gm
+  remote_user: root
+  gather_facts: False
+  roles: [gm]
+
+- hosts: global
+  remote_user: root
+  gather_facts: False
+  roles: [global]
+
+- hosts: log
+  remote_user: root
+  gather_facts: False
+  roles: [log]
+
+- hosts: zk
+  remote_user: root
+  gather_facts: False
+  roles: [zk]
+
+- hosts: api
+  remote_user: root
+  gather_facts: False
+  roles: [api]

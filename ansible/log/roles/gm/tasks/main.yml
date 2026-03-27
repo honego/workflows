@@ -14,6 +14,7 @@
     path: "{{ item.path }}/log"
   loop: "{{ gm_dir.files | default([]) }}"
   register: log_dir_stat
+  when: gm_dir.matched | default(0) > 0
 
 - ansible.builtin.include_role:
     name: public

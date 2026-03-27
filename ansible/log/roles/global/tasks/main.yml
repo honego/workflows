@@ -17,7 +17,7 @@
   when: global_dir.matched | default(0) > 0
 
 - ansible.builtin.include_role:
-    name: public
+    name: clean
   when:
     - log_dir_stat.results is defined
     - log_dir_stat.results | length > 0

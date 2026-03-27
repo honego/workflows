@@ -6,13 +6,4 @@
 
   # 根据停服顺序删除
   # login -> gate -> game -> cross -> gm -> global -> log -> zk -> api
-  roles:
-    - login
-    - gate
-    - game
-    - cross
-    - gm
-    - global
-    - log
-    - zk
-    - api
+  roles: [login, gate, game, cross, gm, global, log, zk, api]

@@ -1,0 +1,90 @@
+{
+  "log": {
+    "level": "error",
+    "output": "/var/log/sing-box/sing-box.log",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "udp",
+        "tag": "dns-google-v4",
+        "server": "8.8.8.8",
+        "server_port": 53
+      },
+      {
+        "type": "udp",
+        "tag": "dns-cf-v4",
+        "server": "1.1.1.1",
+        "server_port": 53
+      },
+      {
+        "type": "udp",
+        "tag": "dns-google-v6",
+        "server": "2001:4860:4860::8888",
+        "server_port": 53
+      },
+      {
+        "type": "udp",
+        "tag": "dns-cf-v6",
+        "server": "2606:4700:4700::1111",
+        "server_port": 53
+      }
+    ],
+    "strategy": "prefer_ipv4"
+  },
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "geoip-cn",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/SagerNet/sing-geoip@rule-set/geoip-cn.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-category-ads-all",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      }
+    ],
+    "rules": [
+      {
+        "protocol": ["bittorrent"],
+        "action": "route",
+        "outbound": "block"
+      },
+      {
+        "ip_is_private": true,
+        "action": "route",
+        "outbound": "block"
+      },
+      {
+        "rule_set": ["geoip-cn"],
+        "action": "route",
+        "outbound": "block"
+      },
+      {
+        "rule_set": ["geosite-category-ads-all"],
+        "action": "route",
+        "outbound": "block"
+      }
+    ],
+    "final": "direct",
+    "auto_detect_interface": true
+  }
+}

@@ -21,6 +21,15 @@
     {
       "type": "block",
       "tag": "block"
+    },
+    {
+      "type": "socks",
+      "tag": "proxy",
+      "server": "8.8.8.8",
+      "server_port": 10086,
+      "version": "5",
+      "username": "admin",
+      "password": "admin"
     }
   ],
   "route": {
@@ -62,9 +71,14 @@
         "rule_set": ["geosite-category-ads-all"],
         "action": "route",
         "outbound": "block"
+      },
+      {
+        "ip_cidr": ["0.0.0.0/0", "::/0"],
+        "action": "route",
+        "outbound": "proxy"
       }
     ],
-    "final": "direct",
+    "final": "proxy",
     "auto_detect_interface": true
   }
 }

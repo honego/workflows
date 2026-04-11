@@ -1,0 +1,385 @@
+{
+  "log": {
+    "level": "warn",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "local",
+        "tag": "dns-local",
+        "prefer_go": true
+      },
+      {
+        "type": "https",
+        "tag": "dns-ali",
+        "server": "dns.alidns.com",
+        "path": "/dns-query",
+        "tls": {
+          "enabled": true,
+          "server_name": "dns.alidns.com"
+        },
+        "domain_resolver": "dns-local"
+      },
+      {
+        "type": "https",
+        "tag": "dns-google",
+        "server": "dns.google",
+        "path": "/dns-query",
+        "tls": {
+          "enabled": true,
+          "server_name": "dns.google"
+        },
+        "domain_resolver": "dns-local"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": ["geosite-private", "geosite-cn"],
+        "server": "dns-ali"
+      }
+    ],
+    "final": "dns-google",
+    "strategy": "prefer_ipv4",
+    "cache_capacity": 4096
+  },
+  "ntp": {
+    "enabled": false,
+    "server": "time.apple.com",
+    "server_port": 123,
+    "interval": "30m"
+  },
+  "inbounds": [
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "0.0.0.0",
+      "listen_port": 7890
+    },
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "tun0",
+      "address": ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
+      "stack": "mixed",
+      "auto_route": true,
+      "auto_redirect": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    },
+    {
+      "type": "socks",
+      "tag": "sg-chain",
+      "server": "1.1.1.1",
+      "server_port": 1080,
+      "version": "5",
+      "username": "socks",
+      "password": "socks"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "hk-chain",
+      "server": "1.0.0.1",
+      "server_port": 8388,
+      "method": "aes-128-gcm",
+      "password": "shadowsocks"
+    },
+    {
+      "type": "urltest",
+      "tag": "auto",
+      "outbounds": ["sg-chain", "hk-chain"],
+      "url": "http://cp.cloudflare.com/generate_204",
+      "interval": "5m",
+      "tolerance": 100
+    },
+    {
+      "type": "selector",
+      "tag": "proxy-default",
+      "outbounds": ["auto", "sg-chain", "hk-chain", "direct"],
+      "default": "auto"
+    },
+    {
+      "type": "selector",
+      "tag": "ai",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "google",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "github",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "gitlab",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "docker",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "microsoft",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "onedrive",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "telegram",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "twitter",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "bilibili",
+      "outbounds": ["direct", "proxy-default"],
+      "default": "direct"
+    },
+    {
+      "type": "selector",
+      "tag": "netflix",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "spotify",
+      "outbounds": ["direct", "proxy-default"],
+      "default": "direct"
+    },
+    {
+      "type": "selector",
+      "tag": "tiktok",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "paypal",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "speedtest",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "apple",
+      "outbounds": ["proxy-default", "direct"],
+      "default": "proxy-default"
+    },
+    {
+      "type": "selector",
+      "tag": "global-direct",
+      "outbounds": ["direct", "proxy-default"],
+      "default": "direct"
+    },
+    {
+      "type": "selector",
+      "tag": "final-catch",
+      "outbounds": ["proxy-default", "auto", "sg-chain", "hk-chain", "direct"],
+      "default": "proxy-default"
+    }
+  ],
+  "route": {
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "geosite-private",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-private.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-cn",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-cn.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-category-ads-all",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": "geoip-cn",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/SagerNet/sing-geoip@rule-set/geoip-cn.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      }
+    ],
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "ip_is_private": true,
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": ["geosite-private"],
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": ["geosite-category-ads-all"],
+        "action": "reject"
+      },
+      {
+        "network": ["udp"],
+        "port": 443,
+        "action": "reject"
+      },
+      {
+        "domain_suffix": ["openai.com", "chatgpt.com", "oaistatic.com"],
+        "action": "route",
+        "outbound": "ai"
+      },
+      {
+        "domain_suffix": ["google.com", "gstatic.com", "googleapis.com", "youtube.com"],
+        "action": "route",
+        "outbound": "google"
+      },
+      {
+        "domain_suffix": ["github.com", "githubusercontent.com", "githubassets.com"],
+        "action": "route",
+        "outbound": "github"
+      },
+      {
+        "domain_suffix": ["gitlab.com"],
+        "action": "route",
+        "outbound": "gitlab"
+      },
+      {
+        "domain_suffix": ["docker.com", "docker.io"],
+        "action": "route",
+        "outbound": "docker"
+      },
+      {
+        "domain_suffix": ["microsoft.com", "live.com", "office.com"],
+        "action": "route",
+        "outbound": "microsoft"
+      },
+      {
+        "domain_suffix": ["onedrive.com"],
+        "action": "route",
+        "outbound": "onedrive"
+      },
+      {
+        "domain_suffix": ["telegram.org", "t.me"],
+        "action": "route",
+        "outbound": "telegram"
+      },
+      {
+        "domain_suffix": ["twitter.com", "x.com", "twimg.com"],
+        "action": "route",
+        "outbound": "twitter"
+      },
+      {
+        "domain_suffix": ["bilibili.com", "bilivideo.com"],
+        "action": "route",
+        "outbound": "bilibili"
+      },
+      {
+        "domain_suffix": ["netflix.com", "nflxvideo.net"],
+        "action": "route",
+        "outbound": "netflix"
+      },
+      {
+        "domain_suffix": ["spotify.com", "scdn.co"],
+        "action": "route",
+        "outbound": "spotify"
+      },
+      {
+        "domain_suffix": ["tiktok.com", "tiktokcdn.com", "byteoversea.com"],
+        "action": "route",
+        "outbound": "tiktok"
+      },
+      {
+        "domain_suffix": ["paypal.com"],
+        "action": "route",
+        "outbound": "paypal"
+      },
+      {
+        "domain_suffix": ["speedtest.net", "ooklaserver.net"],
+        "action": "route",
+        "outbound": "speedtest"
+      },
+      {
+        "domain_suffix": ["apple.com", "icloud.com", "itunes.apple.com"],
+        "action": "route",
+        "outbound": "apple"
+      },
+      {
+        "rule_set": ["geosite-cn"],
+        "action": "route",
+        "outbound": "global-direct"
+      },
+      {
+        "rule_set": ["geoip-cn"],
+        "action": "route",
+        "outbound": "global-direct"
+      }
+    ],
+    "final": "final-catch",
+    "auto_detect_interface": true,
+    "find_process": true
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "path": "cache.db",
+      "store_fakeip": true
+    },
+    "clash_api": {
+      "external_controller": "0.0.0.0:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://v6.gh-proxy.org/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip",
+      "external_ui_download_detour": "direct",
+      "default_mode": "Rule"
+    }
+  }
+}

@@ -46,3 +46,100 @@
     font-family: "Douyin Sans", sans-serif !important;
   }
 </style>
+
+<!-- 毛玻璃视觉层样式 卡片 / 圆角按钮 / 过滤条 / 底部信息条 -->
+<style>
+  [class*="bg-card"],
+  button[class*="rounded-full"],
+  .ios-glass-filter-bar,
+  .bottom-marquee {
+    background-color: rgba(255, 255, 255, 0.01) !important;
+    backdrop-filter: blur(5px) saturate(100%);
+    -webkit-backdrop-filter: blur(5px) saturate(100%);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .dark [class*="bg-card"],
+  .dark button[class*="rounded-full"],
+  .dark .ios-glass-filter-bar,
+  .dark .bottom-marquee {
+    background-color: rgba(30, 30, 30, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* 过滤条激活项背景层级修正 */
+  .light .ios-glass-filter-bar div[class*="bg-white"] {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .dark .ios-glass-filter-bar div[class*="bg-neutral-"] {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  /* 悬停高光扫光效果 */
+  [class*="bg-card"]::after,
+  button[class*="rounded-full"]::after,
+  .ios-glass-filter-bar::after,
+  .bottom-marquee::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 100%;
+    height: 100%;
+    transform: skewX(-30deg);
+    background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 45%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.1) 55%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  [class*="bg-card"]:hover::after,
+  button[class*="rounded-full"]:hover::after,
+  .ios-glass-filter-bar:hover::after,
+  .bottom-marquee:hover::after {
+    left: 150%;
+  }
+</style>
+
+<!-- 交互按钮毛玻璃样式规范 -->
+<style>
+  a.flex.items-center.gap-1.text-sm.font-medium.opacity-50,
+  button.inline-flex.items-center.justify-center.rounded-md.text-sm.font-medium,
+  .server-overview-controls button,
+  a[href*="peekabo.io"] {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 9999px !important;
+    padding: 6px 14px !important;
+    color: #333 !important;
+    opacity: 1 !important;
+    transition: all 0.3s ease !important;
+    text-shadow: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  a.flex.items-center.gap-1.text-sm.font-medium:hover,
+  button.inline-flex:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px);
+  }
+
+  a.flex.items-center.gap-1 svg,
+  button svg {
+    opacity: 0.7 !important;
+  }
+
+  .flex.items-center.gap-2.flex-wrap.justify-end {
+    gap: 10px !important;
+  }
+</style>

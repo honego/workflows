@@ -1,104 +1,74 @@
-/* 自定义字体 */
-* {
-  font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
-}
+/**
+ * Nezha Time Only
+ * 用途：仅调整顶部时间显示，不修改其他组件
+ */
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
-}
-
-/* 隐藏底部页脚 */
-/*footer {
-    display: none;
-}*/
-
-/***************************************
- * 1. 隐藏"当前时间"文字
- ***************************************/
+/* 1. 隐藏“overview / 当前时间”说明文字 */
 p.text-base.font-semibold,
-/* overview */
 p.text-sm.font-medium.opacity-50 {
-  /* where the time is */
   display: none !important;
 }
 
-/***************************************
- * 2. 时间数字（低发光、清晰）
- ***************************************/
+/* 2. 时间主体 */
 [data-issues-count-animation] {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif !important;
   font-size: 3rem !important;
-  height: auto !important;
   line-height: 1 !important;
-  font-weight: 600 !important;
+  font-weight: 800 !important;
+  height: auto !important;
 
   display: inline-flex !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   align-items: baseline !important;
   vertical-align: middle !important;
 
-  /* 低发光毛玻璃 */
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: #ffffff !important;
   text-shadow:
-    0 0 2px rgba(255, 255, 255, 0.35),
-    0 0 6px rgba(255, 255, 255, 0.18);
+    0 2px 8px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.45) !important;
 }
 
-/***************************************
- * 3. 单个数字等宽居中（防抖）
- ***************************************/
+/* 3. 单个数字等宽，避免跳动 */
 [data-issues-count-animation] > div {
   display: inline-block !important;
   min-width: 1.2ch !important;
   text-align: center !important;
 }
 
-/***************************************
- * 4. 冒号（更弱一级）
- ***************************************/
+/* 4. 冒号样式 */
 span.font-medium.text-sm.opacity-50 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif !important;
   font-size: 2.8rem !important;
   line-height: 1 !important;
   vertical-align: middle !important;
-  margin: 0 0.25ch !important;
+  margin: 0 0.2ch !important;
 
-  color: rgba(255, 255, 255, 0.55) !important;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.85) !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) !important;
 }
 
-/***************************************
- * 5. 移除 Tailwind 像素补偿
- ***************************************/
+/* 5. 移除原有像素补偿 */
 span.mb-px {
   margin-bottom: 0 !important;
 }
 
-/***************************************
- * 6. 行高度兜底
- ***************************************/
+/* 6. 整行高度兜底 */
 .flex.items-center.font-medium.text-sm {
   min-height: 3.2rem !important;
   align-items: center !important;
 }
 
-/* 不显示右上角语言切换按钮 */
-[id="radix-:r0:"] {
-  display: none;
-}
+/* 7. 移动端缩放 */
+@media (max-width: 768px) {
+  [data-issues-count-animation] {
+    font-size: 2.2rem !important;
+  }
 
-/* 不显示右上角主题切换按钮 */
-[id="radix-:r2:"] {
-  display: none;
-}
+  span.font-medium.text-sm.opacity-50 {
+    font-size: 2rem !important;
+  }
 
-/* 不显示右下角的图片按钮 */
-button:has(.lucide-image-minus) {
-  display: none !important;
-}
-
-button.rounded-\[50px\][aria-haspopup="dialog"] {
-  display: none !important;
+  .flex.items-center.font-medium.text-sm {
+    min-height: 2.4rem !important;
+  }
 }

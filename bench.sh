@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=all
+
 ## 基本系统信息
 get_system_info() {
     # CPU信息
@@ -9,6 +11,57 @@ get_system_info() {
 
     CPU_AES="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
     CPU_VIRT="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持
+}
+
+get_ipinfo() {
+    local ipv4_result ipv4_asn ipv4_org ipv4_city ipv4_region ipv4_country
+    local ipv6_result ipv6_asn ipv6_org ipv6_city ipv6_region ipv6_country
+
+    ipv4_result="$(curl -Ls -4 https://ip.iplen.de/json 2> /dev/null)"
+    ipv4_asn="$(jq -r '.asn' <<< "$ipv4_result")"
+    ipv4_org="$(jq -r '.org' <<< "$ipv4_result")"
+    ipv4_city="$(jq -r '.city' <<< "$ipv4_result")"
+    ipv4_region="$(jq -r '.region' <<< "$ipv4_result")"
+    ipv4_country="$(jq -r '.country' <<< "$ipv4_result")"
+    if [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ] && [ -n "$ipv4_region" ] && [ -n "$ipv4_country" ]; then
+        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        IPV4_LOCATION="$ipv4_city / $ipv4_region / $ipv4_country"
+    elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ] && [ -n "$ipv4_region" ]; then
+        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        IPV4_LOCATION="$ipv4_city / $ipv4_region"
+    elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ]; then
+        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        IPV4_LOCATION="$ipv4_city"
+    elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_region" ]; then
+        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        IPV4_LOCATION="$ipv4_region"
+    else
+        IPV4_ASN_INFO="None"
+        IPV4_LOCATION="None"
+    fi
+
+    ipv6_result="$(curl -Ls -6 https://ip.iplen.de/json 2> /dev/null)"
+    ipv6_asn="$(jq -r '.asn' <<< "$ipv6_result")"
+    ipv6_org="$(jq -r '.org' <<< "$ipv6_result")"
+    ipv6_city="$(jq -r '.city' <<< "$ipv6_result")"
+    ipv6_region="$(jq -r '.region' <<< "$ipv6_result")"
+    ipv6_country="$(jq -r '.country' <<< "$ipv6_result")"
+    if [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ] && [ -n "$ipv6_region" ] && [ -n "$ipv6_country" ]; then
+        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        IPV6_LOCATION="$ipv6_city / $ipv6_region / $ipv6_country"
+    elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ] && [ -n "$ipv6_region" ]; then
+        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        IPV6_LOCATION="$ipv6_city / $ipv6_region"
+    elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ]; then
+        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        IPV6_LOCATION="$ipv6_city"
+    elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_region" ]; then
+        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        IPV6_LOCATION="$ipv6_region"
+    else
+        IPV6_ASN_INFO="None"
+        IPV6_LOCATION="None"
+    fi
 }
 
 print_system_info() {

@@ -2,12 +2,29 @@
 
 # shellcheck disable=all
 
+get_cmd_path() {
+    # arch 云镜像不带 which
+    # command -v 包括脚本里面的方法
+    # ash 无效
+    type -f -p "$1"
+}
+
+is_have_cmd() {
+    get_cmd_path "$1" > /dev/null 2>&1
+}
+
 ## 基本系统信息
 get_system_info() {
     # CPU信息
     CPU_MODEL="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
     CPU_CORES="$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo 2> /dev/null)"
     CPU_FREQ="$(awk -F: '/cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
+
+    if is_have_cmd uptime; then
+        SYSTEM_UPTIME="$(uptime | awk -F'( |,|:)+' '{d=h=m=0; if ($7=="min") m=$6; else {if ($7~/^day/) {d=$6;h=$8;m=$9} else {h=$6;m=$7}}} {print d+0,"days,",h+0,"hour",m+0,"min"}')"
+    else
+        SYSTEM_UPTIME="$(awk '{print int($1/3600)"h "int(($1%3600)/60)"m "int($1%60)"s"}' /proc/uptime)"
+    fi
 
     CPU_AES="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
     CPU_VIRT="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持
@@ -68,6 +85,7 @@ print_system_info() {
     echo -e "CPU Model\t: $CPU_MODEL"
     echo -e "CPU Cores\t: $CPU_CORES"
     echo -e "CPU Frequency\t: $CPU_FREQ"
+    echo -e "System Uptime\t: $SYSTEM_UPTIME"
 
     if [ -n "$CPU_AES" ]; then
         echo -e "AES-NI\t\t: \xe2\x9c\x93 Enabled"

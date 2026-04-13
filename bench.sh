@@ -7,7 +7,7 @@ get_system_info() {
     # CPU信息
     CPU_MODEL="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
     CPU_CORES="$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo 2> /dev/null)"
-    CPU_FREQ="$(awk -F: ' /cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
+    CPU_FREQ="$(awk -F: '/cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
 
     CPU_AES="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
     CPU_VIRT="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持

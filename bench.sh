@@ -13,7 +13,7 @@ get_system_info() {
     CPU_VIRT="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持
 }
 
-get_ipinfo() {
+get_ip_info() {
     local ipv4_result ipv4_asn ipv4_org ipv4_city ipv4_region ipv4_country
     local ipv6_result ipv6_asn ipv6_org ipv6_city ipv6_region ipv6_country
 
@@ -81,5 +81,23 @@ print_system_info() {
     fi
 }
 
+print_ip_info() {
+    if [ -n "$IPV4_ASN_INFO" ] && [ "$IPV4_ASN_INFO" != "None" ]; then
+        echo -e "IPv4 ASN\t: $IPV4_ASN_INFO"
+    fi
+    if [ -n "$IPV4_LOCATION" ] && [ "$IPV4_LOCATION" != "None" ]; then
+        echo -e "IPv4 Location\t: $IPV4_LOCATION"
+    fi
+    if [ -n "$IPV6_ASN_INFO" ] && [ "$IPV6_ASN_INFO" != "None" ]; then
+        echo -e "IPv6 ASN\t: $IPV6_ASN_INFO"
+    fi
+    if [ -n "$IPV6_LOCATION" ] && [ "$IPV6_LOCATION" != "None" ]; then
+        echo -e "IPv6 Location\t: $IPV6_LOCATION"
+    fi
+}
+
 get_system_info
+get_ip_info
+
 print_system_info
+print_ip_info

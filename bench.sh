@@ -67,25 +67,19 @@ get_cpu_info() {
             cpu_l1_cache=$((cpu_l1_cache + cache_bytes))
             ;;
         2:Unified)
-            cpu_l2_cache=$((cpu_l2_cache + cache_bytes))
+            cpu_l2_cache="$cache_bytes"
             ;;
         3:Unified)
-            cpu_l3_cache=$((cpu_l3_cache + cache_bytes))
+            cpu_l3_cache="$cache_bytes"
             ;;
         esac
     done < <(
-        for cache_path in /sys/devices/system/cpu/cpu*/cache/index*; do
+        for cache_path in /sys/devices/system/cpu/cpu0/cache/index*; do
             [ -r "$cache_path/level" ] || continue
             [ -r "$cache_path/type" ] || continue
             [ -r "$cache_path/size" ] || continue
-            [ -r "$cache_path/shared_cpu_list" ] || continue
-
-            printf '%s|%s|%s|%s\n' \
-                "$(< "$cache_path/level")" \
-                "$(< "$cache_path/type")" \
-                "$(< "$cache_path/size")" \
-                "$(< "$cache_path/shared_cpu_list")"
-        done | sort -u | cut -d'|' -f1-3
+            printf '%s|%s|%s\n' "$(< "$cache_path/level")" "$(< "$cache_path/type")" "$(< "$cache_path/size")"
+        done
     )
 
     # 信息汇总
@@ -215,7 +209,7 @@ print_system_info() {
     echo -e "CPU Cores\t: $RESULT_CPU_CORES"
     echo -e "CPU Frequency\t: $RESULT_CPU_FREQ"
     if [ -n "$RESULT_CPU_CACHEL1" ] && [ -n "$RESULT_CPU_CACHEL2" ] && [ -n "$RESULT_CPU_CACHEL3" ]; then
-        echo -e "CPU Cache\t: L1 Total: $RESULT_CPU_CACHEL1 / L2 Total: $RESULT_CPU_CACHEL2 / L3 Total: $RESULT_CPU_CACHEL3"
+        echo -e "CPU Cache\t: L1: $RESULT_CPU_CACHEL1 / L2: $RESULT_CPU_CACHEL2 / L3: $RESULT_CPU_CACHEL3"
     fi
     echo -e "System Uptime\t: $SYSTEM_UPTIME"
     echo -e "Load Average\t: $LOAD_AVG"

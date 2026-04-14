@@ -22,6 +22,10 @@ get_vm_info() {
             RESULT_VIRT_TYPE="Amazon"
             return 0
             ;;
+        bochs)
+            RESULT_VIRT_TYPE="BOCHS"
+            return 0
+            ;;
         docker)
             RESULT_VIRT_TYPE="Docker"
             return 0
@@ -42,12 +46,32 @@ get_vm_info() {
             RESULT_VIRT_TYPE="Hyper-V"
             return 0
             ;;
+        none)
+            RESULT_VIRT_TYPE="Dedicated"
+            return 0
+            ;;
         openvz)
             RESULT_VIRT_TYPE="OpenVZ"
             return 0
             ;;
         oracle)
             RESULT_VIRT_TYPE="VirtualBox"
+            return 0
+            ;;
+        parallels)
+            RESULT_VIRT_TYPE="Parallels"
+            return 0
+            ;;
+        rkt)
+            RESULT_VIRT_TYPE="RKT"
+            return 0
+            ;;
+        systemd-nspawn)
+            RESULT_VIRT_TYPE="Systemd-nspawn"
+            return 0
+            ;;
+        uml)
+            RESULT_VIRT_TYPE="UML"
             return 0
             ;;
         vmware)
@@ -60,6 +84,10 @@ get_vm_info() {
             ;;
         xen)
             RESULT_VIRT_TYPE="Xen"
+            return 0
+            ;;
+        zvm)
+            RESULT_VIRT_TYPE="S390 Z/VM"
             return 0
             ;;
         esac
@@ -79,6 +107,7 @@ get_vm_info() {
     esac
 
     [ -f /.dockerenv ] && RESULT_VIRT_TYPE="Docker" && return 0
+    grep -qa 'container=lxc' /proc/1/environ 2> /dev/null && RESULT_VIRT_TYPE="LXC" && return 0
     [ -d /proc/vz ] && [ ! -d /proc/bc ] && RESULT_VIRT_TYPE="OpenVZ" && return 0
     [ -c /dev/lxss ] && RESULT_VIRT_TYPE="WSL" && return 0
 
@@ -92,8 +121,8 @@ get_vm_info() {
         RESULT_VIRT_TYPE="Google"
         return 0
         ;;
-    *HVM*domU* | *Xen*)
-        RESULT_VIRT_TYPE="Xen"
+    *HVM*domU*)
+        RESULT_VIRT_TYPE="Xen-DomU"
         return 0
         ;;
     *KVM* | *QEMU*)
@@ -104,6 +133,10 @@ get_vm_info() {
         RESULT_VIRT_TYPE="Hyper-V"
         return 0
         ;;
+    *Parallels*)
+        RESULT_VIRT_TYPE="Parallels"
+        return 0
+        ;;
     *VirtualBox* | *innotek* | *Oracle*)
         RESULT_VIRT_TYPE="VirtualBox"
         return 0
@@ -112,15 +145,25 @@ get_vm_info() {
         RESULT_VIRT_TYPE="VMware"
         return 0
         ;;
+    *Xen*)
+        RESULT_VIRT_TYPE="Xen"
+        return 0
+        ;;
     esac
 
     # 检查 Xen 相关接口
     hypervisor_type="$(cat /sys/hypervisor/type 2> /dev/null)"
     [ "$hypervisor_type" = "xen" ] && RESULT_VIRT_TYPE="Xen" && return 0
-    [ -d /proc/xen ] && RESULT_VIRT_TYPE="Xen" && return 0
 
-    xen_caps="$(cat /proc/xen/capabilities 2> /dev/null)"
-    [ -n "$xen_caps" ] && RESULT_VIRT_TYPE="Xen" && return 0
+    if [ -d /proc/xen ]; then
+        xen_caps="$(cat /proc/xen/capabilities 2> /dev/null)"
+        if echo "$xen_caps" | grep -q "control_d" 2> /dev/null; then
+            RESULT_VIRT_TYPE="Xen-Dom0"
+        else
+            RESULT_VIRT_TYPE="Xen-DomU"
+        fi
+        return 0
+    fi
 
     # 通过 CPU hypervisor vendor 特征识别虚拟化平台
     cpu_vendor="$(awk -F: '/vendor_id|Hypervisor vendor/ {gsub(/^[ \t]+/, "", $2); print $2; exit}' /proc/cpuinfo 2> /dev/null)"

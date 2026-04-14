@@ -48,6 +48,18 @@
   }
 </style>
 
+<!-- 隐藏不必要的元素 -->
+<style>
+  p.text-base.font-semibold,
+  p.text-sm.font-medium.opacity-50,
+  [id="radix-:r0:"],
+  [id="radix-:r2:"],
+  button:has(.lucide-image-minus),
+  button.rounded-\[50px\][aria-haspopup="dialog"] {
+    display: none !important;
+  }
+</style>
+
 <!-- 自定义时间显示样式 -->
 <style>
   /* 隐藏标题和副标题 */

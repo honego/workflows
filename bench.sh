@@ -4,7 +4,7 @@
 # Description:
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 #
-# Thanks:
+# References:
 # https://github.com/bin456789/reinstall
 # https://gitlab.com/fscarmen/warp
 # https://github.com/LemonBench/LemonBench

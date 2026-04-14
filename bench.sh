@@ -50,12 +50,17 @@ get_system_info() {
     else
         echo "$SYSTEM_ARCH" | grep -q "64" && SYSTEM_BIT="64" || SYSTEM_BIT="32"
     fi
-
     # 内核
     if [ -r /proc/sys/kernel/osrelease ]; then
         SYSTEM_KERNEL="$(< /proc/sys/kernel/osrelease)"
     else
         SYSTEM_KERNEL="$(uname -r 2> /dev/null)"
+    fi
+    # TCP拥塞控制算法
+    if [ -r /proc/sys/net/ipv4/tcp_congestion_control ]; then
+        TCP_CONGESTION="$(< /proc/sys/net/ipv4/tcp_congestion_control)"
+    else
+        TCP_CONGESTION="$(sysctl -n net.ipv4.tcp_congestion_control 2> /dev/null)"
     fi
 }
 
@@ -149,6 +154,7 @@ print_system_info() {
     fi
     echo -e "Arch\t\t: $SYSTEM_ARCH ($SYSTEM_BIT Bit)"
     echo -e "Kernel\t\t: $SYSTEM_KERNEL"
+    echo -e "TCP Congestion\t: $TCP_CONGESTION"
 }
 
 print_ip_info() {

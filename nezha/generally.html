@@ -50,6 +50,7 @@
 
 <!-- 自定义时间显示样式 -->
 <style>
+  /* 隐藏标题和副标题 */
   .header-timer > p.text-base.font-semibold {
     display: none !important;
   }
@@ -62,6 +63,7 @@
     align-items: flex-start !important;
   }
 
+  /* 时间主体 */
   .header-timer .flex.items-center.font-medium.text-sm {
     font-family: "Douyin Sans", sans-serif !important;
     font-size: 4rem !important;
@@ -74,6 +76,7 @@
     text-shadow: 0 4px 18px rgba(0, 0, 0, 0.32) !important;
   }
 
+  /* 动画容器 */
   .header-timer .flex.items-center.font-medium.text-sm [data-issues-count-animation] {
     height: 4rem !important;
     line-height: 1 !important;
@@ -91,6 +94,7 @@
     line-height: 1 !important;
   }
 
+  /* 手机端 */
   @media (max-width: 768px) {
     .header-timer .flex.items-center.font-medium.text-sm,
     .header-timer .flex.items-center.font-medium.text-sm .relative,

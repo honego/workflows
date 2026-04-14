@@ -44,6 +44,7 @@ format_bytes() {
 get_cpu_info() {
     local cpu_model cpu_cores cpu_freq
     local cpu_l1_cache cpu_l2_cache cpu_l3_cache cache_level cache_type cache_size cache_bytes
+    local cpu_aes cpu_virt
 
     # CPU型号 核心数 频率
     cpu_model="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
@@ -87,6 +88,9 @@ get_cpu_info() {
         done | sort -u | cut -d'|' -f1-3
     )
 
+    cpu_aes="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
+    cpu_virt="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持
+
     # 信息汇总
     RESULT_CPU_MODEL="$cpu_model"
     RESULT_CPU_CORES="$cpu_cores"
@@ -94,6 +98,8 @@ get_cpu_info() {
     RESULT_CPU_CACHEL1="$(format_bytes "$cpu_l1_cache")"
     RESULT_CPU_CACHEL2="$(format_bytes "$cpu_l2_cache")"
     RESULT_CPU_CACHEL3="$(format_bytes "$cpu_l3_cache")"
+    RESULT_CPU_AES="$cpu_aes"
+    RESULT_CPU_VIRT="$cpu_virt"
 }
 
 # 执行基本系统信息检测
@@ -113,9 +119,6 @@ exec_system_info_check() {
     else
         LOAD_AVG="$(awk '{print $1", "$2", "$3}' /proc/loadavg 2> /dev/null)"
     fi
-
-    CPU_AES="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
-    CPU_VIRT="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持
 
     # 架构
     if is_have_cmd getconf; then
@@ -216,19 +219,20 @@ print_system_info() {
     if [ -n "$RESULT_CPU_CACHEL1" ] && [ -n "$RESULT_CPU_CACHEL2" ] && [ -n "$RESULT_CPU_CACHEL3" ]; then
         echo -e "CPU Cache\t: L1: $RESULT_CPU_CACHEL1 / L2: $RESULT_CPU_CACHEL2 / L3: $RESULT_CPU_CACHEL3"
     fi
-    echo -e "System Uptime\t: $SYSTEM_UPTIME"
-    echo -e "Load Average\t: $LOAD_AVG"
-    echo -e "OS\t\t: $SYSTEM_OS_FULLNAME"
-    if [ -n "$CPU_AES" ]; then
+    if [ -n "$RESULT_CPU_AES" ]; then
         echo -e "AES-NI\t\t: \xe2\x9c\x93 Enabled"
     else
         echo -e "AES-NI\t\t: \xe2\x9c\x97 Disabled"
     fi
-    if [ -n "$CPU_VIRT" ]; then
+    if [ -n "$RESULT_CPU_VIRT" ]; then
         echo -e "VM-x/AMD-V\t: \xe2\x9c\x93 Enabled"
     else
         echo -e "VM-x/AMD-V\t: \xe2\x9c\x97 Disabled"
     fi
+
+    echo -e "System Uptime\t: $SYSTEM_UPTIME"
+    echo -e "Load Average\t: $LOAD_AVG"
+    echo -e "OS\t\t: $SYSTEM_OS_FULLNAME"
     echo -e "Arch\t\t: $SYSTEM_ARCH ($SYSTEM_BIT Bit)"
     echo -e "Kernel\t\t: $SYSTEM_KERNEL"
     echo -e "TCP Congestion\t: $TCP_CONGESTION"

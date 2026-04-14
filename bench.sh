@@ -22,6 +22,23 @@ print_sep() {
     printf '%s\n' "${sep// /$2}"
 }
 
+# 字节格式化
+format_bytes() {
+    [[ "$1" =~ ^[0-9]+$ ]] || return 1
+
+    if [ "$1" -ge 1099511627776 ]; then
+        awk "BEGIN { printf \"%.2f TB\n\", $1/1024/1024/1024/1024 }"
+    elif [ "$1" -ge 1073741824 ]; then
+        awk "BEGIN { printf \"%.2f GB\n\", $1/1024/1024/1024 }"
+    elif [ "$1" -ge 1048576 ]; then
+        awk "BEGIN { printf \"%.2f MB\n\", $1/1024/1024 }"
+    elif [ "$1" -ge 1024 ]; then
+        awk "BEGIN { printf \"%.2f KB\n\", $1/1024 }"
+    else
+        awk "BEGIN { printf \"%.2f B\n\", $1 }"
+    fi
+}
+
 ## 基本系统信息
 # 获取CPU信息
 get_cpu_info() {

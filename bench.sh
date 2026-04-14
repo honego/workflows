@@ -43,15 +43,58 @@ format_bytes() {
 # 获取CPU信息
 get_cpu_info() {
     local cpu_model cpu_cores cpu_freq
+    local cpu_l1_cache cpu_l2_cache cpu_l3_cache cache_level cache_type cache_size cache_bytes
 
+    # CPU型号 核心数 频率
     cpu_model="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
     cpu_cores="$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo 2> /dev/null)"
     cpu_freq="$(awk -F: '/cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
+
+    # CPU缓存
+    cpu_l1_cache=0
+    cpu_l2_cache=0
+    cpu_l3_cache=0
+    while IFS='|' read -r cache_level cache_type cache_size; do
+        case "$cache_size" in
+        *K) cache_bytes=$((${cache_size%K} * 1024)) ;;
+        *M) cache_bytes=$((${cache_size%M} * 1024 * 1024)) ;;
+        *G) cache_bytes=$((${cache_size%G} * 1024 * 1024 * 1024)) ;;
+        *) cache_bytes="$cache_size" ;;
+        esac
+
+        case "$cache_level:$cache_type" in
+        1:Data | 1:Instruction)
+            cpu_l1_cache=$((cpu_l1_cache + cache_bytes))
+            ;;
+        2:Unified)
+            cpu_l2_cache=$((cpu_l2_cache + cache_bytes))
+            ;;
+        3:Unified)
+            cpu_l3_cache=$((cpu_l3_cache + cache_bytes))
+            ;;
+        esac
+    done < <(
+        for cache_path in /sys/devices/system/cpu/cpu*/cache/index*; do
+            [ -r "$cache_path/level" ] || continue
+            [ -r "$cache_path/type" ] || continue
+            [ -r "$cache_path/size" ] || continue
+            [ -r "$cache_path/shared_cpu_list" ] || continue
+
+            printf '%s|%s|%s|%s\n' \
+                "$(< "$cache_path/level")" \
+                "$(< "$cache_path/type")" \
+                "$(< "$cache_path/size")" \
+                "$(< "$cache_path/shared_cpu_list")"
+        done | sort -u | cut -d'|' -f1-3
+    )
 
     # 信息汇总
     RESULT_CPU_MODEL="$cpu_model"
     RESULT_CPU_CORES="$cpu_cores"
     RESULT_CPU_FREQ="$cpu_freq"
+    RESULT_CPU_CACHEL1="$(format_bytes "$cpu_l1_cache")"
+    RESULT_CPU_CACHEL2="$(format_bytes "$cpu_l2_cache")"
+    RESULT_CPU_CACHEL3="$(format_bytes "$cpu_l3_cache")"
 }
 
 # 执行基本系统信息检测
@@ -171,6 +214,9 @@ print_system_info() {
     echo -e "CPU Model\t: $RESULT_CPU_MODEL"
     echo -e "CPU Cores\t: $RESULT_CPU_CORES"
     echo -e "CPU Frequency\t: $RESULT_CPU_FREQ"
+    if [ -n "$RESULT_CPU_CACHEL1" ] && [ -n "$RESULT_CPU_CACHEL2" ] && [ -n "$RESULT_CPU_CACHEL3" ]; then
+        echo -e "CPU Cache\t: L1: $RESULT_CPU_CACHEL1 / L2: $RESULT_CPU_CACHEL2 / L3: $RESULT_CPU_CACHEL3"
+    fi
     echo -e "System Uptime\t: $SYSTEM_UPTIME"
     echo -e "Load Average\t: $LOAD_AVG"
     echo -e "OS\t\t: $SYSTEM_OS_FULLNAME"

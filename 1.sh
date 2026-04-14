@@ -3,7 +3,6 @@
 # 系统信息模块 -> 获取虚拟化信息
 # https://github.com/TyIsI/virt-what
 # https://dmo.ca/blog/detecting-virtualization-on-linux
-
 get_vm_info() {
     local sys_vendor product_name product_version dmi virt cgroup hypervisor_type xen_caps cpu_vendor
 

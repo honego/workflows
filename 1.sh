@@ -9,6 +9,7 @@ get_vm_info() {
 
     RESULT_VIRT_TYPE="Unknown"
 
+    # 读取 DMI/SMBIOS 基本信息, 用于识别云平台或常见虚拟化环境
     sys_vendor="$(cat /sys/class/dmi/id/sys_vendor 2> /dev/null)"
     product_name="$(cat /sys/class/dmi/id/product_name 2> /dev/null)"
     product_version="$(cat /sys/class/dmi/id/product_version 2> /dev/null)"
@@ -68,6 +69,7 @@ get_vm_info() {
         esac
     fi
 
+    # 检查容器环境特征
     cgroup="$(cat /proc/1/cgroup 2> /dev/null)"
     case "$cgroup" in
     *docker*)
@@ -84,7 +86,7 @@ get_vm_info() {
     [ -d /proc/vz ] && [ ! -d /proc/bc ] && RESULT_VIRT_TYPE="OpenVZ" && return 0
     [ -c /dev/lxss ] && RESULT_VIRT_TYPE="WSL" && return 0
 
-    # 云平台 / DMI 特征
+    # 通过 DMI/SMBIOS 信息识别云平台或常见虚拟化产品
     case "$dmi" in
     *Amazon*EC2* | *Amazon*)
         RESULT_VIRT_TYPE="Amazon"
@@ -116,7 +118,7 @@ get_vm_info() {
         ;;
     esac
 
-    # Xen
+    # 检查 Xen 相关接口
     hypervisor_type="$(cat /sys/hypervisor/type 2> /dev/null)"
     [ "$hypervisor_type" = "xen" ] && RESULT_VIRT_TYPE="Xen" && return 0
     [ -d /proc/xen ] && RESULT_VIRT_TYPE="Xen" && return 0
@@ -124,7 +126,7 @@ get_vm_info() {
     xen_caps="$(cat /proc/xen/capabilities 2> /dev/null)"
     [ -n "$xen_caps" ] && RESULT_VIRT_TYPE="Xen" && return 0
 
-    # CPU vendor
+    # 通过 CPU hypervisor vendor 特征识别虚拟化平台
     cpu_vendor="$(awk -F: '/vendor_id|Hypervisor vendor/ {gsub(/^[ \t]+/, "", $2); print $2; exit}' /proc/cpuinfo 2> /dev/null)"
     case "$cpu_vendor" in
     KVMKVMKVM)
@@ -145,7 +147,7 @@ get_vm_info() {
         ;;
     esac
 
-    # 只能确认是虚拟化
+    # 如果只能确认运行在 hypervisor 上, 但无法识别具体类型
     if grep -q -w hypervisor /proc/cpuinfo 2> /dev/null; then
         RESULT_VIRT_TYPE="Virtualized"
         return 0

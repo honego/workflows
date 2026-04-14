@@ -12,20 +12,6 @@ is_have_cmd() {
 }
 
 ## 基本系统信息
-get_os_info() {
-    local arch
-
-    if is_have_cmd arch; then
-        arch="$(arch 2> /dev/null)"
-    else
-        arch="$(uname -m 2> /dev/null)"
-    fi
-
-    # shellcheck disable=SC1091
-    . /etc/os-release
-    SYSTEM_OS_FULLNAME="$PRETTY_NAME ($arch)"
-}
-
 get_system_info() {
     # CPU信息
     CPU_MODEL="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
@@ -48,6 +34,37 @@ get_system_info() {
 
     CPU_AES="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
     CPU_VIRT="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持
+
+    # 架构
+    if is_have_cmd getconf; then
+        SYSTEM_BIT="$(getconf LONG_BIT 2> /dev/null)"
+    else
+        echo "$SYSTEM_ARCH" | grep -q "64" && SYSTEM_BIT="64" || SYSTEM_BIT="32"
+    fi
+
+    # 内核
+    if [ -r /proc/sys/kernel/osrelease ]; then
+        SYSTEM_KERNEL="$(< /proc/sys/kernel/osrelease)"
+    else
+        SYSTEM_KERNEL="$(uname -r 2> /dev/null)"
+    fi
+}
+
+get_os_arch() {
+    local arch
+
+    if is_have_cmd arch; then
+        arch="$(arch 2> /dev/null)"
+    else
+        arch="$(uname -m 2> /dev/null)"
+    fi
+    SYSTEM_ARCH="$arch"
+}
+
+get_os_info() {
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    SYSTEM_OS_FULLNAME="$PRETTY_NAME ($SYSTEM_ARCH)"
 }
 
 get_ip_info() {
@@ -118,6 +135,8 @@ print_system_info() {
     else
         echo -e "VM-x/AMD-V\t: \xe2\x9c\x97 Disabled"
     fi
+    echo -e "Arch\t\t: $SYSTEM_ARCH ($SYSTEM_BIT Bit)"
+    echo -e "Kernel\t\t: $SYSTEM_KERNEL"
 }
 
 print_ip_info() {
@@ -135,8 +154,9 @@ print_ip_info() {
     fi
 }
 
-get_os_info
 get_system_info
+get_os_arch
+get_os_info
 get_ip_info
 
 print_system_info

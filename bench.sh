@@ -11,6 +11,15 @@ is_have_cmd() {
     get_cmd_path "$1" > /dev/null 2>&1
 }
 
+# 分隔符打印
+print_sep() {
+    local sep
+    [ -n "$1" ] && [ -n "$2" ] || return 1
+
+    printf -v sep '%*s' "$1" ''
+    printf '%s\n' "${sep// /$2}"
+}
+
 ## 基本系统信息
 get_system_info() {
     # CPU信息
@@ -119,6 +128,9 @@ get_ip_info() {
 }
 
 print_system_info() {
+    echo -e "Basic System Information:"
+    print_sep 30 -
+
     echo -e "CPU Model\t: $CPU_MODEL"
     echo -e "CPU Cores\t: $CPU_CORES"
     echo -e "CPU Frequency\t: $CPU_FREQ"

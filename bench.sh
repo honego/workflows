@@ -215,7 +215,7 @@ print_system_info() {
     echo -e "CPU Cores\t: $RESULT_CPU_CORES"
     echo -e "CPU Frequency\t: $RESULT_CPU_FREQ"
     if [ -n "$RESULT_CPU_CACHEL1" ] && [ -n "$RESULT_CPU_CACHEL2" ] && [ -n "$RESULT_CPU_CACHEL3" ]; then
-        echo -e "CPU Cache\t: L1: $RESULT_CPU_CACHEL1 / L2: $RESULT_CPU_CACHEL2 / L3: $RESULT_CPU_CACHEL3"
+        echo -e "CPU Cache\t: L1 Total: $RESULT_CPU_CACHEL1 / L2 Total: $RESULT_CPU_CACHEL2 / L3 Total: $RESULT_CPU_CACHEL3"
     fi
     echo -e "System Uptime\t: $SYSTEM_UPTIME"
     echo -e "Load Average\t: $LOAD_AVG"

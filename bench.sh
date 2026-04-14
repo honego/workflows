@@ -1,6 +1,30 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0
+#
+# Description:
+# Copyright (c) 2025-2026 honeok <i@honeok.com>
+#
+# Thanks:
+# https://github.com/bin456789/reinstall
+# https://gitlab.com/fscarmen/warp
+# https://github.com/masonr/yet-another-bench-script
+# https://github.com/spiritLHLS/ecs
 
-# shellcheck disable=all
+_red() {
+    printf "\033[31m%b\033[0m\n" "$*"
+}
+
+_green() {
+    printf "\033[32m%b\033[0m\n" "$*"
+}
+
+_yellow() {
+    printf "\033[33m%b\033[0m\n" "$*"
+}
+
+_cyan() {
+    printf "\033[36m%b\033[0m\n" "$*"
+}
 
 get_cmd_path() {
     # arch 云镜像不带 which

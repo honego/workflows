@@ -5,7 +5,7 @@
 # https://dmo.ca/blog/detecting-virtualization-on-linux
 
 get_vm_info() {
-    local sys_vendor product_name product_version virt cgroup dmi hypervisor_type xen_caps cpu_vendor
+    local sys_vendor product_name product_version dmi virt cgroup hypervisor_type xen_caps cpu_vendor
 
     RESULT_VIRT_TYPE="Unknown"
 

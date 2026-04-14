@@ -1,8 +1,8 @@
 <!-- 用户前端 -->
 <!-- https://nezha.wiki/guide/settings.html -->
 <script>
-  // window.CustomBackgroundImage = "https://img.honeok.com/file/9a1bjfkC.webp"; /* 自定义背景图 */
-  // window.CustomMobileBackgroundImage = "https://img.honeok.com/file/9a1bjfkC.webp"; /* 自定义手机端背景图 */
+  window.CustomBackgroundImage = "https://img.honeok.com/file/vdR6Ynvz.jpg"; /* 自定义背景图 */
+  window.CustomMobileBackgroundImage = "https://img.honeok.com/file/vdR6Ynvz.jpg"; /* 自定义手机端背景图 */
   window.CustomLogo = "https://img.honeok.com/file/G1XQNWbC.png"; /* 自定义 Logo */
   window.CustomDesc = "一个无趣者的自我放逐之地"; /* 自定义描述 */
   window.ShowNetTransfer = "true"; /* 卡片显示上下行流量 */
@@ -45,5 +45,61 @@
   select,
   textarea {
     font-family: "Douyin Sans", sans-serif !important;
+  }
+</style>
+
+<!-- 自定义时间显示样式 -->
+<style>
+  .header-timer > p.text-base.font-semibold {
+    display: none !important;
+  }
+
+  .header-timer > .flex.items-center.gap-1 > p.text-sm.font-medium.opacity-50 {
+    display: none !important;
+  }
+
+  .header-timer {
+    align-items: flex-start !important;
+  }
+
+  .header-timer .flex.items-center.font-medium.text-sm {
+    font-family: "Douyin Sans", sans-serif !important;
+    font-size: 4rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.04em !important;
+    justify-content: flex-start !important;
+    color: #ffffff !important;
+    opacity: 0.96 !important;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.32) !important;
+  }
+
+  .header-timer .flex.items-center.font-medium.text-sm [data-issues-count-animation] {
+    height: 4rem !important;
+    line-height: 1 !important;
+  }
+
+  .header-timer .flex.items-center.font-medium.text-sm .relative {
+    font-size: 4rem !important;
+    line-height: 1 !important;
+    min-width: 0.62em !important;
+  }
+
+  .header-timer .flex.items-center.font-medium.text-sm > span {
+    font-size: 4rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+  }
+
+  @media (max-width: 768px) {
+    .header-timer .flex.items-center.font-medium.text-sm,
+    .header-timer .flex.items-center.font-medium.text-sm .relative,
+    .header-timer .flex.items-center.font-medium.text-sm > span {
+      font-size: 2.6rem !important;
+    }
+
+    .header-timer .flex.items-center.font-medium.text-sm [data-issues-count-animation] {
+      height: 2.6rem !important;
+    }
   }
 </style>

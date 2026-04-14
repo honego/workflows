@@ -31,7 +31,7 @@ get_system_info() {
     if is_have_cmd uptime; then
         LOAD_AVG="$(uptime | awk -F'load averages?:' '{print $2}' | sed 's/^ *//;s/ *$//')"
     else
-        LOAD_AVG="$(awk '{print $1","$2","$3}' /proc/loadavg)"
+        LOAD_AVG="$(awk '{print $1", "$2", "$3}' /proc/loadavg 2> /dev/null)"
     fi
 
     CPU_AES="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持

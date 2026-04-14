@@ -20,10 +20,18 @@ get_system_info() {
     CPU_CORES="$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo 2> /dev/null)"
     CPU_FREQ="$(awk -F: '/cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
 
+    # 系统在线时间
     if is_have_cmd uptime; then
         SYSTEM_UPTIME="$(uptime | awk -F'( |,|:)+' '{d=h=m=0; if ($7=="min") m=$6; else {if ($7~/^day/) {d=$6;h=$8;m=$9} else {h=$6;m=$7}}} {print d+0,"days,",h+0,"hour",m+0,"min"}')"
     else
         SYSTEM_UPTIME="$(awk '{print int($1/3600)"h "int(($1%3600)/60)"m "int($1%60)"s"}' /proc/uptime)"
+    fi
+
+    # 系统负载
+    if is_have_cmd uptime; then
+        LOAD_AVG="$(uptime | awk -F'load averages?:' '{print $2}' | sed 's/^ *//;s/ *$//')"
+    else
+        LOAD_AVG="$(awk '{print $1","$2","$3}' /proc/loadavg)"
     fi
 
     CPU_AES="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
@@ -86,6 +94,7 @@ print_system_info() {
     echo -e "CPU Cores\t: $CPU_CORES"
     echo -e "CPU Frequency\t: $CPU_FREQ"
     echo -e "System Uptime\t: $SYSTEM_UPTIME"
+    echo -e "Load Average\t: $LOAD_AVG"
 
     if [ -n "$CPU_AES" ]; then
         echo -e "AES-NI\t\t: \xe2\x9c\x93 Enabled"

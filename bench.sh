@@ -50,7 +50,7 @@ get_cpu_info() {
     cpu_cores="$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo 2> /dev/null)"
     cpu_freq="$(awk -F: '/cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
 
-    # CPU缓存
+    # CPU缓存 L1 合并, L2 / L3 按 sum of all 合并
     cpu_l1_cache=0
     cpu_l2_cache=0
     cpu_l3_cache=0
@@ -67,19 +67,24 @@ get_cpu_info() {
             cpu_l1_cache=$((cpu_l1_cache + cache_bytes))
             ;;
         2:Unified)
-            cpu_l2_cache="$cache_bytes"
+            cpu_l2_cache=$((cpu_l2_cache + cache_bytes))
             ;;
         3:Unified)
-            cpu_l3_cache="$cache_bytes"
+            cpu_l3_cache=$((cpu_l3_cache + cache_bytes))
             ;;
         esac
     done < <(
-        for cache_path in /sys/devices/system/cpu/cpu0/cache/index*; do
+        for cache_path in /sys/devices/system/cpu/cpu*/cache/index*; do
             [ -r "$cache_path/level" ] || continue
             [ -r "$cache_path/type" ] || continue
             [ -r "$cache_path/size" ] || continue
-            printf '%s|%s|%s\n' "$(< "$cache_path/level")" "$(< "$cache_path/type")" "$(< "$cache_path/size")"
-        done
+            [ -r "$cache_path/shared_cpu_list" ] || continue
+            printf '%s|%s|%s|%s\n' \
+                "$(< "$cache_path/level")" \
+                "$(< "$cache_path/type")" \
+                "$(< "$cache_path/size")" \
+                "$(< "$cache_path/shared_cpu_list")"
+        done | sort -u | cut -d'|' -f1-3
     )
 
     # 信息汇总

@@ -125,9 +125,53 @@ get_cpu_info() {
     RESULT_CPU_VIRT="$cpu_virt"
 }
 
+# 获取内存信息
+get_mem_info() {
+    local mem_total mem_available mem_free mem_buffers mem_cached mem_used mem_total_bytes mem_used_bytes
+    local swap_total swap_free swap_used swap_total_bytes swap_used_bytes
+
+    mem_total="$(awk '/^MemTotal:/ {print $2; exit}' /proc/meminfo 2> /dev/null)"         # 总物理内存
+    mem_available="$(awk '/^MemAvailable:/ {print $2; exit}' /proc/meminfo 2> /dev/null)" # 可用内存
+    mem_free="$(awk '/^MemFree:/ {print $2; exit}' /proc/meminfo 2> /dev/null)"           # 完全空闲内存
+    mem_buffers="$(awk '/^Buffers:/ {print $2; exit}' /proc/meminfo 2> /dev/null)"        # 可回收的缓存内存
+    mem_cached="$(awk '/^Cached:/ {print $2; exit}' /proc/meminfo 2> /dev/null)"          # 页缓存
+
+    # 如果系统不支持 MemAvailable 字段 则使用其他字段估算可用内存
+    if ! [[ "$mem_available" =~ ^[0-9]+$ ]]; then
+        mem_available=$((mem_free + mem_buffers + mem_cached))
+    fi
+
+    # 已用内存 = 总内存 - 可用内存
+    mem_used=$((mem_total - mem_available))
+    [ "$mem_used" -lt 0 ] && mem_used=0
+
+    # byte 转换
+    mem_total_bytes=$((mem_total * 1024))
+    mem_used_bytes=$((mem_used * 1024))
+
+    # 已用内存 / 总内存
+    RESULT_MEM_INFO="$(format_bytes "$mem_used_bytes") / $(format_bytes "$mem_total_bytes")"
+
+    # 交换分区 / 交换文件信息
+    swap_total="$(awk '/^SwapTotal:/ {print $2; exit}' /proc/meminfo 2> /dev/null)"
+    swap_free="$(awk '/^SwapFree:/ {print $2; exit}' /proc/meminfo 2> /dev/null)"
+    swap_used=$((swap_total - swap_free))
+    [ "$swap_used" -lt 0 ] && swap_used=0
+
+    swap_total_bytes=$((swap_total * 1024))
+    swap_used_bytes=$((swap_used * 1024))
+
+    if [ "$swap_total" -eq 0 ]; then
+        RESULT_SWAP_INFO="[ no swap partition or swap file detected ]"
+    else
+        RESULT_SWAP_INFO="$(format_bytes "$swap_used_bytes") / $(format_bytes "$swap_total_bytes")"
+    fi
+}
+
 # 执行基本系统信息检测
 get_system_info() {
     get_cpu_info
+    get_mem_info
 
     # 系统在线时间
     if is_have_cmd uptime; then
@@ -252,6 +296,9 @@ print_system_info() {
     else
         echo -e "VM-x/AMD-V\t: \xe2\x9c\x97 Disabled"
     fi
+
+    echo -e "Memory\t\t: $RESULT_MEM_INFO"
+    echo -e "Swap\t\t: $RESULT_SWAP_INFO"
 
     echo -e "System Uptime\t: $SYSTEM_UPTIME"
     echo -e "Load Average\t: $LOAD_AVG"

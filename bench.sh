@@ -38,7 +38,7 @@ get_cpu_info() {
 }
 
 # 执行基本系统信息检测
-exec_system_info() {
+exec_system_info_check() {
     get_cpu_info
 
     # 系统在线时间
@@ -187,7 +187,7 @@ print_ip_info() {
     fi
 }
 
-get_system_info
+exec_system_info_check
 get_os_arch
 get_os_info
 get_ip_info

@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: GPL-3.0
+# SPDX-License-Identifier: GPL-2.0
 #
 # Description:
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 #
 # References:
-# https://github.com/bin456789/reinstall
-# https://gitlab.com/fscarmen/warp
 # https://github.com/LemonBench/LemonBench
 # https://github.com/masonr/yet-another-bench-script
 # https://github.com/spiritLHLS/ecs

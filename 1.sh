@@ -30,7 +30,7 @@ get_vm_info() {
             RESULT_VIRT_TYPE="Google"
             return 0
             ;;
-        kvm)
+        kvm | qemu)
             RESULT_VIRT_TYPE="KVM"
             return 0
             ;;
@@ -39,7 +39,7 @@ get_vm_info() {
             return 0
             ;;
         microsoft)
-            RESULT_VIRT_TYPE="Azure"
+            RESULT_VIRT_TYPE="Hyper-V"
             return 0
             ;;
         openvz)
@@ -48,10 +48,6 @@ get_vm_info() {
             ;;
         oracle)
             RESULT_VIRT_TYPE="VirtualBox"
-            return 0
-            ;;
-        qemu)
-            RESULT_VIRT_TYPE="QEMU"
             return 0
             ;;
         vmware)
@@ -105,7 +101,7 @@ get_vm_info() {
         return 0
         ;;
     *Microsoft*Corporation*Virtual*Machine* | *Hyper-V*)
-        RESULT_VIRT_TYPE="Azure"
+        RESULT_VIRT_TYPE="Hyper-V"
         return 0
         ;;
     *VirtualBox* | *innotek* | *Oracle*)
@@ -134,7 +130,7 @@ get_vm_info() {
         return 0
         ;;
     "Microsoft Hv")
-        RESULT_VIRT_TYPE="Azure"
+        RESULT_VIRT_TYPE="Hyper-V"
         return 0
         ;;
     VMwareVMware)
@@ -154,7 +150,7 @@ get_vm_info() {
     fi
 
     # Deadline
-    RESULT_VIRT_TYPE="Physical"
+    RESULT_VIRT_TYPE="Dedicated"
 }
 
 get_vm_info

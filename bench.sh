@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=all
-
 get_cmd_path() {
     # arch 云镜像不带 which
     # command -v 包括脚本里面的方法
@@ -14,6 +12,20 @@ is_have_cmd() {
 }
 
 ## 基本系统信息
+get_os_info() {
+    local arch
+
+    if is_have_cmd arch; then
+        arch="$(arch 2> /dev/null)"
+    else
+        arch="$(uname -m 2> /dev/null)"
+    fi
+
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    SYSTEM_OS_FULLNAME="$PRETTY_NAME ($arch)"
+}
+
 get_system_info() {
     # CPU信息
     CPU_MODEL="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
@@ -29,7 +41,7 @@ get_system_info() {
 
     # 系统负载
     if is_have_cmd uptime; then
-        LOAD_AVG="$(uptime | awk -F'load averages?:' '{print $2}' | sed 's/^ *//;s/ *$//')"
+        LOAD_AVG="$(uptime | grep -o 'load averages\{0,1\}: .*' | sed 's/load averages\{0,1\}: //')"
     else
         LOAD_AVG="$(awk '{print $1", "$2", "$3}' /proc/loadavg 2> /dev/null)"
     fi
@@ -95,7 +107,7 @@ print_system_info() {
     echo -e "CPU Frequency\t: $CPU_FREQ"
     echo -e "System Uptime\t: $SYSTEM_UPTIME"
     echo -e "Load Average\t: $LOAD_AVG"
-
+    echo -e "OS\t\t: $SYSTEM_OS_FULLNAME"
     if [ -n "$CPU_AES" ]; then
         echo -e "AES-NI\t\t: \xe2\x9c\x93 Enabled"
     else
@@ -123,6 +135,7 @@ print_ip_info() {
     fi
 }
 
+get_os_info
 get_system_info
 get_ip_info
 

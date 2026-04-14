@@ -38,7 +38,7 @@ get_cpu_info() {
 }
 
 # 执行基本系统信息检测
-get_system_info() {
+exec_system_info() {
     get_cpu_info
 
     # 系统在线时间

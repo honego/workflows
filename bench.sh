@@ -214,44 +214,206 @@ get_disk_info() {
     RESULT_DISK_FREE="$(format_bytes "$disk_free_bytes")"
 }
 
-# 执行基本系统信息检测
-get_system_info() {
-    get_cpu_info
-    get_mem_info
-    get_disk_info
+# 系统信息模块 -> 获取虚拟化信息
+# https://github.com/TyIsI/virt-what
+# https://dmo.ca/blog/detecting-virtualization-on-linux
+get_vm_info() {
+    local sys_vendor product_name product_version dmi virt cgroup hypervisor_type xen_caps cpu_vendor
 
-    # 系统在线时间
-    if is_have_cmd uptime; then
-        SYSTEM_UPTIME="$(uptime | awk -F'( |,|:)+' '{d=h=m=0; if ($7=="min") m=$6; else {if ($7~/^day/) {d=$6;h=$8;m=$9} else {h=$6;m=$7}}} {print d+0,"days,",h+0,"hour",m+0,"min"}')"
-    else
-        SYSTEM_UPTIME="$(awk '{print int($1/3600)"h "int(($1%3600)/60)"m "int($1%60)"s"}' /proc/uptime)"
+    RESULT_VIRT_TYPE="Unknown"
+
+    # 读取 DMI/SMBIOS 基本信息, 用于识别云平台或常见虚拟化环境
+    sys_vendor="$(cat /sys/class/dmi/id/sys_vendor 2> /dev/null)"
+    product_name="$(cat /sys/class/dmi/id/product_name 2> /dev/null)"
+    product_version="$(cat /sys/class/dmi/id/product_version 2> /dev/null)"
+    dmi="$sys_vendor $product_name $product_version"
+
+    if command -v systemd-detect-virt > /dev/null 2>&1; then
+        virt="$(systemd-detect-virt 2> /dev/null)"
+        case "$virt" in
+        amazon)
+            RESULT_VIRT_TYPE="Amazon"
+            return 0
+            ;;
+        bochs)
+            RESULT_VIRT_TYPE="BOCHS"
+            return 0
+            ;;
+        docker)
+            RESULT_VIRT_TYPE="Docker"
+            return 0
+            ;;
+        google)
+            RESULT_VIRT_TYPE="Google"
+            return 0
+            ;;
+        kvm | qemu)
+            RESULT_VIRT_TYPE="KVM"
+            return 0
+            ;;
+        lxc | lxc-libvirt)
+            RESULT_VIRT_TYPE="LXC"
+            return 0
+            ;;
+        microsoft)
+            RESULT_VIRT_TYPE="Hyper-V"
+            return 0
+            ;;
+        none)
+            RESULT_VIRT_TYPE="Dedicated"
+            return 0
+            ;;
+        openvz)
+            RESULT_VIRT_TYPE="OpenVZ"
+            return 0
+            ;;
+        oracle)
+            RESULT_VIRT_TYPE="VirtualBox"
+            return 0
+            ;;
+        parallels)
+            RESULT_VIRT_TYPE="Parallels"
+            return 0
+            ;;
+        rkt)
+            RESULT_VIRT_TYPE="RKT"
+            return 0
+            ;;
+        systemd-nspawn)
+            RESULT_VIRT_TYPE="Systemd-nspawn"
+            return 0
+            ;;
+        uml)
+            RESULT_VIRT_TYPE="UML"
+            return 0
+            ;;
+        vmware)
+            RESULT_VIRT_TYPE="VMware"
+            return 0
+            ;;
+        wsl)
+            RESULT_VIRT_TYPE="WSL"
+            return 0
+            ;;
+        xen)
+            RESULT_VIRT_TYPE="Xen"
+            return 0
+            ;;
+        zvm)
+            RESULT_VIRT_TYPE="S390 Z/VM"
+            return 0
+            ;;
+        esac
     fi
 
-    # 系统负载
-    if is_have_cmd uptime; then
-        LOAD_AVG="$(uptime | grep -o 'load averages\{0,1\}: .*' | sed 's/load averages\{0,1\}: //')"
-    else
-        LOAD_AVG="$(awk '{print $1", "$2", "$3}' /proc/loadavg 2> /dev/null)"
+    # 检查容器环境特征
+    cgroup="$(cat /proc/1/cgroup 2> /dev/null)"
+    case "$cgroup" in
+    *docker*)
+        RESULT_VIRT_TYPE="Docker"
+        return 0
+        ;;
+    *lxc*)
+        RESULT_VIRT_TYPE="LXC"
+        return 0
+        ;;
+    esac
+
+    [ -f /.dockerenv ] && RESULT_VIRT_TYPE="Docker" && return 0
+    grep -qa 'container=lxc' /proc/1/environ 2> /dev/null && RESULT_VIRT_TYPE="LXC" && return 0
+    [ -d /proc/vz ] && [ ! -d /proc/bc ] && RESULT_VIRT_TYPE="OpenVZ" && return 0
+    [ -c /dev/lxss ] && RESULT_VIRT_TYPE="WSL" && return 0
+
+    # 通过 DMI/SMBIOS 信息识别云平台或常见虚拟化产品
+    case "$dmi" in
+    *Amazon*EC2* | *Amazon*)
+        RESULT_VIRT_TYPE="Amazon"
+        return 0
+        ;;
+    *Google*Compute*Engine* | *Google*)
+        RESULT_VIRT_TYPE="Google"
+        return 0
+        ;;
+    *HVM*domU*)
+        RESULT_VIRT_TYPE="Xen-DomU"
+        return 0
+        ;;
+    *KVM* | *QEMU*)
+        RESULT_VIRT_TYPE="KVM"
+        return 0
+        ;;
+    *Microsoft*Corporation*Virtual*Machine* | *Hyper-V*)
+        RESULT_VIRT_TYPE="Hyper-V"
+        return 0
+        ;;
+    *Parallels*)
+        RESULT_VIRT_TYPE="Parallels"
+        return 0
+        ;;
+    *VirtualBox* | *innotek* | *Oracle*)
+        RESULT_VIRT_TYPE="VirtualBox"
+        return 0
+        ;;
+    *VMware*)
+        RESULT_VIRT_TYPE="VMware"
+        return 0
+        ;;
+    *Xen*)
+        RESULT_VIRT_TYPE="Xen"
+        return 0
+        ;;
+    esac
+
+    # 检查 Xen 相关接口
+    hypervisor_type="$(cat /sys/hypervisor/type 2> /dev/null)"
+    [ "$hypervisor_type" = "xen" ] && RESULT_VIRT_TYPE="Xen" && return 0
+
+    if [ -d /proc/xen ]; then
+        xen_caps="$(cat /proc/xen/capabilities 2> /dev/null)"
+        if echo "$xen_caps" | grep -q "control_d" 2> /dev/null; then
+            RESULT_VIRT_TYPE="Xen-Dom0"
+        else
+            RESULT_VIRT_TYPE="Xen-DomU"
+        fi
+        return 0
     fi
 
-    # 架构
-    if is_have_cmd getconf; then
-        SYSTEM_BIT="$(getconf LONG_BIT 2> /dev/null)"
-    else
-        echo "$SYSTEM_ARCH" | grep -q "64" && SYSTEM_BIT="64" || SYSTEM_BIT="32"
+    # 通过 CPU hypervisor vendor 特征识别虚拟化平台
+    cpu_vendor="$(awk -F: '/vendor_id|Hypervisor vendor/ {gsub(/^[ \t]+/, "", $2); print $2; exit}' /proc/cpuinfo 2> /dev/null)"
+    case "$cpu_vendor" in
+    KVMKVMKVM)
+        RESULT_VIRT_TYPE="KVM"
+        return 0
+        ;;
+    "Microsoft Hv")
+        RESULT_VIRT_TYPE="Hyper-V"
+        return 0
+        ;;
+    VMwareVMware)
+        RESULT_VIRT_TYPE="VMware"
+        return 0
+        ;;
+    XenVMMXenVMM)
+        RESULT_VIRT_TYPE="Xen"
+        return 0
+        ;;
+    esac
+
+    # 如果只能确认运行在 hypervisor 上, 但无法识别具体类型
+    if grep -q -w hypervisor /proc/cpuinfo 2> /dev/null; then
+        RESULT_VIRT_TYPE="Virtualized"
+        return 0
     fi
-    # 内核
-    if [ -r /proc/sys/kernel/osrelease ]; then
-        SYSTEM_KERNEL="$(< /proc/sys/kernel/osrelease)"
-    else
-        SYSTEM_KERNEL="$(uname -r 2> /dev/null)"
-    fi
-    # TCP拥塞控制算法
-    if [ -r /proc/sys/net/ipv4/tcp_congestion_control ]; then
-        TCP_CONGESTION="$(< /proc/sys/net/ipv4/tcp_congestion_control)"
-    else
-        TCP_CONGESTION="$(sysctl -n net.ipv4.tcp_congestion_control 2> /dev/null)"
-    fi
+
+    # Deadline
+    RESULT_VIRT_TYPE="Dedicated"
+}
+
+# https://github.com/chef/os_release
+get_os_info() {
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    RESULT_SYSTEM_OS_FULLNAME="$PRETTY_NAME"
 }
 
 get_os_arch() {
@@ -262,14 +424,51 @@ get_os_arch() {
     else
         arch="$(uname -m 2> /dev/null)"
     fi
-    SYSTEM_ARCH="$arch"
+    RESULT_SYSTEM_ARCH="$arch"
 }
 
-get_os_info() {
-    # https://github.com/chef/os_release
-    # shellcheck disable=SC1091
-    . /etc/os-release
-    SYSTEM_OS_FULLNAME="$PRETTY_NAME"
+# 执行基本系统信息检测
+get_system_info() {
+    get_cpu_info
+    get_mem_info
+    get_disk_info
+
+    # 系统在线时间
+    if is_have_cmd uptime; then
+        RESULT_SYSTEM_UPTIME="$(uptime | awk -F'( |,|:)+' '{d=h=m=0; if ($7=="min") m=$6; else {if ($7~/^day/) {d=$6;h=$8;m=$9} else {h=$6;m=$7}}} {print d+0,"days,",h+0,"hour",m+0,"min"}')"
+    else
+        RESULT_SYSTEM_UPTIME="$(awk '{print int($1/3600)"h "int(($1%3600)/60)"m "int($1%60)"s"}' /proc/uptime)"
+    fi
+
+    # 系统负载
+    if is_have_cmd uptime; then
+        RESULT_LOAD_AVG="$(uptime | grep -o 'load averages\{0,1\}: .*' | sed 's/load averages\{0,1\}: //')"
+    else
+        RESULT_LOAD_AVG="$(awk '{print $1", "$2", "$3}' /proc/loadavg 2> /dev/null)"
+    fi
+
+    get_os_info
+    get_os_arch
+
+    # 架构
+    if is_have_cmd getconf; then
+        RESULT_SYSTEM_BIT="$(getconf LONG_BIT 2> /dev/null)"
+    else
+        echo "$RESULT_SYSTEM_ARCH" | grep -q "64" && RESULT_SYSTEM_BIT="64" || RESULT_SYSTEM_BIT="32"
+    fi
+    # 内核
+    if [ -r /proc/sys/kernel/osrelease ]; then
+        RESULT_SYSTEM_KERNEL="$(< /proc/sys/kernel/osrelease)"
+    else
+        RESULT_SYSTEM_KERNEL="$(uname -r 2> /dev/null)"
+    fi
+    # TCP拥塞控制算法
+    if [ -r /proc/sys/net/ipv4/tcp_congestion_control ]; then
+        RESULT_TCP_CONGESTION="$(< /proc/sys/net/ipv4/tcp_congestion_control)"
+    else
+        RESULT_TCP_CONGESTION="$(sysctl -n net.ipv4.tcp_congestion_control 2> /dev/null)"
+    fi
+    get_vm_info
 }
 
 get_ip_info() {
@@ -283,20 +482,20 @@ get_ip_info() {
     ipv4_region="$(jq -r '.region' <<< "$ipv4_result")"
     ipv4_country="$(jq -r '.country' <<< "$ipv4_result")"
     if [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ] && [ -n "$ipv4_region" ] && [ -n "$ipv4_country" ]; then
-        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        IPV4_LOCATION="$ipv4_city / $ipv4_region / $ipv4_country"
+        RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        RESULT_IPV4_LOCATION="$ipv4_city / $ipv4_region / $ipv4_country"
     elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ] && [ -n "$ipv4_region" ]; then
-        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        IPV4_LOCATION="$ipv4_city / $ipv4_region"
+        RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        RESULT_IPV4_LOCATION="$ipv4_city / $ipv4_region"
     elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ]; then
-        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        IPV4_LOCATION="$ipv4_city"
+        RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        RESULT_IPV4_LOCATION="$ipv4_city"
     elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_region" ]; then
-        IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        IPV4_LOCATION="$ipv4_region"
+        RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
+        RESULT_IPV4_LOCATION="$ipv4_region"
     else
-        IPV4_ASN_INFO="None"
-        IPV4_LOCATION="None"
+        RESULT_IPV4_ASN_INFO="None"
+        RESULT_IPV4_LOCATION="None"
     fi
 
     ipv6_result="$(curl -Ls -6 https://ip.iplen.de/json 2> /dev/null)"
@@ -306,20 +505,20 @@ get_ip_info() {
     ipv6_region="$(jq -r '.region' <<< "$ipv6_result")"
     ipv6_country="$(jq -r '.country' <<< "$ipv6_result")"
     if [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ] && [ -n "$ipv6_region" ] && [ -n "$ipv6_country" ]; then
-        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        IPV6_LOCATION="$ipv6_city / $ipv6_region / $ipv6_country"
+        RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        RESULT_IPV6_LOCATION="$ipv6_city / $ipv6_region / $ipv6_country"
     elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ] && [ -n "$ipv6_region" ]; then
-        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        IPV6_LOCATION="$ipv6_city / $ipv6_region"
+        RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        RESULT_IPV6_LOCATION="$ipv6_city / $ipv6_region"
     elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ]; then
-        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        IPV6_LOCATION="$ipv6_city"
+        RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        RESULT_IPV6_LOCATION="$ipv6_city"
     elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_region" ]; then
-        IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        IPV6_LOCATION="$ipv6_region"
+        RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
+        RESULT_IPV6_LOCATION="$ipv6_region"
     else
-        IPV6_ASN_INFO="None"
-        IPV6_LOCATION="None"
+        RESULT_IPV6_ASN_INFO="None"
+        RESULT_IPV6_LOCATION="None"
     fi
 }
 
@@ -347,33 +546,31 @@ print_system_info() {
     echo -e "Swap\t\t: $RESULT_SWAP_INFO"
     echo -e "Space Disk\t: $RESULT_DISK_INFO"
     echo -e "Boot Disk\t: $RESULT_DISK_PATH"
-
-    echo -e "System Uptime\t: $SYSTEM_UPTIME"
-    echo -e "Load Average\t: $LOAD_AVG"
-    echo -e "OS\t\t: $SYSTEM_OS_FULLNAME"
-    echo -e "Arch\t\t: $SYSTEM_ARCH ($SYSTEM_BIT Bit)"
-    echo -e "Kernel\t\t: $SYSTEM_KERNEL"
-    echo -e "TCP Congestion\t: $TCP_CONGESTION"
+    echo -e "System Uptime\t: $RESULT_SYSTEM_UPTIME"
+    echo -e "Load Average\t: $RESULT_LOAD_AVG"
+    echo -e "OS\t\t: $RESULT_SYSTEM_OS_FULLNAME"
+    echo -e "Arch\t\t: $RESULT_SYSTEM_ARCH ($RESULT_SYSTEM_BIT Bit)"
+    echo -e "Kernel\t\t: $RESULT_SYSTEM_KERNEL"
+    echo -e "TCP Congestion\t: $RESULT_TCP_CONGESTION"
+    echo -e "Virtualization\t: $RESULT_VIRT_TYPE"
 }
 
 print_ip_info() {
-    if [ -n "$IPV4_ASN_INFO" ] && [ "$IPV4_ASN_INFO" != "None" ]; then
-        echo -e "IPv4 ASN\t: $IPV4_ASN_INFO"
+    if [ -n "$RESULT_IPV4_ASN_INFO" ] && [ "$RESULT_IPV4_ASN_INFO" != "None" ]; then
+        echo -e "IPv4 ASN\t: $RESULT_IPV4_ASN_INFO"
     fi
-    if [ -n "$IPV4_LOCATION" ] && [ "$IPV4_LOCATION" != "None" ]; then
-        echo -e "IPv4 Location\t: $IPV4_LOCATION"
+    if [ -n "$RESULT_IPV4_LOCATION" ] && [ "$RESULT_IPV4_LOCATION" != "None" ]; then
+        echo -e "IPv4 Location\t: $RESULT_IPV4_LOCATION"
     fi
-    if [ -n "$IPV6_ASN_INFO" ] && [ "$IPV6_ASN_INFO" != "None" ]; then
-        echo -e "IPv6 ASN\t: $IPV6_ASN_INFO"
+    if [ -n "$RESULT_IPV6_ASN_INFO" ] && [ "$RESULT_IPV6_ASN_INFO" != "None" ]; then
+        echo -e "IPv6 ASN\t: $RESULT_IPV6_ASN_INFO"
     fi
-    if [ -n "$IPV6_LOCATION" ] && [ "$IPV6_LOCATION" != "None" ]; then
-        echo -e "IPv6 Location\t: $IPV6_LOCATION"
+    if [ -n "$RESULT_IPV6_LOCATION" ] && [ "$RESULT_IPV6_LOCATION" != "None" ]; then
+        echo -e "IPv6 Location\t: $RESULT_IPV6_LOCATION"
     fi
 }
 
 get_system_info
-get_os_arch
-get_os_info
 get_ip_info
 
 print_system_info

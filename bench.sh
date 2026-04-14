@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=all
+
 get_cmd_path() {
     # arch 云镜像不带 which
     # command -v 包括脚本里面的方法
@@ -21,11 +23,23 @@ print_sep() {
 }
 
 ## 基本系统信息
+# 获取CPU信息
+get_cpu_info() {
+    local cpu_model cpu_cores cpu_freq
+
+    cpu_model="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
+    cpu_cores="$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo 2> /dev/null)"
+    cpu_freq="$(awk -F: '/cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
+
+    # 信息汇总
+    RESULT_CPU_MODEL="$cpu_model"
+    RESULT_CPU_CORES="$cpu_cores"
+    RESULT_CPU_FREQ="$cpu_freq"
+}
+
+# 执行基本系统信息检测
 get_system_info() {
-    # CPU信息
-    CPU_MODEL="$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
-    CPU_CORES="$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo 2> /dev/null)"
-    CPU_FREQ="$(awk -F: '/cpu MHz/ {freq=$2} END {print freq " MHz"}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')"
+    get_cpu_info
 
     # 系统在线时间
     if is_have_cmd uptime; then
@@ -137,9 +151,9 @@ print_system_info() {
     echo -e "Basic System Information:"
     print_sep 30 -
 
-    echo -e "CPU Model\t: $CPU_MODEL"
-    echo -e "CPU Cores\t: $CPU_CORES"
-    echo -e "CPU Frequency\t: $CPU_FREQ"
+    echo -e "CPU Model\t: $RESULT_CPU_MODEL"
+    echo -e "CPU Cores\t: $RESULT_CPU_CORES"
+    echo -e "CPU Frequency\t: $RESULT_CPU_FREQ"
     echo -e "System Uptime\t: $SYSTEM_UPTIME"
     echo -e "Load Average\t: $LOAD_AVG"
     echo -e "OS\t\t: $SYSTEM_OS_FULLNAME"

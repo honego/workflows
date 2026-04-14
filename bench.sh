@@ -76,9 +76,10 @@ get_os_arch() {
 }
 
 get_os_info() {
+    # https://github.com/chef/os_release
     # shellcheck disable=SC1091
     . /etc/os-release
-    SYSTEM_OS_FULLNAME="$PRETTY_NAME ($SYSTEM_ARCH)"
+    SYSTEM_OS_FULLNAME="$PRETTY_NAME"
 }
 
 get_ip_info() {

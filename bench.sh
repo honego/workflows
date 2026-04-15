@@ -526,50 +526,42 @@ get_ip_info() {
     local ipv6_result ipv6_asn ipv6_org ipv6_city ipv6_region ipv6_country
 
     ipv4_result="$(curl -Ls -4 https://ip.iplen.de/json 2> /dev/null)"
-    ipv4_asn="$(jq -r '.asn' <<< "$ipv4_result")"
-    ipv4_org="$(jq -r '.org' <<< "$ipv4_result")"
-    ipv4_city="$(jq -r '.city' <<< "$ipv4_result")"
-    ipv4_region="$(jq -r '.region' <<< "$ipv4_result")"
-    ipv4_country="$(jq -r '.country' <<< "$ipv4_result")"
-    if [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ] && [ -n "$ipv4_region" ] && [ -n "$ipv4_country" ]; then
+    ipv4_asn="$(sed -En 's/.*"asn": *"?([0-9]+)"?.*/\1/p' <<< "$ipv4_result")"
+    ipv4_org="$(sed -En 's/.*"org": *"([^"]+)".*/\1/p' <<< "$ipv4_result")"
+    ipv4_city="$(sed -En 's/.*"city": *"([^"]+)".*/\1/p' <<< "$ipv4_result")"
+    ipv4_region="$(sed -En 's/.*"region": *"([^"]+)".*/\1/p' <<< "$ipv4_result")"
+    ipv4_country="$(sed -En 's/.*"country": *"([^"]+)".*/\1/p' <<< "$ipv4_result")"
+
+    if [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ]; then
         RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        RESULT_IPV4_LOCATION="$ipv4_city / $ipv4_region / $ipv4_country"
-    elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ] && [ -n "$ipv4_region" ]; then
-        RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        RESULT_IPV4_LOCATION="$ipv4_city / $ipv4_region"
-    elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_city" ]; then
-        RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        RESULT_IPV4_LOCATION="$ipv4_city"
-    elif [ -n "$ipv4_asn" ] && [ -n "$ipv4_org" ] && [ -n "$ipv4_region" ]; then
-        RESULT_IPV4_ASN_INFO="AS$ipv4_asn $ipv4_org"
-        RESULT_IPV4_LOCATION="$ipv4_region"
     else
         RESULT_IPV4_ASN_INFO="None"
-        RESULT_IPV4_LOCATION="None"
     fi
 
+    RESULT_IPV4_LOCATION=''
+    [ -n "$ipv4_city" ] && RESULT_IPV4_LOCATION="$ipv4_city"
+    [ -n "$ipv4_region" ] && RESULT_IPV4_LOCATION="${RESULT_IPV4_LOCATION:+$RESULT_IPV4_LOCATION / }$ipv4_region"
+    [ -n "$ipv4_country" ] && RESULT_IPV4_LOCATION="${RESULT_IPV4_LOCATION:+$RESULT_IPV4_LOCATION / }$ipv4_country"
+    [ -z "$RESULT_IPV4_LOCATION" ] && RESULT_IPV4_LOCATION="None"
+
     ipv6_result="$(curl -Ls -6 https://ip.iplen.de/json 2> /dev/null)"
-    ipv6_asn="$(jq -r '.asn' <<< "$ipv6_result")"
-    ipv6_org="$(jq -r '.org' <<< "$ipv6_result")"
-    ipv6_city="$(jq -r '.city' <<< "$ipv6_result")"
-    ipv6_region="$(jq -r '.region' <<< "$ipv6_result")"
-    ipv6_country="$(jq -r '.country' <<< "$ipv6_result")"
-    if [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ] && [ -n "$ipv6_region" ] && [ -n "$ipv6_country" ]; then
+    ipv6_asn="$(sed -En 's/.*"asn": *"?([0-9]+)"?.*/\1/p' <<< "$ipv6_result")"
+    ipv6_org="$(sed -En 's/.*"org": *"([^"]+)".*/\1/p' <<< "$ipv6_result")"
+    ipv6_city="$(sed -En 's/.*"city": *"([^"]+)".*/\1/p' <<< "$ipv6_result")"
+    ipv6_region="$(sed -En 's/.*"region": *"([^"]+)".*/\1/p' <<< "$ipv6_result")"
+    ipv6_country="$(sed -En 's/.*"country": *"([^"]+)".*/\1/p' <<< "$ipv6_result")"
+
+    if [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ]; then
         RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        RESULT_IPV6_LOCATION="$ipv6_city / $ipv6_region / $ipv6_country"
-    elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ] && [ -n "$ipv6_region" ]; then
-        RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        RESULT_IPV6_LOCATION="$ipv6_city / $ipv6_region"
-    elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_city" ]; then
-        RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        RESULT_IPV6_LOCATION="$ipv6_city"
-    elif [ -n "$ipv6_asn" ] && [ -n "$ipv6_org" ] && [ -n "$ipv6_region" ]; then
-        RESULT_IPV6_ASN_INFO="AS$ipv6_asn $ipv6_org"
-        RESULT_IPV6_LOCATION="$ipv6_region"
     else
         RESULT_IPV6_ASN_INFO="None"
-        RESULT_IPV6_LOCATION="None"
     fi
+
+    RESULT_IPV6_LOCATION=''
+    [ -n "$ipv6_city" ] && RESULT_IPV6_LOCATION="$ipv6_city"
+    [ -n "$ipv6_region" ] && RESULT_IPV6_LOCATION="${RESULT_IPV6_LOCATION:+$RESULT_IPV6_LOCATION / }$ipv6_region"
+    [ -n "$ipv6_country" ] && RESULT_IPV6_LOCATION="${RESULT_IPV6_LOCATION:+$RESULT_IPV6_LOCATION / }$ipv6_country"
+    [ -z "$RESULT_IPV6_LOCATION" ] && RESULT_IPV6_LOCATION="None"
 }
 
 print_system_info() {

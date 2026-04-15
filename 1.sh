@@ -27,20 +27,20 @@ print_title() {
         fi
     done
 
-    # 如果标题宽度已经达到或超过 60 则直接输出原文
-    if ((title_width >= line_width)); then
+    # 标题左右各预留 1 个空格
+    if ((title_width + 2 > line_width)); then
         printf '%s\n' "$title"
         return
     fi
 
     # 按 60 个 '-' 的基准宽度计算左右两边需要补多少个 '-'
-    pad_width=$((line_width - title_width))
+    pad_width=$((line_width - title_width - 2))
     left_width=$((pad_width / 2))
     right_width=$((pad_width - left_width))
 
-    # 输出左侧 '-' 和标题
+    # 输出左侧 '-' 空格 标题 空格
     printf -v dash_buffer '%*s' "$left_width" ''
-    printf '%s%s' "${dash_buffer// /-}" "$title"
+    printf '%s %s ' "${dash_buffer// /-}" "$title"
 
     # 输出右侧 '-' 并换行
     printf -v dash_buffer '%*s' "$right_width" ''

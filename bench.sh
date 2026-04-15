@@ -36,6 +36,27 @@ is_have_cmd() {
     get_cmd_path "$1" > /dev/null 2>&1
 }
 
+curl() {
+    local rc
+
+    # 添加 --fail 不然404退出码也为0
+    # 32位cygwin已停止更新, 证书可能有问题, 添加 --insecure
+    # centos7 curl 不支持 --retry-connrefused --retry-all-errors 因此手动 retry
+    for ((i = 1; i <= 5; i++)); do
+        command curl --connect-timeout 10 --fail --insecure "$@"
+        rc="$?"
+        if [ "$rc" -eq 0 ]; then
+            return
+        else
+            # 403 404 错误或达到重试次数
+            if [ "$rc" -eq 22 ] || [ "$i" -eq 5 ]; then
+                return "$rc"
+            fi
+            sleep 0.5
+        fi
+    done
+}
+
 # 分隔符打印
 print_sep() {
     local sep

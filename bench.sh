@@ -28,6 +28,11 @@ _cyan() {
     printf "\033[36m%b\033[0m\n" "$*"
 }
 
+# ANSI转义序列实现斜体效果
+_italic() {
+    printf "\033[3m%b\033[23m\n" "$*"
+}
+
 get_cmd_path() {
     # arch 云镜像不带 which
     # command -v 包括脚本里面的方法
@@ -592,8 +597,8 @@ get_ip_info() {
 # 输出介绍信息
 print_intro() {
     print_title "A Bench Script By honeok"
-    echo -e "Script Version\t: v$SCRIPT_VERSION"
-    echo -e "GitHub\t\t: https://github.com/honeok/cross"
+    echo -e "Script Version\t: $(_italic v$SCRIPT_VERSION)"
+    echo -e "GitHub \xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x92\xbb\t: $(_italic https://github.com/honeok/cross)"
 }
 
 # 输出基本系统信息

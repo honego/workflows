@@ -597,8 +597,8 @@ get_ip_info() {
 # 输出介绍信息
 print_intro() {
     print_title "A Bench Script By honeok"
-    echo -e "Script Version\t: $(_italic v$SCRIPT_VERSION)"
-    echo -e "GitHub \xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x92\xbb\t: $(_italic https://github.com/honeok/cross)"
+    echo -e "Script Version\t: $(_cyan "$(_italic "v$SCRIPT_VERSION")")"
+    echo -e "GitHub \xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x92\xbb\t: $(_yellow "$(_italic "https://github.com/honeok/cross")")"
 }
 
 # 输出基本系统信息

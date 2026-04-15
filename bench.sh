@@ -507,6 +507,8 @@ get_system_info() {
     # 内核
     if [ -r /proc/sys/kernel/osrelease ]; then
         RESULT_SYSTEM_KERNEL="$(< /proc/sys/kernel/osrelease)"
+    elif is_have_cmd hostnamectl; then
+        RESULT_SYSTEM_KERNEL="$(awk -F'Linux ' '/Kernel:/ {print $2}' < <(hostnamectl) 2> /dev/null)"
     else
         RESULT_SYSTEM_KERNEL="$(uname -r 2> /dev/null)"
     fi

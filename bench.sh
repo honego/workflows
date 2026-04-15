@@ -571,7 +571,7 @@ get_ip_info() {
 }
 
 print_system_info() {
-    print_title "System Information"
+    print_title "Basic System Information"
 
     echo -e "CPU Model\t: $RESULT_CPU_MODEL"
     echo -e "CPU Cores\t: $RESULT_CPU_CORES"

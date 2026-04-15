@@ -276,7 +276,7 @@ get_vm_info() {
     product_version="$(cat /sys/class/dmi/id/product_version 2> /dev/null)"
     dmi="$sys_vendor $product_name $product_version"
 
-    if command -v systemd-detect-virt > /dev/null 2>&1; then
+    if is_have_cmd systemd-detect-virt; then
         virt="$(systemd-detect-virt 2> /dev/null)"
         case "$virt" in
         amazon)

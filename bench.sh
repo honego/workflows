@@ -9,6 +9,9 @@
 # https://github.com/masonr/yet-another-bench-script
 # https://github.com/spiritLHLS/ecs
 
+# MAJOR.MINOR.PATCH
+readonly SCRIPT_VERSION="1.0.0"
+
 _red() {
     printf "\033[31m%b\033[0m\n" "$*"
 }
@@ -585,6 +588,15 @@ get_ip_info() {
     [ -z "$RESULT_IPV6_LOCATION" ] && RESULT_IPV6_LOCATION="None"
 }
 
+## 输出部分
+# 输出介绍信息
+print_intro() {
+    print_title "A Bench Script By honeok"
+    echo -e "Script Version\t: v$SCRIPT_VERSION"
+    echo -e "GitHub\t\t: https://github.com/honeok/cross"
+}
+
+# 输出基本系统信息
 print_system_info() {
     print_title "Basic System Information"
 
@@ -617,6 +629,7 @@ print_system_info() {
     echo -e "Virtualization\t: $RESULT_VIRT_TYPE"
 }
 
+# 输出 IP 信息
 print_ip_info() {
     if [ -n "$RESULT_IPV4_ASN_INFO" ] && [ "$RESULT_IPV4_ASN_INFO" != "None" ]; then
         echo -e "IPv4 ASN\t: $RESULT_IPV4_ASN_INFO"
@@ -635,5 +648,6 @@ print_ip_info() {
 get_system_info
 get_ip_info
 
+print_intro
 print_system_info
 print_ip_info

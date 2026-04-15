@@ -1,199 +1,55 @@
 #!/bin/bash
 
-# 系统信息模块 -> 获取虚拟化信息
-# https://github.com/TyIsI/virt-what
-# https://dmo.ca/blog/detecting-virtualization-on-linux
-get_vm_info() {
-    local sys_vendor product_name product_version dmi virt cgroup hypervisor_type xen_caps cpu_vendor
+print_title() {
+    local LC_COLLATE title total_width title_width content_width remaining_width left_dash_width right_dash_width index current_char dash_buffer
 
-    RESULT_VIRT_TYPE="Unknown"
+    LC_COLLATE=C
+    title="$*"         # 接收函数全部参数作为标题文本
+    total_width=60     # 整行总宽度为 60
+    title_width=0      # 初始化标题显示宽度计数器
+    content_width=0    # 初始化标题内容总宽度
+    remaining_width=0  # 初始化剩余宽度
+    left_dash_width=0  # 初始化左侧横杠数量
+    right_dash_width=0 # 初始化右侧横杠数量
+    index=0            # 初始化循环变量
+    current_char=''    # 初始化当前字符变量
+    dash_buffer=''     # 初始化横杠缓冲区
 
-    # 读取 DMI/SMBIOS 基本信息, 用于识别云平台或常见虚拟化环境
-    sys_vendor="$(cat /sys/class/dmi/id/sys_vendor 2> /dev/null)"
-    product_name="$(cat /sys/class/dmi/id/product_name 2> /dev/null)"
-    product_version="$(cat /sys/class/dmi/id/product_version 2> /dev/null)"
-    dmi="$sys_vendor $product_name $product_version"
-
-    if command -v systemd-detect-virt > /dev/null 2>&1; then
-        virt="$(systemd-detect-virt 2> /dev/null)"
-        case "$virt" in
-        amazon)
-            RESULT_VIRT_TYPE="Amazon"
-            return 0
+    # 计算标题显示宽度
+    for ((index = 0; index < ${#title}; index++)); do
+        current_char="${title:index:1}"
+        case "$current_char" in
+        [!-~] | ' ')
+            ((title_width += 1))
             ;;
-        bochs)
-            RESULT_VIRT_TYPE="BOCHS"
-            return 0
-            ;;
-        docker)
-            RESULT_VIRT_TYPE="Docker"
-            return 0
-            ;;
-        google)
-            RESULT_VIRT_TYPE="Google"
-            return 0
-            ;;
-        kvm | qemu)
-            RESULT_VIRT_TYPE="KVM"
-            return 0
-            ;;
-        lxc | lxc-libvirt)
-            RESULT_VIRT_TYPE="LXC"
-            return 0
-            ;;
-        microsoft)
-            RESULT_VIRT_TYPE="Hyper-V"
-            return 0
-            ;;
-        none)
-            RESULT_VIRT_TYPE="Dedicated"
-            return 0
-            ;;
-        openvz)
-            RESULT_VIRT_TYPE="OpenVZ"
-            return 0
-            ;;
-        oracle)
-            RESULT_VIRT_TYPE="VirtualBox"
-            return 0
-            ;;
-        parallels)
-            RESULT_VIRT_TYPE="Parallels"
-            return 0
-            ;;
-        rkt)
-            RESULT_VIRT_TYPE="RKT"
-            return 0
-            ;;
-        systemd-nspawn)
-            RESULT_VIRT_TYPE="Systemd-nspawn"
-            return 0
-            ;;
-        uml)
-            RESULT_VIRT_TYPE="UML"
-            return 0
-            ;;
-        vmware)
-            RESULT_VIRT_TYPE="VMware"
-            return 0
-            ;;
-        wsl)
-            RESULT_VIRT_TYPE="WSL"
-            return 0
-            ;;
-        xen)
-            RESULT_VIRT_TYPE="Xen"
-            return 0
-            ;;
-        zvm)
-            RESULT_VIRT_TYPE="S390 Z/VM"
-            return 0
+        *)
+            ((title_width += 2))
             ;;
         esac
+    done
+
+    # 标题左右各补 1 个空格
+    content_width=$((title_width + 2))
+
+    # 如果标题本身已经超过总宽度则直接输出
+    if ((content_width >= total_width)); then
+        printf '%s\n' "$title"
+        return
     fi
 
-    # 检查容器环境特征
-    cgroup="$(cat /proc/1/cgroup 2> /dev/null)"
-    case "$cgroup" in
-    *docker*)
-        RESULT_VIRT_TYPE="Docker"
-        return 0
-        ;;
-    *lxc*)
-        RESULT_VIRT_TYPE="LXC"
-        return 0
-        ;;
-    esac
+    # 计算左右两边需要补多少个横杠
+    remaining_width=$((total_width - content_width))
+    left_dash_width=$((remaining_width / 2))
+    right_dash_width=$((remaining_width - left_dash_width))
 
-    [ -f /.dockerenv ] && RESULT_VIRT_TYPE="Docker" && return 0
-    grep -qa 'container=lxc' /proc/1/environ 2> /dev/null && RESULT_VIRT_TYPE="LXC" && return 0
-    [ -d /proc/vz ] && [ ! -d /proc/bc ] && RESULT_VIRT_TYPE="OpenVZ" && return 0
-    [ -c /dev/lxss ] && RESULT_VIRT_TYPE="WSL" && return 0
+    # 生成并输出左侧横杠
+    printf -v dash_buffer '%*s' "$left_dash_width" ''
+    printf '%s %s ' "${dash_buffer// /-}" "$title"
 
-    # 通过 DMI/SMBIOS 信息识别云平台或常见虚拟化产品
-    case "$dmi" in
-    *Amazon*EC2* | *Amazon*)
-        RESULT_VIRT_TYPE="Amazon"
-        return 0
-        ;;
-    *Google*Compute*Engine* | *Google*)
-        RESULT_VIRT_TYPE="Google"
-        return 0
-        ;;
-    *HVM*domU*)
-        RESULT_VIRT_TYPE="Xen-DomU"
-        return 0
-        ;;
-    *KVM* | *QEMU*)
-        RESULT_VIRT_TYPE="KVM"
-        return 0
-        ;;
-    *Microsoft*Corporation*Virtual*Machine* | *Hyper-V*)
-        RESULT_VIRT_TYPE="Hyper-V"
-        return 0
-        ;;
-    *Parallels*)
-        RESULT_VIRT_TYPE="Parallels"
-        return 0
-        ;;
-    *VirtualBox* | *innotek* | *Oracle*)
-        RESULT_VIRT_TYPE="VirtualBox"
-        return 0
-        ;;
-    *VMware*)
-        RESULT_VIRT_TYPE="VMware"
-        return 0
-        ;;
-    *Xen*)
-        RESULT_VIRT_TYPE="Xen"
-        return 0
-        ;;
-    esac
-
-    # 检查 Xen 相关接口
-    hypervisor_type="$(cat /sys/hypervisor/type 2> /dev/null)"
-    [ "$hypervisor_type" = "xen" ] && RESULT_VIRT_TYPE="Xen" && return 0
-
-    if [ -d /proc/xen ]; then
-        xen_caps="$(cat /proc/xen/capabilities 2> /dev/null)"
-        if echo "$xen_caps" | grep -q "control_d" 2> /dev/null; then
-            RESULT_VIRT_TYPE="Xen-Dom0"
-        else
-            RESULT_VIRT_TYPE="Xen-DomU"
-        fi
-        return 0
-    fi
-
-    # 通过 CPU hypervisor vendor 特征识别虚拟化平台
-    cpu_vendor="$(awk -F: '/vendor_id|Hypervisor vendor/ {gsub(/^[ \t]+/, "", $2); print $2; exit}' /proc/cpuinfo 2> /dev/null)"
-    case "$cpu_vendor" in
-    KVMKVMKVM)
-        RESULT_VIRT_TYPE="KVM"
-        return 0
-        ;;
-    "Microsoft Hv")
-        RESULT_VIRT_TYPE="Hyper-V"
-        return 0
-        ;;
-    VMwareVMware)
-        RESULT_VIRT_TYPE="VMware"
-        return 0
-        ;;
-    XenVMMXenVMM)
-        RESULT_VIRT_TYPE="Xen"
-        return 0
-        ;;
-    esac
-
-    # 如果只能确认运行在 hypervisor 上, 但无法识别具体类型
-    if grep -q -w hypervisor /proc/cpuinfo 2> /dev/null; then
-        RESULT_VIRT_TYPE="Virtualized"
-        return 0
-    fi
-
-    # Deadline
-    RESULT_VIRT_TYPE="Dedicated"
+    # 生成并输出右侧横杠
+    printf -v dash_buffer '%*s' "$right_dash_width" ''
+    printf '%s\n' "${dash_buffer// /-}"
 }
 
-get_vm_info
-echo -e "虚拟化类型: $RESULT_VIRT_TYPE"
+print_title 基础信息查询
+print_title Basic System Information

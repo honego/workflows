@@ -9,8 +9,10 @@
 # https://github.com/masonr/yet-another-bench-script
 # https://github.com/spiritLHLS/ecs
 
+# set -eE
+
 # MAJOR.MINOR.PATCH
-readonly SCRIPT_VERSION='1.0.0'
+readonly SCRIPT_VERSION='1.1.0'
 
 _red() {
     printf "\033[31m%b\033[0m\n" "$*"
@@ -183,6 +185,28 @@ format_bytes() {
     fi
 }
 
+# 转换为百分比
+to_percent() {
+    [[ "$1" =~ ^[0-9]+$ ]] || return 1
+    [[ "$2" =~ ^[0-9]+$ ]] || return 1
+
+    if [ "$2" -eq 0 ]; then
+        printf '0.00%%\n'
+    else
+        awk -v num="$1" -v den="$2" 'BEGIN { printf "%.2f%%\n", num * 100 / den }'
+    fi
+}
+
+# 转换为大写
+to_upper() {
+    tr '[:lower:]' '[:upper:]'
+}
+
+# 转换为小写
+to_lower() {
+    tr '[:upper:]' '[:lower:]'
+}
+
 ## 基本系统信息
 # 系统信息模块 -> 获取CPU信息
 get_cpu_info() {
@@ -331,6 +355,7 @@ get_disk_info() {
     # 信息汇总
     RESULT_DISK_PATH="$disk_root_path"
     RESULT_DISK_INFO="$(format_bytes "$disk_used_bytes") / $(format_bytes "$disk_total_bytes")"
+    RESULT_DISK_PERCENT="$(to_percent "$disk_used_bytes" "$disk_total_bytes")"
     # shellcheck disable=SC2034
     RESULT_DISK_FREE="$(format_bytes "$disk_free_bytes")"
 }
@@ -692,7 +717,7 @@ print_system_info() {
     fi
     echo -e "Memory\t\t: $RESULT_MEM_INFO"
     echo -e "Swap\t\t: $RESULT_SWAP_INFO"
-    echo -e "Space Disk\t: $RESULT_DISK_INFO"
+    echo -e "Space Disk\t: $RESULT_DISK_INFO ($RESULT_DISK_PERCENT)"
     echo -e "Boot Disk\t: $RESULT_DISK_PATH"
     echo -e "System Uptime\t: $RESULT_SYSTEM_UPTIME"
     echo -e "Load Average\t: $RESULT_LOAD_AVG"

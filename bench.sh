@@ -28,6 +28,15 @@ _cyan() {
     printf "\033[36m%b\033[0m\n" "$*"
 }
 
+_err_msg() {
+    printf "\033[41m\033[1mError\033[0m %b\n" "$*"
+}
+
+die() {
+    _err_msg >&2 "$(_red "$@")"
+    exit 1
+}
+
 # ANSI转义序列实现斜体效果
 _italic() {
     printf "\033[3m%b\033[23m\n" "$*"
@@ -84,6 +93,20 @@ curl() {
             sleep 0.5
         fi
     done
+}
+
+is_in_china() {
+    # www.prologis.cn
+    # www.autodesk.com.cn
+    # www.keysight.com.cn
+
+    if [ -z "$GEOIP_COUNTRY_CODE" ]; then
+        if ! GEOIP_COUNTRY_CODE="$(curl -L http://www.qualcomm.cn/cdn-cgi/trace | grep '^loc=' | cut -d= -f2 | grep .)"; then
+            die "Can not get location."
+        fi
+        echo >&2 "Location: $GEOIP_COUNTRY_CODE"
+    fi
+    [ "$GEOIP_COUNTRY_CODE" = CN ]
 }
 
 # 分隔符打印

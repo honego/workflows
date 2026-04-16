@@ -48,6 +48,23 @@ is_nz_file() {
     [ -s "$1" ]
 }
 
+# 判断是否运行在 Darwin/macOS 系统
+is_darwin() {
+    [ "$(uname -s 2> /dev/null)" = "Darwin" ]
+}
+
+# 判断是否运行在 BSD 系统
+is_bsd() {
+    case "$(uname -s 2> /dev/null)" in
+    *BSD)
+        return 0
+        ;;
+    *)
+        return 1
+        ;;
+    esac
+}
+
 curl() {
     local rc
 
@@ -517,11 +534,18 @@ get_os_info() {
 get_os_arch() {
     local arch
 
-    if is_have_cmd arch; then
-        arch="$(arch 2> /dev/null)"
-    else
-        arch="$(uname -m 2> /dev/null)"
+    if is_darwin || is_bsd; then
+        if is_have_cmd sysctl; then
+            arch="$(sysctl -n hw.machine 2> /dev/null)"
+        fi
     fi
+
+    [ -z "$arch" ] && is_have_cmd uname &&
+        arch="$(uname -m 2> /dev/null)"
+    [ -z "$arch" ] && is_have_cmd arch &&
+        arch="$(arch 2> /dev/null)"
+
+    # 信息汇总
     RESULT_SYSTEM_ARCH="$arch"
 }
 

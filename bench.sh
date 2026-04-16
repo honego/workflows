@@ -599,6 +599,7 @@ get_system_info() {
     if is_have_cmd getconf; then
         RESULT_SYSTEM_BIT="$(getconf LONG_BIT 2> /dev/null)"
     else
+        # 依赖 get_os_arch 函数的输出
         echo "$RESULT_SYSTEM_ARCH" | grep -q "64" && RESULT_SYSTEM_BIT="64" || RESULT_SYSTEM_BIT="32"
     fi
     # 内核

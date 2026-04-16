@@ -33,15 +33,19 @@ _italic() {
     printf "\033[3m%b\033[23m\n" "$*"
 }
 
+# 获取命令路径
 get_cmd_path() {
-    # arch 云镜像不带 which
-    # command -v 包括脚本里面的方法
-    # ash 无效
     type -f -p "$1"
 }
 
+# 判断命令是否存在
 is_have_cmd() {
     get_cmd_path "$1" > /dev/null 2>&1
+}
+
+# 判断文件是否存在且非空
+is_nz_file() {
+    [ -s "$1" ]
 }
 
 curl() {
@@ -486,13 +490,30 @@ get_vm_info() {
     RESULT_VIRT_TYPE="Dedicated"
 }
 
-# https://github.com/chef/os_release
+# 系统信息模块 -> 获取操作系统信息
 get_os_info() {
-    # shellcheck disable=SC1091
-    . /etc/os-release
-    RESULT_SYSTEM_OS_FULLNAME="$PRETTY_NAME"
+    # https://github.com/chef/os_release
+    if [ -r /etc/os-release ]; then
+        # shellcheck disable=SC1091
+        . /etc/os-release
+        RESULT_SYSTEM_OS_FULLNAME="$PRETTY_NAME"
+        return 0
+    elif is_have_cmd hostnamectl; then
+        RESULT_SYSTEM_OS_FULLNAME="$(awk -F: '/Operating System/ {sub(/^[[:space:]]+/, "", $2); print $2; exit}' < <(hostnamectl 2> /dev/null))"
+        return 0
+    elif is_have_cmd lsb_release; then
+        RESULT_SYSTEM_OS_FULLNAME="$(lsb_release -sd 2> /dev/null | sed 's/^"\(.*\)"$/\1/')"
+        return 0
+    elif is_nz_file /etc/lsb-release; then
+        RESULT_SYSTEM_OS_FULLNAME="$(awk -F= '/^DISTRIB_DESCRIPTION=/{gsub(/"/,"",$2);print $2;exit}' /etc/lsb-release)"
+        return 0
+    elif is_nz_file /etc/redhat-release; then
+        RESULT_SYSTEM_OS_FULLNAME="$(awk '{print;exit}' /etc/redhat-release)"
+        return 0
+    fi
 }
 
+# 系统信息模块 -> 获取系统架构
 get_os_arch() {
     local arch
 

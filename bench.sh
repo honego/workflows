@@ -256,8 +256,8 @@ get_cpu_info() {
         done | sort -u | cut -d'|' -f1-3
     )
 
-    cpu_aes="$(grep -i 'aes' /proc/cpuinfo)"       # 检查 AES-NI 指令集支持
-    cpu_virt="$(grep -Ei 'vmx|svm' /proc/cpuinfo)" # 检查 VM-x/AMD-V 支持
+    cpu_aes="$(grep -i 'aes' /proc/cpuinfo || true)"       # 检查 AES-NI 指令集支持
+    cpu_virt="$(grep -Ei 'vmx|svm' /proc/cpuinfo || true)" # 检查 VM-x/AMD-V 支持
 
     # 信息汇总
     RESULT_CPU_MODEL="$cpu_model"

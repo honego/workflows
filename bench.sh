@@ -10,7 +10,7 @@
 # https://github.com/spiritLHLS/ecs
 
 # MAJOR.MINOR.PATCH
-readonly SCRIPT_VERSION="1.0.0"
+readonly SCRIPT_VERSION='1.0.0'
 
 _red() {
     printf "\033[31m%b\033[0m\n" "$*"

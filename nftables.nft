@@ -1,0 +1,36 @@
+#!/usr/sbin/nft -f
+flush ruleset
+
+table inet mihomo {
+  set bypass_v4 {
+    type ipv4_addr
+    flags interval
+    elements = {
+      0.0.0.0/8,
+      10.0.0.0/8,
+      100.64.0.0/10,
+      127.0.0.0/8,
+      169.254.0.0/16,
+      172.16.0.0/12,
+      192.168.0.0/16,
+      224.0.0.0/4,
+      240.0.0.0/4
+    }
+  }
+
+  chain prerouting_tproxy {
+    type filter hook prerouting priority mangle; policy accept;
+
+    ip daddr @bypass_v4 return
+    meta l4proto { tcp, udp } tproxy to :7893 meta mark set 1
+  }
+}
+
+table ip mihomo_dns {
+  chain prerouting_dns {
+    type nat hook prerouting priority dstnat; policy accept;
+
+    udp dport 53 redirect to :53
+    tcp dport 53 redirect to :53
+  }
+}

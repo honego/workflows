@@ -1,0 +1,12 @@
+[Unit]
+Description=Mihomo Policy Routing
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'ip rule add fwmark 1 table 100 2>/dev/null || true; ip route add local default dev lo table 100 2>/dev/null || true'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

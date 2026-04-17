@@ -1,0 +1,3 @@
+job:
+  script:
+    - "curl --request POST --header \"Content-Type: application/json\" \"https://gitlab/api/v4/projects\""

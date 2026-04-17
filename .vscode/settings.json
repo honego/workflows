@@ -82,6 +82,11 @@
     "editor.defaultFormatter": "JohnnyMorganz.stylua"
   },
 
+  // nft
+  "[nft]": {
+    "editor.defaultFormatter": "omBratteng.nftables"
+  },
+
   // python
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",

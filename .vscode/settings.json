@@ -30,7 +30,7 @@
   "git.fetchOnPull": true,
   "git.pruneOnFetch": true,
 
-  // github
+  // github copilot
   "github.copilot.chat.commitMessageGeneration.instructions": [
     { "text": "Output only the final commit message text. No markdown, no code fences, no extra commentary." },
     { "text": "Use Conventional Commit format: <type>(<scope>): <subject>." },

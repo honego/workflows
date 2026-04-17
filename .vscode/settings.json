@@ -31,16 +31,16 @@
   "git.pruneOnFetch": true,
 
   // github
-  "github.copilot.chat.commitMessageGeneration.instructions": [
-    { "text": "Style: Strictly follow the Angular Commit Message Format <type>(<scope>): <short summary>." },
-    { "text": "Types: build, ci, docs, feat, fix, perf, refactor, style, test." },
-    { "text": "Scope: Optional. Use lowercase (e.g., 'runner', 'api')." },
-    { "text": "Subject: Imperative mood (e.g., 'add' not 'added'). No period. Max 100 chars." },
-    {
-      "text": "Body: MANDATORY. Follow Linux Kernel rules: Explain 'why' the change is needed and 'how' it addresses the issue. Do NOT simply paraphrase the code."
-    },
-    { "text": "Formatting: Separate subject from body with a blank line. Hard-wrap the body text at 72 characters." }
-  ],
+  // "github.copilot.chat.commitMessageGeneration.instructions": [
+  //   { "text": "Style: Strictly follow the Angular Commit Message Format <type>(<scope>): <short summary>." },
+  //   { "text": "Types: build, ci, docs, feat, fix, perf, refactor, style, test." },
+  //   { "text": "Scope: Optional. Use lowercase (e.g., 'runner', 'api')." },
+  //   { "text": "Subject: Imperative mood (e.g., 'add' not 'added'). No period. Max 100 chars." },
+  //   {
+  //     "text": "Body: MANDATORY. Follow Linux Kernel rules: Explain 'why' the change is needed and 'how' it addresses the issue. Do NOT simply paraphrase the code."
+  //   },
+  //   { "text": "Formatting: Separate subject from body with a blank line. Hard-wrap the body text at 72 characters." }
+  // ],
 
   // error Lens
   "errorLens.fontStyleItalic": true,

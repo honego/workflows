@@ -84,9 +84,9 @@
   },
 
   // nft
-  "[nft]": {
-    "editor.defaultFormatter": "omBratteng.nftables"
-  },
+  // "[nft]": {
+  //   "editor.defaultFormatter": "omBratteng.nftables"
+  // },
 
   // python
   "[python]": {
@@ -112,7 +112,7 @@
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
-  "yaml.format.bracketSpacing": true, // 对象字面量之间不添加空格
+  "yaml.format.bracketSpacing": true, // 括号内侧保留空格
   "yaml.format.printWidth": 500,
   "yaml.format.singleQuote": true // 优先使用单引号字符串
 }

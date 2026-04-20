@@ -23,6 +23,7 @@ _err_msg() {
 }
 
 # 各变量默认值
+GITHUB_PROXY="https://v6.gh-proxy.org/"
 GITHUB_REPO="MetaCubeX/mihomo"
 GITHUB_REPO_URL="https://github.com/$GITHUB_REPO"
 PROJECT_NAME="${GITHUB_REPO##*/}"
@@ -109,6 +110,24 @@ is_in_china() {
     [ "$GEOIP_COUNTRY_CODE" = CN ]
 }
 
+has_ipv4() {
+    ip -4 route get 151.101.65.1 > /dev/null 2>&1
+}
+
+has_ipv6() {
+    ip -6 route get 2a04:4e42:200::485 > /dev/null 2>&1
+}
+
+check_cdn() {
+    if is_in_china; then
+        return
+    elif ! has_ipv4 && has_ipv6; then
+        return
+    else
+        GITHUB_PROXY=""
+    fi
+}
+
 check_sys() {
     if is_linux; then
         OS_NAME="linux"
@@ -144,12 +163,16 @@ check_arch() {
     fi
 }
 
-install_mihomo() {
-    [ -n "$VERSION" ] || VERSION="$(curl -Ls "https://api.github.com/repos/$GITHUB_REPO/releases" 2>&1 | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
-    curl -L -O "$GITHUB_REPO_URL/releases/download/v$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" || die "$PROJECT_NAME download failed."
+download_mihomo() {
+    [ -n "$VERSION" ] || VERSION="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/$GITHUB_REPO/releases" 2>&1 | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+    curl -L -O "$GITHUB_PROXY$GITHUB_REPO_URL/releases/download/v$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" || die "$PROJECT_NAME download failed."
     gzip -cdf "$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" > "$PROJECT_NAME"
+    chmod +x "$PROJECT_NAME"
+}
 
-    tee /etc/systemd/system/mihomo.service > /dev/null << 'EOF'
+install_mihomo_svc() {
+    if [ ! -f /etc/systemd/system/mihomo.service ]; then
+        tee /etc/systemd/system/mihomo.service > /dev/null << 'EOF'
 [Unit]
 Description=Mihomo Service, Another Clash Kernel.
 Documentation=https://wiki.metacubex.one
@@ -169,8 +192,9 @@ LimitNOFILE=infinity
 [Install]
 WantedBy=multi-user.target
 EOF
-    systemctl daemon-reload
-    systemctl enable --now mihomo
+        systemctl daemon-reload
+        systemctl enable --now mihomo
+    fi
 }
 
 pushd "$TEMP_DIR" > /dev/null 2>&1 || die "Can't access temporary work dir."
@@ -193,5 +217,6 @@ done
 
 check_sys
 check_arch
+check_cdn
 
 install_mihomo

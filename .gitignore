@@ -1,2 +1,4 @@
 .idea/
 kubernetes/
+*.json
+.gitlab-ci.yml

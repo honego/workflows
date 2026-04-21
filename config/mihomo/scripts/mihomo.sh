@@ -100,6 +100,10 @@ is_linux() {
     [ "$(uname -s 2> /dev/null)" = "Linux" ]
 }
 
+is_in_alpine() {
+    [ -f /etc/alpine-release ]
+}
+
 is_in_china() {
     if [ -z "$GEOIP_COUNTRY_CODE" ]; then
         if ! GEOIP_COUNTRY_CODE="$(curl -L http://www.qualcomm.cn/cdn-cgi/trace | grep '^loc=' | cut -d= -f2 | grep .)"; then
@@ -143,7 +147,7 @@ check_arch() {
         case "$(uname -m 2> /dev/null)" in
         i?86) OS_ARCH="386" ;;
         amd64 | x86_64) OS_ARCH="amd64" ;;
-        arm64 | armv8 | aarch64) OS_ARCH="arm64" ;;
+        arm64 | aarch64) OS_ARCH="arm64" ;;
         armv5*) OS_ARCH="armv5" ;;
         armv6*) OS_ARCH="armv6" ;;
         armv7*) OS_ARCH="armv7" ;;
@@ -155,7 +159,7 @@ check_arch() {
     elif is_darwin; then
         case "$(uname -m 2> /dev/null)" in
         amd64 | x86_64) OS_ARCH="amd64" ;;
-        arm64 | armv8 | aarch64) OS_ARCH="arm64" ;;
+        arm64 | aarch64) OS_ARCH="arm64" ;;
         *) die "Architecture is not supported." ;;
         esac
     else
@@ -170,7 +174,7 @@ download_mihomo() {
     chmod +x "$PROJECT_NAME"
 }
 
-install_mihomo_svc() {
+setup_mihomo() {
     if [ ! -f /etc/systemd/system/mihomo.service ]; then
         tee /etc/systemd/system/mihomo.service > /dev/null << 'EOF'
 [Unit]
@@ -197,6 +201,24 @@ EOF
     fi
 }
 
+restart_mihomo() {
+    local restart_cmd
+
+    if is_in_alpine; then
+        restart_cmd="/etc/init.d/$PROJECT_NAME restart"
+    else
+        restart_cmd="systemctl restart $PROJECT_NAME.service"
+    fi
+
+    for ((i = 1; i <= 3; i++)); do
+        if eval "$restart_cmd" > /dev/null 2>&1; then
+            return
+        fi
+    done
+
+    die "Failed to restart $PROJECT_NAME service."
+}
+
 pushd "$TEMP_DIR" > /dev/null 2>&1 || die "Can't access temporary work dir."
 
 while [ "$#" -gt 0 ]; do
@@ -209,7 +231,7 @@ while [ "$#" -gt 0 ]; do
         shift
         ;;
     --*)
-        _yellow "Illegal option $1"
+        _red "Invalid option $1"
         ;;
     esac
     shift $(($# > 0 ? 1 : 0))

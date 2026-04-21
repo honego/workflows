@@ -14,10 +14,6 @@ _red() {
     printf "\033[31m%b\033[0m\n" "$*"
 }
 
-_yellow() {
-    printf "\033[33m%b\033[0m\n" "$*"
-}
-
 _err_msg() {
     printf "\033[41m\033[1mError\033[0m %b\n" "$*"
 }
@@ -30,8 +26,6 @@ PROJECT_NAME="${GITHUB_REPO##*/}"
 TEMP_DIR="$(mktemp -d 2> /dev/null)"
 
 trap 'rm -rf "${TEMP_DIR:?}" > /dev/null 2>&1' INT TERM EXIT
-
-VERSION="${VERSION#v}"
 
 clear() {
     [ -t 1 ] && tput clear 2> /dev/null || printf "\033[2J\033[H" || command clear
@@ -92,10 +86,6 @@ curl() {
     done
 }
 
-is_darwin() {
-    [ "$(uname -s 2> /dev/null)" = "Darwin" ]
-}
-
 is_linux() {
     [ "$(uname -s 2> /dev/null)" = "Linux" ]
 }
@@ -122,16 +112,6 @@ has_ipv6() {
     ip -6 route get 2a04:4e42:200::485 > /dev/null 2>&1
 }
 
-check_cdn() {
-    if is_in_china; then
-        return
-    elif ! has_ipv4 && has_ipv6; then
-        return
-    else
-        GITHUB_PROXY=""
-    fi
-}
-
 check_sys() {
     if is_linux; then
         OS_NAME="linux"
@@ -156,49 +136,34 @@ check_arch() {
         s390x) OS_ARCH="s390x" ;;
         *) die "Architecture is not supported." ;;
         esac
-    elif is_darwin; then
-        case "$(uname -m 2> /dev/null)" in
-        amd64 | x86_64) OS_ARCH="amd64" ;;
-        arm64 | aarch64) OS_ARCH="arm64" ;;
-        *) die "Architecture is not supported." ;;
-        esac
     else
         die "Architecture is not supported."
     fi
 }
 
-download_mihomo() {
-    [ -n "$VERSION" ] || VERSION="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/$GITHUB_REPO/releases" 2>&1 | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
-    curl -L -O "$GITHUB_PROXY$GITHUB_REPO_URL/releases/download/v$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" || die "$PROJECT_NAME download failed."
-    gzip -cdf "$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" > "$PROJECT_NAME"
-    chmod +x "$PROJECT_NAME"
+check_cdn() {
+    if is_in_china; then
+        return
+    elif ! has_ipv4 && has_ipv6; then
+        return
+    else
+        GITHUB_PROXY=""
+    fi
 }
 
-setup_mihomo() {
-    if [ ! -f /etc/systemd/system/mihomo.service ]; then
-        tee /etc/systemd/system/mihomo.service > /dev/null << 'EOF'
-[Unit]
-Description=Mihomo Service, Another Clash Kernel.
-Documentation=https://wiki.metacubex.one
-Wants=network-online.target
-After=network-online.target
+update_mihomo() {
+    local latest_ver current_ver
 
-[Service]
-Type=simple
-CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_TIME CAP_SYS_PTRACE CAP_DAC_READ_SEARCH CAP_DAC_OVERRIDE
-AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_TIME CAP_SYS_PTRACE CAP_DAC_READ_SEARCH CAP_DAC_OVERRIDE
-ExecStart=/usr/local/bin/mihomo -d /etc/mihomo
-ExecReload=/bin/kill -HUP $MAINPID
-Restart=on-failure
-RestartSec=10
-LimitNOFILE=infinity
+    latest_ver="$(curl -Ls "${GITHUB_PROXY}https://api.github.com/repos/$GITHUB_REPO/releases" 2>&1 | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' | sort -rV | head -n 1)"
+    current_ver="$(get_cmd_path "$PROJECT_NAME")"
 
-[Install]
-WantedBy=multi-user.target
-EOF
-        systemctl daemon-reload
-        systemctl enable --now mihomo
+    if [[ "$(printf '%s\n%s\n' "$latest_ver" "$current_ver" | sort -V | head -n 1)" == "$latest_ver" ]]; then
+        return
     fi
+
+    curl -L -O "$GITHUB_PROXY$GITHUB_REPO_URL/releases/download/v$VERSION/$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" || die "$PROJECT_NAME download failed."
+    gzip -cdf "$PROJECT_NAME-$OS_NAME-$OS_ARCH-v$VERSION.gz" > "/usr/local/bin/$PROJECT_NAME"
+    chmod +x "/usr/local/bin/$PROJECT_NAME"
 }
 
 restart_mihomo() {
@@ -221,24 +186,10 @@ restart_mihomo() {
 
 pushd "$TEMP_DIR" > /dev/null 2>&1 || die "Can't access temporary work dir."
 
-while [ "$#" -gt 0 ]; do
-    case "$1" in
-    --debug)
-        set -x
-        ;;
-    --version)
-        VERSION="${2#v}"
-        shift
-        ;;
-    --*)
-        _red "Invalid option $1"
-        ;;
-    esac
-    shift $(($# > 0 ? 1 : 0))
-done
-
+clear
 check_sys
 check_arch
 check_cdn
 
-install_mihomo
+update_mihomo
+restart_mihomo

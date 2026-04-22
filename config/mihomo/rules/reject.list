@@ -3,6 +3,8 @@ DOMAIN-SUFFIX,buychennai.com
 DOMAIN-SUFFIX,pages-gist.com
 
 # https://www.nodeseek.com/post-652016-1
-DOMAIN-SUFFIX,httpdnsmultiapi.meituan.com # 美团 HTTPDNS
-DOMAIN-SUFFIX,httpdnsmultiapivip.meituan.com # 美团 HTTPDNS
-DOMAIN-SUFFIX,maplocatesdksnapshot.dreport.meituan.net # 美团定位 SDK 上报
+# 美团 HTTPDNS
+DOMAIN-SUFFIX,httpdnsmultiapi.meituan.com
+DOMAIN-SUFFIX,httpdnsmultiapivip.meituan.com
+# 美团定位 SDK 上报
+DOMAIN-SUFFIX,maplocatesdksnapshot.dreport.meituan.net

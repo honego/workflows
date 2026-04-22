@@ -257,14 +257,12 @@ rules:
   - RULE-SET,private_ip,DIRECT,no-resolve
   - RULE-SET,private_domain,DIRECT
 
+  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT # QUIC 拦截
   - RULE-SET,reject_list,REJECT
   - RULE-SET,awaads_domain,REJECT # 广告拦截
   - RULE-SET,icloudprivaterelay_domain,REJECT # iCloud 私有中继
   - RULE-SET,winspy_domain,REJECT # Windows 隐私追踪
   - RULE-SET,httpdnscn_domain,REJECT # 国内 HTTPDNS 劫持
-
-  # QUIC
-  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
 
   - RULE-SET,direct_list,DIRECT
   - RULE-SET,meituan_domain,DIRECT

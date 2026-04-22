@@ -146,7 +146,6 @@ dns:
     "rule-set:cn-domain,private-domain":
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
-    "geosite:category-ads-all": "rcode://success"
     "rule-set:hageziproplus-domain": "rcode://success"
 
 ## 节点信息

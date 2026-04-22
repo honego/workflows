@@ -255,6 +255,7 @@ rules:
   - RULE-SET,private_ip,DIRECT,no-resolve
   - RULE-SET,private_domain,DIRECT
 
+  - RULE-SET,reject_list,REJECT
   - RULE-SET,awaads_domain,REJECT # 广告拦截
   - RULE-SET,winspy_domain,REJECT # Windows 隐私追踪
   - RULE-SET,httpdns_domain,REJECT # 国内 HTTPDNS 劫持
@@ -319,6 +320,7 @@ rule-anchor:
 ## 规则集订阅
 rule-providers:
   direct_list: { <<: *class, url: "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/rules/direct.list" }
+  reject_list: { <<: *class, url: "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/rules/reject.list" }
 
   ai_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs" }
   awaads_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.mrs" }

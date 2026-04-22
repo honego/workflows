@@ -239,7 +239,9 @@ proxy-groups:
   - { name: 🇹🇼 台湾自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇹🇼|台湾|tw|taiwan)" }
   - { name: 🇸🇬 狮城自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇸🇬|新加坡|sg|singapore|lion\\s?city)" }
   - { name: 🇯🇵 日本自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇯🇵|日本|jp|japan|tokyo|osaka)" }
+  - { name: 🇰🇷 韩国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇰🇷|韩国|kr|korea|seoul)" }
   - { name: 🇺🇸 美国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇺🇸|美国|us|united\\s?states|america)" }
+  - { name: 🇬🇧 英国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇬🇧|英国|gb|great\\s?britain|london)" }
   - { name: 🇳🇱 荷兰自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇳🇱|荷兰|nl|netherlands|amsterdam)" }
   - { name: 🇩🇪 德国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|de|germany|frankfurt)" }
 

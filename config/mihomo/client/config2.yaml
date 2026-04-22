@@ -128,6 +128,7 @@ dns:
   # 支持UDP TCP DoT DoH DoQ
   # 这部分为主要DNS配置 影响所有直连 确保使用对大陆解析精准的DNS
   nameserver:
+    - https://dns.adguard-dns.com/dns-query#🚀 默认代理
     - https://one.one.one.one/dns-query#🚀 默认代理
     - https://dns.google/dns-query#🚀 默认代理
 

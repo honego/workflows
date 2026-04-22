@@ -293,7 +293,6 @@ rules:
 
   - RULE-SET,proxy_domain,🚀 默认代理
   - RULE-SET,gfw_domain,🚀 默认代理
-  - RULE-SET,tld_domain,🚀 默认代理
   - RULE-SET,cn_domain,🎯 全球直连
 
   - RULE-SET,apple_ip,🍎 Apple,no-resolve
@@ -353,7 +352,6 @@ rule-providers:
   steam_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs" }
   telegram_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs" }
   tiktok_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/tiktok.mrs" }
-  tld_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/tld-not-cn.mrs" }
   twitter_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs" }
   whatsapp_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/whatsapp.mrs" }
   winspy_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/win-spy.mrs" }

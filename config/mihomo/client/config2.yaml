@@ -258,8 +258,9 @@ rules:
 
   - RULE-SET,reject_list,REJECT
   - RULE-SET,awaads_domain,REJECT # 广告拦截
+  - RULE-SET,icloudprivaterelay_domain,REJECT # iCloud 私有中继
   - RULE-SET,winspy_domain,REJECT # Windows 隐私追踪
-  - RULE-SET,httpdns_domain,REJECT # 国内 HTTPDNS 劫持
+  - RULE-SET,httpdnscn_domain,REJECT # 国内 HTTPDNS 劫持
 
   # QUIC
   - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
@@ -340,7 +341,8 @@ rule-providers:
   google_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs" }
   googlecn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/google.mrs" }
   hageziads_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MiHomoer/MiHomo-Hagezi@release/HageziProPlus.mrs" }
-  httpdns_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/httpdns.mrs" }
+  httpdnscn_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-httpdns-cn.mrs" }
+  icloudprivaterelay_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/icloudprivaterelay.mrs" }
   instagram_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs" }
   meituan_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/meituan.mrs" }
   microsoft_domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs" }

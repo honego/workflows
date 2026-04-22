@@ -180,6 +180,7 @@ airport_conf: &airport_conf
   proxy: DIRECT # 通过直连拉取机场订阅 该名字是指策略组或某个代理节点的名字
   lazy: true # 懒加载
   client-fingerprint: firefox
+  exclude-filter: "(?i)(expire|expired|traffic|website|official|invalid|到期|过期|剩余|流量|官网|网址|会员[ -_]?id|套餐|订阅|更新|公告|客服|备用|维护|维修)"
   # 节点自动检测延时
   health-check:
     enable: true

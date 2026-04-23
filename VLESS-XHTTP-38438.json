@@ -1,0 +1,43 @@
+{
+  "inbounds": [
+    {
+      "tag": "VLESS-XHTTP-38438.json",
+      "port": 38438,
+      "listen": "::",
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "3621cdbe-5926-4386-884b-2aafb84c41e2"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "alice.rosie.qzz.io",
+          "alpn": ["h3", "h2"],
+          "minVersion": "1.2",
+          "certificates": [
+            {
+              "certificateFile": "/etc/xray/cert/certificate.crt",
+              "keyFile": "/etc/xray/cert/private.key"
+            }
+          ]
+        },
+        "xhttpSettings": {
+          "host": "",
+          "path": "/xhttp_client_upload",
+          "mode": "auto"
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls", "quic"],
+        "metadataOnly": false
+      }
+    }
+  ]
+}

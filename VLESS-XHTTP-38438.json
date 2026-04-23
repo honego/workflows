@@ -29,7 +29,7 @@
         },
         "xhttpSettings": {
           "host": "",
-          "path": "/xhttp_client_upload",
+          "path": "/apis/networking.k8s.io/v1/namespaces/default/ingresses",
           "mode": "auto"
         }
       },

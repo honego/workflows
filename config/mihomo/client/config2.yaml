@@ -137,6 +137,7 @@ dns:
     - https://dns.google/dns-query#🚀 默认代理
     - https://dns.adguard-dns.com/dns-query#🚀 默认代理
     - https://doh.dns.sb/dns-query#🚀 默认代理
+    - https://dns.quad9.net/dns-query#🚀 默认代理
 
   # 专用于节点域名解析的DNS服务器 非必要配置项 如果不填则遵循nameserver-policy nameserver和fallback的配置
   proxy-server-nameserver:

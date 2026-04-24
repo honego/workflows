@@ -213,32 +213,55 @@ proxy: &proxy { type: select, include-all: true, proxies: [ 🚀 默认代理, �
 specific: &specific { type: select, include-all: true, proxies: [ 🚀 默认代理, ♻️ 自动选择, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], <<: *airports, filter: "^((?!(?i)(🇭🇰|香港|hk|hong\\s?kong|🇲🇴|澳门|澳門|macau|macao|🇷🇺|俄罗斯|ru|russia|🇨🇳|中国|回国|china|cn)).)*$" }
 island: &island { type: select, proxies: [ DIRECT ], <<: *airports, filter: "(?i)(🇭🇰|香港|hk|hong\\s?kong|🇲🇴|澳门|澳門|macau|macao|🇹🇼|台湾|tw|taiwan)" }
 
+# Icon 锚点
+default: &default "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
+fallback: &fallback "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
+ai: &ai "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openai.svg"
+google: &google "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google.svg"
+github: &github "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github.svg"
+gitlab: &gitlab "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/gitlab.svg"
+docker: &docker "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/docker.svg"
+microsoft: &microsoft "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/microsoft.svg"
+onedrive: &onedrive "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/onedrive.svg"
+apple: &apple "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/apple.svg"
+paypal: &paypal "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/paypal.svg"
+telegram: &telegram "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/telegram.svg"
+twitter: &twitter "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/twitter.svg"
+meta: &meta "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/facebook.svg"
+bilibili: &bilibili "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/bilibili.svg"
+netflix: &netflix "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/netflix.svg"
+spotify: &spotify "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg"
+tiktok: &tiktok "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/tiktok.svg"
+games: &games "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-play-games.svg"
+speedtest: &speedtest "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
+fish: &fish "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg"
+
 ## 代理分组
 proxy-groups:
   #------------------------基础分组------------------------#
-  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ] }
+  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], icon: *default }
   - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300 }
-  - { name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 100, interval: 300 }
+  - { name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 100, interval: 300, icon: *fallback }
 
   #------------------------场景分组------------------------#
-  - { name: 🤖 AI, <<: *specific }
-  - { name: 🍀 Google, <<: *proxy }
-  - { name: 👨‍💻 GitHub, <<: *proxy }
-  - { name: 🦊 GitLab, <<: *proxy }
-  - { name: 🐳 Docker, <<: *proxy }
-  - { name: 🪟 Microsoft, <<: *main }
-  - { name: 🐬 OneDrive, <<: *main }
-  - { name: 🍎 Apple, <<: *main }
-  - { name: 💶 PayPal, <<: *main }
-  - { name: 📲 Telegram, <<: *proxy }
-  - { name: 🐦 Twitter, <<: *proxy }
-  - { name: 🌀 Meta, <<: *proxy }
-  - { name: 📺 BiliBili, <<: *island }
-  - { name: 🎥 NETFLIX, <<: *specific }
-  - { name: 🎧 Spotify, <<: *island }
-  - { name: 🎵 TikTok, <<: *specific }
-  - { name: 🎮 Games, <<: *main }
-  - { name: ✈️ Speedtest, <<: *main }
+  - { name: 🤖 AI, <<: *specific, icon: *ai }
+  - { name: 🍀 Google, <<: *proxy, icon: *google }
+  - { name: 👨‍💻 GitHub, <<: *proxy, icon: *github }
+  - { name: 🦊 GitLab, <<: *proxy, icon: *gitlab }
+  - { name: 🐳 Docker, <<: *proxy, icon: *docker }
+  - { name: 🪟 Microsoft, <<: *main, icon: *microsoft }
+  - { name: 🐬 OneDrive, <<: *main, icon: *onedrive }
+  - { name: 🍎 Apple, <<: *main, icon: *apple }
+  - { name: 💶 PayPal, <<: *main, icon: *paypal }
+  - { name: 📲 Telegram, <<: *proxy, icon: *telegram }
+  - { name: 🐦 Twitter, <<: *proxy, icon: *twitter }
+  - { name: 🌀 Meta, <<: *proxy, icon: *meta }
+  - { name: 📺 BiliBili, <<: *island, icon: *bilibili }
+  - { name: 🎥 NETFLIX, <<: *specific, icon: *netflix }
+  - { name: 🎧 Spotify, <<: *island, icon: *spotify }
+  - { name: 🎵 TikTok, <<: *specific, icon: *tiktok }
+  - { name: 🎮 Games, <<: *main, icon: *games }
+  - { name: ✈️ Speedtest, <<: *main, icon: *speedtest }
 
   #------------------------地区分组------------------------#
   - { name: 🇭🇰 香港自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇭🇰|香港|hk|hong\\s?kong)" }
@@ -253,7 +276,7 @@ proxy-groups:
 
   #------------------------特殊分组------------------------#
   - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🚀 默认代理 ] }
-  - { name: 🎣 漏网之鱼, <<: *main }
+  - { name: 🎣 漏网之鱼, <<: *main, icon: *fish }
 
 ## 规则匹配
 rules:

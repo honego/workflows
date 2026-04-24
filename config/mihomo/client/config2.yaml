@@ -225,7 +225,7 @@ docker: &docker "https://fastly.jsdelivr.net/gh/devicons/devicon/icons/docker/do
 microsoft: &microsoft "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
 onedrive: &onedrive "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/onedrive.svg"
 apple: &apple "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/apple.svg"
-paypal: &paypal "https://fastly.jsdelivr.net/gh/edent/SuperTinyIcons@master/images/svg/paypal.svg"
+paypal: &paypal "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/paypal.svg"
 telegram: &telegram "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg"
 twitter: &twitter "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/twitter.svg"
 meta: &meta "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/facebook.svg"

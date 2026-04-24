@@ -210,7 +210,6 @@ proxy-providers:
     url: "url2"
 
 ## Icon 锚点
-# 应用 Icon
 default-icon: &default-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
 automatic-icon: &automatic-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
 fallback-icon: &fallback-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
@@ -234,17 +233,6 @@ games-icon: &games-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/conf
 speedtest-icon: &speedtest-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/speedtest.svg"
 direct-icon: &direct-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/direct.svg"
 fish-icon: &fish-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg"
-
-# 国家地区 Icon
-hongkong-icon: &hongkong-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
-taiwan-icon: &taiwan-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
-singapore-icon: &singapore-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
-japan-icon: &japan-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
-korea-icon: &korea-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
-unitedstates-icon: &unitedstates-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
-unitedkingdom-icon: &unitedkingdom-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png"
-netherlands-icon: &netherlands-icon "https://fastly.jsdelivr.net/gh/lianginx/Qure@master/IconSet/Color/Netherlands.png"
-germany-icon: &germany-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Germany.png"
 
 ## 代理分组锚点
 main: &main { type: select, include-all: true, proxies: [ 🚀 默认代理, ♻️ 自动选择, 🔯 故障转移, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动, DIRECT ] }
@@ -280,15 +268,15 @@ proxy-groups:
   - { name: ✈️ Speedtest, <<: *main, icon: *speedtest-icon }
 
   #------------------------地区分组------------------------#
-  - { name: 🇭🇰 香港自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇭🇰|香港|\\bHK\\b|\\bHKG\\b|Hong\\s?Kong)", icon: *hongkong-icon }
-  - { name: 🇹🇼 台湾自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇹🇼|台湾|台灣|\\bTW\\b|\\bTWN\\b|Taiwan)", icon: *taiwan-icon }
-  - { name: 🇸🇬 狮城自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇸🇬|新加坡|狮城|\\bSG\\b|\\bSGP\\b|Singapore)", icon: *singapore-icon }
-  - { name: 🇯🇵 日本自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇯🇵|日本|\\bJP\\b|\\bJPN\\b|Japan)", icon: *japan-icon }
-  - { name: 🇰🇷 韩国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇰🇷|韩国|\\bKR\\b|\\bKOR\\b|Korea)", icon: *korea-icon }
-  - { name: 🇺🇸 美国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇺🇸|美国|\\bUS\\b|\\bUSA\\b|United\\s?States|America)", icon: *unitedstates-icon }
-  - { name: 🇬🇧 英国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇬🇧|英国|\\bUK\\b|\\bGB\\b|\\bGBR\\b|United\\s?Kingdom|Great\\s?Britain|Britain|England)", icon: *unitedkingdom-icon }
-  - { name: 🇳🇱 荷兰自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇳🇱|荷兰|\\bNL\\b|\\bNLD\\b|Netherlands|Holland)", icon: *netherlands-icon }
-  - { name: 🇩🇪 德国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|\\bDE\\b|\\bDEU\\b|Germany)", icon: *germany-icon }
+  - { name: 🇭🇰 香港自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇭🇰|香港|\\bHK\\b|\\bHKG\\b|Hong\\s?Kong)" }
+  - { name: 🇹🇼 台湾自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇹🇼|台湾|台灣|\\bTW\\b|\\bTWN\\b|Taiwan)" }
+  - { name: 🇸🇬 狮城自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇸🇬|新加坡|狮城|\\bSG\\b|\\bSGP\\b|Singapore)" }
+  - { name: 🇯🇵 日本自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇯🇵|日本|\\bJP\\b|\\bJPN\\b|Japan)" }
+  - { name: 🇰🇷 韩国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇰🇷|韩国|\\bKR\\b|\\bKOR\\b|Korea)" }
+  - { name: 🇺🇸 美国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇺🇸|美国|\\bUS\\b|\\bUSA\\b|United\\s?States|America)" }
+  - { name: 🇬🇧 英国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇬🇧|英国|\\bUK\\b|\\bGB\\b|\\bGBR\\b|United\\s?Kingdom|Great\\s?Britain|Britain|England)" }
+  - { name: 🇳🇱 荷兰自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇳🇱|荷兰|\\bNL\\b|\\bNLD\\b|Netherlands|Holland)" }
+  - { name: 🇩🇪 德国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|\\bDE\\b|\\bDEU\\b|Germany)" }
 
   #------------------------特殊分组------------------------#
   - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🚀 默认代理 ], icon: *direct-icon }

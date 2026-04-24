@@ -214,8 +214,8 @@ specific: &specific { type: select, include-all: true, proxies: [ 🚀 默认代
 island: &island { type: select, proxies: [ DIRECT ], <<: *airports, filter: "(?i)(🇭🇰|香港|hk|hong\\s?kong|🇲🇴|澳门|澳門|macau|macao|🇹🇼|台湾|tw|taiwan)" }
 
 # Icon 锚点
-default: &default "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f680.svg"
-automatic: &automatic "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/267b.svg"
+default: &default "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
+automatic: &automatic "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
 fallback: &fallback "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
 ai: &ai "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openai.svg"
 google: &google "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg"

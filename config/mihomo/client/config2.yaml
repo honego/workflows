@@ -229,7 +229,7 @@ paypal: &paypal "https://fastly.jsdelivr.net/gh/edent/SuperTinyIcons@master/imag
 telegram: &telegram "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg"
 twitter: &twitter "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/twitter.svg"
 meta: &meta "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/facebook.svg"
-bilibili: &bilibili "https://fastly.jsdelivr.net/gh/xushier/HD-Icons@main/svg/bilibili-1.svg"
+bilibili: &bilibili "https://img.honeok.com/file/G4AlKJtw.svg"
 netflix: &netflix "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/netflix.svg"
 spotify: &spotify "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg"
 tiktok: &tiktok "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/tiktok.svg"

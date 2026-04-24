@@ -255,7 +255,7 @@ germany-icon: &germany-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/
 ## 代理分组锚点
 main: &main { type: select, include-all: true, proxies: [ 🚀 默认代理, ♻️ 自动选择, 🔯 故障转移, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动, DIRECT ] }
 proxy: &proxy { type: select, include-all: true, proxies: [ 🚀 默认代理, ♻️ 自动选择, 🔯 故障转移, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ] }
-specific: &specific { type: select, include-all: true, proxies: [ 🚀 默认代理, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], exclude-filter: "(?i)(🇭🇰|香港|\\bHK\\b|\\bHKG\\b|Hong\\s?Kong|🇲🇴|澳门|澳門|\\bMO\\b|\\bMAC\\b|Macau|Macao|🇷🇺|俄罗斯|俄羅斯|\\bRU\\b|\\bRUS\\b|Russia|🇨🇳|中国|中國|回国|回國|\\bCN\\b|\\bCHN\\b|China)" }
+specific: &specific { type: select, include-all: true, proxies: [ 🚀 默认代理, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], exclude-filter: "(?i)(🇭🇰|香港|\\bHK\\b|\\bHKG\\b|Hong\\s?Kong|🇲🇴|澳门|澳門|\\bMO\\b|\\bMAC\\b|Macau|Macao|🇷🇺|俄罗斯|\\bRU\\b|\\bRUS\\b|Russia|🇨🇳|中国|回国|\\bCN\\b|\\bCHN\\b|China)" }
 island: &island { type: select, include-all: true, proxies: [ DIRECT ], filter: "(?i)(🇭🇰|香港|\\bHK\\b|\\bHKG\\b|Hong\\s?Kong|🇲🇴|澳门|澳門|\\bMO\\b|\\bMAC\\b|Macau|Macao|🇹🇼|台湾|台灣|\\bTW\\b|\\bTWN\\b|Taiwan)" }
 
 ## 代理分组

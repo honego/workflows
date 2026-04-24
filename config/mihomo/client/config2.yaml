@@ -288,13 +288,13 @@ proxy-groups:
   #------------------------地区分组------------------------#
   - { name: 🇭🇰 香港自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇭🇰|香港|\\bHK\\b|\\bHKG\\b|Hong\\s?Kong)", icon: *hongkong-icon }
   - { name: 🇹🇼 台湾自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇹🇼|台湾|台灣|\\bTW\\b|\\bTWN\\b|Taiwan)", icon: *taiwan-icon }
-  - { name: 🇸🇬 狮城自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇸🇬|新加坡|狮城|獅城|\\bSG\\b|\\bSGP\\b|Singapore)", icon: *singapore-icon }
+  - { name: 🇸🇬 狮城自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇸🇬|新加坡|狮城|\\bSG\\b|\\bSGP\\b|Singapore)", icon: *singapore-icon }
   - { name: 🇯🇵 日本自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇯🇵|日本|\\bJP\\b|\\bJPN\\b|Japan)", icon: *japan-icon }
-  - { name: 🇰🇷 韩国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇰🇷|韩国|韓國|\\bKR\\b|\\bKOR\\b|Korea)", icon: *korea-icon }
-  - { name: 🇺🇸 美国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇺🇸|美国|美國|\\bUS\\b|\\bUSA\\b|United\\s?States|America)", icon: *unitedstates-icon }
-  - { name: 🇬🇧 英国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇬🇧|英国|英國|\\bUK\\b|\\bGB\\b|\\bGBR\\b|United\\s?Kingdom|Great\\s?Britain|Britain|England)", icon: *unitedkingdom-icon }
-  - { name: 🇳🇱 荷兰自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇳🇱|荷兰|荷蘭|\\bNL\\b|\\bNLD\\b|Netherlands|Holland)", icon: *netherlands-icon }
-  - { name: 🇩🇪 德国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|德國|\\bDE\\b|\\bDEU\\b|Germany)", icon: *germany-icon }
+  - { name: 🇰🇷 韩国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇰🇷|韩国|\\bKR\\b|\\bKOR\\b|Korea)", icon: *korea-icon }
+  - { name: 🇺🇸 美国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇺🇸|美国|\\bUS\\b|\\bUSA\\b|United\\s?States|America)", icon: *unitedstates-icon }
+  - { name: 🇬🇧 英国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇬🇧|英国|\\bUK\\b|\\bGB\\b|\\bGBR\\b|United\\s?Kingdom|Great\\s?Britain|Britain|England)", icon: *unitedkingdom-icon }
+  - { name: 🇳🇱 荷兰自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇳🇱|荷兰|\\bNL\\b|\\bNLD\\b|Netherlands|Holland)", icon: *netherlands-icon }
+  - { name: 🇩🇪 德国自动, type: url-test, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|\\bDE\\b|\\bDEU\\b|Germany)", icon: *germany-icon }
 
   #------------------------特殊分组------------------------#
   - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🚀 默认代理 ], icon: *direct-icon }

@@ -214,7 +214,8 @@ specific: &specific { type: select, include-all: true, proxies: [ 🚀 默认代
 island: &island { type: select, proxies: [ DIRECT ], <<: *airports, filter: "(?i)(🇭🇰|香港|hk|hong\\s?kong|🇲🇴|澳门|澳門|macau|macao|🇹🇼|台湾|tw|taiwan)" }
 
 # Icon 锚点
-default: &default "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
+default: &default "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f680.svg"
+automatic: &automatic "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/267b.svg"
 fallback: &fallback "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
 ai: &ai "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openai.svg"
 google: &google "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google.svg"
@@ -234,13 +235,14 @@ spotify: &spotify "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/sv
 tiktok: &tiktok "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/tiktok.svg"
 games: &games "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-play-games.svg"
 speedtest: &speedtest "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
+direct: &direct "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f3af.svg"
 fish: &fish "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg"
 
 ## 代理分组
 proxy-groups:
   #------------------------基础分组------------------------#
   - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], icon: *default }
-  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300 }
+  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300, icon: *automatic }
   - { name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 100, interval: 300, icon: *fallback }
 
   #------------------------场景分组------------------------#
@@ -275,7 +277,7 @@ proxy-groups:
   - { name: 🇩🇪 德国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|de|germany|frankfurt)" }
 
   #------------------------特殊分组------------------------#
-  - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🚀 默认代理 ] }
+  - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🚀 默认代理 ], icon: *direct }
   - { name: 🎣 漏网之鱼, <<: *main, icon: *fish }
 
 ## 规则匹配

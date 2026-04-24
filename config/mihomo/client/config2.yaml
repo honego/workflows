@@ -200,12 +200,6 @@ airport_conf: &airport_conf
     url: "http://cp.cloudflare.com/generate_204" # 用于健康检查的 URL
     expected-status: 204 # 当健康检查返回状态码与期望值不符时认为节点不可用
 
-# 策略组引用列表
-Airports: &airports
-  use:
-    - Airport1
-    - Airport2
-
 # 机场订阅合集
 proxy-providers:
   Airport1:
@@ -347,6 +341,7 @@ rules:
 
   - RULE-SET,proxy-domain,🚀 默认代理
   - RULE-SET,gfw-domain,🚀 默认代理
+  - RULE-SET,tld-!cn-domain,🚀 默认代理
   - RULE-SET,cn-domain,🎯 全球直连
 
   - RULE-SET,apple-ip,🍎 Apple,no-resolve
@@ -408,6 +403,7 @@ rule-providers:
   steam-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs" }
   telegram-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs" }
   tiktok-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/tiktok.mrs" }
+  tld-!cn-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/tld-proxy.mrs" }
   twitter-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs" }
   whatsapp-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/whatsapp.mrs" }
   winspy-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/win-spy.mrs" }

@@ -100,7 +100,7 @@ sniffer:
     - "+.push.apple.com"
 
 ## DNS模块
-# Doh锚点
+# DNS锚点
 dns-cn: &dns-cn
   - https://doh.pub/dns-query
   - https://dns.alidns.com/dns-query

@@ -215,82 +215,82 @@ island: &island { type: select, proxies: [ DIRECT ], <<: *airports, filter: "(?i
 
 ## Icon 锚点
 # 应用 Icon
-Default-icon: &Default-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
-Automatic-icon: &Automatic-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
-Fallback-icon: &Fallback-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
-Ai-icon: &Ai-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/openai.svg"
-Google-icon: &Google-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg"
-Github-icon: &Github-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/github.svg"
-Gitlab-icon: &Gitlab-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/gitlab.svg"
-Docker-icon: &Docker-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/docker.svg"
-Microsoft-icon: &Microsoft-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
-Onedrive-icon: &Onedrive-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/onedrive.svg"
-Apple-icon: &Apple-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/apple.svg"
-Paypal-icon: &Paypal-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/paypal.svg"
-Telegram-icon: &Telegram-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg"
-Twitter-icon: &Twitter-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/twitter.svg"
-Meta-icon: &Meta-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/facebook.svg"
-BiliBili-icon: &BiliBili-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/bilibili.svg"
-Netflix-icon: &Netflix-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/netflix.svg"
-Spotify-icon: &Spotify-icon "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg"
-Tiktok-icon: &Tiktok-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/tiktok.svg"
-Games-icon: &Games-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/games.svg"
-Speedtest-icon: &Speedtest-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/speedtest.svg"
-Direct-icon: &Direct-icon "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f3af.svg"
-Fish-icon: &Fish-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg"
+default-icon: &default-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
+automatic-icon: &automatic-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
+fallback-icon: &fallback-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
+ai-icon: &ai-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/openai.svg"
+google-icon: &google-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg"
+github-icon: &github-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/github.svg"
+gitlab-icon: &gitlab-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/gitlab.svg"
+docker-icon: &docker-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/docker.svg"
+microsoft-icon: &microsoft-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
+onedrive-icon: &onedrive-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/onedrive.svg"
+apple-icon: &apple-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/apple.svg"
+paypal-icon: &paypal-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/paypal.svg"
+telegram-icon: &telegram-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg"
+twitter-icon: &twitter-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/twitter.svg"
+meta-icon: &meta-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/facebook.svg"
+bilibili-icon: &bilibili-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/bilibili.svg"
+netflix-icon: &netflix-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/netflix.svg"
+spotify-icon: &spotify-icon "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg"
+tiktok-icon: &tiktok-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/tiktok.svg"
+games-icon: &games-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/games.svg"
+speedtest-icon: &speedtest-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/speedtest.svg"
+direct-icon: &direct-icon "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f3af.svg"
+fish-icon: &fish-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg"
 
 # 国家地区 Icon
-HongKong-icon: &HongKong-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
-Taiwan-icon: &Taiwan-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
-Singapore-icon: &Singapore-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
-Japan-icon: &Japan-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
-Korea-icon: &Korea-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
-UnitedStates-icon: &UnitedStates-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
-UnitedKingdom-icon: &UnitedKingdom-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png"
-Netherlands-icon: &Netherlands-icon "https://fastly.jsdelivr.net/gh/lianginx/Qure@master/IconSet/Color/Netherlands.png"
-Germany-icon: &Germany-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Germany.png"
+hongkong-icon: &hongkong-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
+taiwan-icon: &taiwan-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
+singapore-icon: &singapore-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
+japan-icon: &japan-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
+korea-icon: &korea-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
+unitedstates-icon: &unitedstates-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
+unitedkingdom-icon: &unitedkingdom-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png"
+netherlands-icon: &netherlands-icon "https://fastly.jsdelivr.net/gh/lianginx/Qure@master/IconSet/Color/Netherlands.png"
+germany-icon: &germany-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Germany.png"
 
 ## 代理分组
 proxy-groups:
   #------------------------基础分组------------------------#
-  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], icon: *Default-icon }
-  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300, icon: *Automatic-icon }
-  - { name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 100, interval: 300, icon: *Fallback-icon }
+  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], icon: *default-icon }
+  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300, icon: *automatic-icon }
+  - { name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 100, interval: 300, icon: *fallback-icon }
 
   #------------------------场景分组------------------------#
-  - { name: 🤖 AI, <<: *specific, icon: *Ai-icon }
-  - { name: 🍀 Google, <<: *proxy, icon: *Google-icon }
-  - { name: 👨‍💻 GitHub, <<: *proxy, icon: *Github-icon }
-  - { name: 🦊 GitLab, <<: *proxy, icon: *Gitlab-icon }
-  - { name: 🐳 Docker, <<: *proxy, icon: *Docker-icon }
-  - { name: 🪟 Microsoft, <<: *main, icon: *Microsoft-icon }
-  - { name: 🐬 OneDrive, <<: *main, icon: *Onedrive-icon }
-  - { name: 🍎 Apple, <<: *main, icon: *Apple-icon }
-  - { name: 💶 PayPal, <<: *main, icon: *Paypal-icon }
-  - { name: 📲 Telegram, <<: *proxy, icon: *Telegram-icon }
-  - { name: 🐦 Twitter, <<: *proxy, icon: *Twitter-icon }
-  - { name: 🌀 Meta, <<: *proxy, icon: *Meta-icon }
-  - { name: 📺 BiliBili, <<: *island, icon: *BiliBili-icon }
-  - { name: 🎥 NETFLIX, <<: *specific, icon: *Netflix-icon }
-  - { name: 🎧 Spotify, <<: *island, icon: *Spotify-icon }
-  - { name: 🎵 TikTok, <<: *specific, icon: *Tiktok-icon }
-  - { name: 🎮 Games, <<: *main, icon: *Games-icon }
-  - { name: ✈️ Speedtest, <<: *main, icon: *Speedtest-icon }
+  - { name: 🤖 AI, <<: *specific, icon: *ai-icon }
+  - { name: 🍀 Google, <<: *proxy, icon: *google-icon }
+  - { name: 👨‍💻 GitHub, <<: *proxy, icon: *github-icon }
+  - { name: 🦊 GitLab, <<: *proxy, icon: *gitlab-icon }
+  - { name: 🐳 Docker, <<: *proxy, icon: *docker-icon }
+  - { name: 🪟 Microsoft, <<: *main, icon: *microsoft-icon }
+  - { name: 🐬 OneDrive, <<: *main, icon: *onedrive-icon }
+  - { name: 🍎 Apple, <<: *main, icon: *apple-icon }
+  - { name: 💶 PayPal, <<: *main, icon: *paypal-icon }
+  - { name: 📲 Telegram, <<: *proxy, icon: *telegram-icon }
+  - { name: 🐦 Twitter, <<: *proxy, icon: *twitter-icon }
+  - { name: 🌀 Meta, <<: *proxy, icon: *meta-icon }
+  - { name: 📺 BiliBili, <<: *island, icon: *bilibili-icon }
+  - { name: 🎥 NETFLIX, <<: *specific, icon: *netflix-icon }
+  - { name: 🎧 Spotify, <<: *island, icon: *spotify-icon }
+  - { name: 🎵 TikTok, <<: *specific, icon: *tiktok-icon }
+  - { name: 🎮 Games, <<: *main, icon: *games-icon }
+  - { name: ✈️ Speedtest, <<: *main, icon: *speedtest-icon }
 
   #------------------------地区分组------------------------#
-  - { name: 🇭🇰 香港自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇭🇰|香港|hk|hong\\s?kong)", icon: *HongKong-icon }
-  - { name: 🇹🇼 台湾自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇹🇼|台湾|tw|taiwan)", icon: *Taiwan-icon }
-  - { name: 🇸🇬 狮城自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇸🇬|新加坡|sg|singapore|lion\\s?city)", icon: *Singapore-icon }
-  - { name: 🇯🇵 日本自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇯🇵|日本|jp|japan|tokyo|osaka)", icon: *Japan-icon }
-  - { name: 🇰🇷 韩国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇰🇷|韩国|kr|korea|seoul)", icon: *Korea-icon }
-  - { name: 🇺🇸 美国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇺🇸|美国|us|united\\s?states|america)", icon: *UnitedStates-icon }
-  - { name: 🇬🇧 英国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇬🇧|英国|gb|great\\s?britain|london)", icon: *UnitedKingdom-icon }
-  - { name: 🇳🇱 荷兰自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇳🇱|荷兰|nl|netherlands|amsterdam)", icon: *Netherlands-icon }
-  - { name: 🇩🇪 德国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|de|germany|frankfurt)", icon: *Germany-icon }
+  - { name: 🇭🇰 香港自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇭🇰|香港|hk|hong\\s?kong)", icon: *hongkong-icon }
+  - { name: 🇹🇼 台湾自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇹🇼|台湾|tw|taiwan)", icon: *taiwan-icon }
+  - { name: 🇸🇬 狮城自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇸🇬|新加坡|sg|singapore|lion\\s?city)", icon: *singapore-icon }
+  - { name: 🇯🇵 日本自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇯🇵|日本|jp|japan|tokyo|osaka)", icon: *japan-icon }
+  - { name: 🇰🇷 韩国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇰🇷|韩国|kr|korea|seoul)", icon: *korea-icon }
+  - { name: 🇺🇸 美国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇺🇸|美国|us|united\\s?states|america)", icon: *unitedstates-icon }
+  - { name: 🇬🇧 英国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇬🇧|英国|gb|great\\s?britain|london)", icon: *unitedkingdom-icon }
+  - { name: 🇳🇱 荷兰自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇳🇱|荷兰|nl|netherlands|amsterdam)", icon: *netherlands-icon }
+  - { name: 🇩🇪 德国自动, type: url-test, <<: *airports, include-all: true, tolerance: 100, interval: 300, filter: "(?i)(🇩🇪|德国|de|germany|frankfurt)", icon: *germany-icon }
 
   #------------------------特殊分组------------------------#
-  - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🚀 默认代理 ], icon: *Direct-icon }
-  - { name: 🎣 漏网之鱼, <<: *main, icon: *Fish-icon }
+  - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🚀 默认代理 ], icon: *direct-icon }
+  - { name: 🎣 漏网之鱼, <<: *main, icon: *fish-icon }
 
 ## 规则匹配
 rules:

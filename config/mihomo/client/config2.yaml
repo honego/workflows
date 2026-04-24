@@ -233,7 +233,7 @@ bilibili: &bilibili "https://fastly.jsdelivr.net/gh/honego/workflows@master/conf
 netflix: &netflix "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/netflix.svg"
 spotify: &spotify "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg"
 tiktok: &tiktok "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/tiktok.svg"
-games: &games "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-play-games.svg"
+games: &games "https://fastly.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Video%20game/Color/video_game_color.svg"
 speedtest: &speedtest "https://fastly.jsdelivr.net/gh/xushier/HD-Icons@main/svg/librespeed-1.svg"
 direct: &direct "https://fastly.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f3af.svg"
 fish: &fish "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg"

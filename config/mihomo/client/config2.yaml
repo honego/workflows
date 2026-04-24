@@ -263,7 +263,7 @@ proxy-groups:
   #------------------------基础分组------------------------#
   - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🔯 故障转移, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], icon: *default-icon }
   - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300, icon: *automatic-icon }
-  - { name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 100, interval: 300, icon: *fallback-icon }
+  - { name: 🔯 故障转移, type: fallback, include-all: true, interval: 300, icon: *fallback-icon }
 
   #------------------------场景分组------------------------#
   - { name: 🤖 AI, <<: *specific, icon: *ai-icon }

@@ -210,9 +210,9 @@ proxy-providers:
     url: "url2"
 
 ## Icon 锚点
-default-icon: &default-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
-automatic-icon: &automatic-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
-fallback-icon: &fallback-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
+proxy-icon: &proxy-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/proxy.svg"
+auto-icon: &auto-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/auto.svg"
+fallback-icon: &fallback-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/fallback.svg"
 ai-icon: &ai-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/openai.svg"
 google-icon: &google-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/google.svg"
 github-icon: &github-icon "https://cdn.simpleicons.org/github?size=48"
@@ -229,7 +229,7 @@ bilibili-icon: &bilibili-icon "https://cdn.simpleicons.org/bilibili?size=48"
 netflix-icon: &netflix-icon "https://cdn.simpleicons.org/netflix?size=48"
 spotify-icon: &spotify-icon "https://cdn.simpleicons.org/spotify?size=48"
 tiktok-icon: &tiktok-icon "https://cdn.simpleicons.org/tiktok?size=48"
-games-icon: &games-icon "https://fastly.jsdelivr.net/gh/bytedance/IconPark@master/source/Game/game.svg"
+game-icon: &game-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/game.svg"
 speedtest-icon: &speedtest-icon "https://cdn.simpleicons.org/speedtest?size=48"
 direct-icon: &direct-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/direct.svg"
 fish-icon: &fish-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/fish.svg"
@@ -243,8 +243,8 @@ island: &island { type: select, include-all: true, proxies: [ DIRECT ], filter: 
 ## 代理分组
 proxy-groups:
   #------------------------基础分组------------------------#
-  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🔯 故障转移, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], icon: *default-icon }
-  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300, icon: *automatic-icon }
+  - { name: 🚀 默认代理, type: select, include-all: true, proxies: [ ♻️ 自动选择, 🔯 故障转移, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动 ], icon: *proxy-icon }
+  - { name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 100, interval: 300, icon: *auto-icon }
   - { name: 🔯 故障转移, type: fallback, include-all: true, interval: 300, icon: *fallback-icon }
 
   #------------------------场景分组------------------------#
@@ -264,7 +264,7 @@ proxy-groups:
   - { name: 🎥 NETFLIX, <<: *specific, icon: *netflix-icon }
   - { name: 🎧 Spotify, <<: *island, icon: *spotify-icon }
   - { name: 🎵 TikTok, <<: *specific, icon: *tiktok-icon }
-  - { name: 🎮 Games, <<: *main, icon: *games-icon }
+  - { name: 🎮 Games, <<: *main, icon: *game-icon }
   - { name: ✈️ Speedtest, <<: *main, icon: *speedtest-icon }
 
   #------------------------地区分组------------------------#

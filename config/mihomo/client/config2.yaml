@@ -215,22 +215,22 @@ automatic-icon: &automatic-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/
 fallback-icon: &fallback-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg"
 ai-icon: &ai-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/openai.svg"
 google-icon: &google-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg"
-github-icon: &github-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/github.svg"
-gitlab-icon: &gitlab-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/gitlab.svg"
-docker-icon: &docker-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/docker.svg"
+github-icon: &github-icon "https://cdn.simpleicons.org/github?size=48"
+gitlab-icon: &gitlab-icon "https://cdn.simpleicons.org/gitlab?size=48"
+docker-icon: &docker-icon "https://cdn.simpleicons.org/docker?size=48"
 microsoft-icon: &microsoft-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
 onedrive-icon: &onedrive-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/onedrive.svg"
 apple-icon: &apple-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/apple.svg"
-paypal-icon: &paypal-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/paypal.svg"
-telegram-icon: &telegram-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg"
+paypal-icon: &paypal-icon "https://cdn.simpleicons.org/paypal?size=48"
+telegram-icon: &telegram-icon "https://cdn.simpleicons.org/telegram?size=48"
 twitter-icon: &twitter-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/twitter.svg"
-meta-icon: &meta-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/facebook.svg"
-bilibili-icon: &bilibili-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/bilibili.svg"
-netflix-icon: &netflix-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/netflix.svg"
-spotify-icon: &spotify-icon "https://fastly.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg"
-tiktok-icon: &tiktok-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/tiktok.svg"
+meta-icon: &meta-icon "https://cdn.simpleicons.org/meta?size=48"
+bilibili-icon: &bilibili-icon "https://cdn.simpleicons.org/bilibili?size=48"
+netflix-icon: &netflix-icon "https://cdn.simpleicons.org/netflix?size=48"
+spotify-icon: &spotify-icon "https://cdn.simpleicons.org/spotify?size=48"
+tiktok-icon: &tiktok-icon "https://cdn.simpleicons.org/tiktok?size=48"
 games-icon: &games-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/games.svg"
-speedtest-icon: &speedtest-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/speedtest.svg"
+speedtest-icon: &speedtest-icon "https://cdn.simpleicons.org/speedtest?size=48"
 direct-icon: &direct-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/direct.svg"
 fish-icon: &fish-icon "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg"
 
@@ -313,6 +313,7 @@ rules:
   - RULE-SET,docker-domain,🐳 Docker
   - RULE-SET,facebook-domain,🌀 Meta
   - RULE-SET,instagram-domain,🌀 Meta
+  - RULE-SET,threads-domain,🌀 Meta
   - RULE-SET,whatsapp-domain,🌀 Meta
   - RULE-SET,microsoft-domain,🪟 Microsoft
   - RULE-SET,microsoft-cn-domain,🪟 Microsoft
@@ -389,6 +390,7 @@ rule-providers:
   spotify-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/spotify.mrs" }
   steam-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs" }
   telegram-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs" }
+  threads-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/threads.mrs" }
   tiktok-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/tiktok.mrs" }
   twitter-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs" }
   whatsapp-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/whatsapp.mrs" }

@@ -1,0 +1,36 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Color Gamepad 48</title>
+  <defs>
+    <linearGradient id="body" x1="8" y1="12" x2="40" y2="39" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6A5CFF"/>
+      <stop offset="0.45" stop-color="#2F80ED"/>
+      <stop offset="1" stop-color="#00C2A8"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="10" y1="14" x2="35" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="3" y="10" width="42" height="34" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <path d="M14.2 16H33.8C39.5 16 43 20.5 43 27.3C43 35.8 39.2 39 35.3 39C32.2 39 30.2 35.8 27.8 35.8H20.2C17.8 35.8 15.8 39 12.7 39C8.8 39 5 35.8 5 27.3C5 20.5 8.5 16 14.2 16Z" fill="url(#body)"/>
+    <path d="M14.2 16H33.8C39.5 16 43 20.5 43 27.3C43 35.8 39.2 39 35.3 39C32.2 39 30.2 35.8 27.8 35.8H20.2C17.8 35.8 15.8 39 12.7 39C8.8 39 5 35.8 5 27.3C5 20.5 8.5 16 14.2 16Z" fill="url(#shine)"/>
+  </g>
+
+  <path d="M14 25H20" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M17 22V28" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
+
+  <circle cx="31.5" cy="23.8" r="2.35" fill="#FFD43B"/>
+  <circle cx="36.2" cy="27.9" r="2.35" fill="#FF5C5C"/>
+  <circle cx="31.5" cy="32" r="2.35" fill="#28D17C"/>
+  <circle cx="26.8" cy="27.9" r="2.35" fill="#FF7AD9"/>
+
+  <rect x="20.2" y="19.2" width="3.9" height="1.8" rx="0.9" fill="#1B2559" opacity="0.72"/>
+  <rect x="24.8" y="19.2" width="3.9" height="1.8" rx="0.9" fill="#1B2559" opacity="0.72"/>
+
+  <circle cx="21" cy="30.6" r="2.15" fill="#1B2559" opacity="0.72"/>
+  <circle cx="24.8" cy="30.6" r="2.15" fill="#1B2559" opacity="0.72"/>
+</svg>

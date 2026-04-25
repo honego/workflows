@@ -29,6 +29,7 @@ geox-url:
   asn: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-geodata/Country-ASN-all.mmdb"
 
 geodata-mode: true
+geodata-loader: memconservative # geo 文件加载模式 standard: 标准加载器 memconservative: 专为内存受限设备优化的加载器 (默认值)
 geo-auto-update: true # 是否自动更新geodata
 geo-update-interval: 24 # 更新间隔 单位: 小时
 
@@ -301,30 +302,30 @@ rules:
   - RULE-SET,direct-list,DIRECT # 直连补充
 
   # 应用分流
-  - RULE-SET,apple-domain,🍎 Apple
-  - RULE-SET,apple-cn-domain,🍎 Apple
   - RULE-SET,google-domain,🍀 Google
   - RULE-SET,google-cn-domain,🍀 Google
   - RULE-SET,ai-domain,🤖 AI
-  - RULE-SET,steam-domain,🎮 Games
-  - RULE-SET,epicgames-domain,🎮 Games
   - RULE-SET,github-domain,👨‍💻 GitHub
   - RULE-SET,gitlab-domain,🦊 GitLab
   - RULE-SET,docker-domain,🐳 Docker
+  - RULE-SET,onedrive-domain,🐬 OneDrive
+  - RULE-SET,microsoft-domain,🪟 Microsoft
+  - RULE-SET,microsoft-cn-domain,🪟 Microsoft
+  - RULE-SET,apple-domain,🍎 Apple
+  - RULE-SET,apple-cn-domain,🍎 Apple
+  - RULE-SET,telegram-domain,📲 Telegram
+  - RULE-SET,twitter-domain,🐦 Twitter
   - RULE-SET,facebook-domain,🌀 Meta
   - RULE-SET,instagram-domain,🌀 Meta
   - RULE-SET,threads-domain,🌀 Meta
   - RULE-SET,whatsapp-domain,🌀 Meta
-  - RULE-SET,microsoft-domain,🪟 Microsoft
-  - RULE-SET,microsoft-cn-domain,🪟 Microsoft
-  - RULE-SET,onedrive-domain,🐬 OneDrive
-  - RULE-SET,telegram-domain,📲 Telegram
-  - RULE-SET,twitter-domain,🐦 Twitter
   - RULE-SET,bilibili-domain,📺 BiliBili
   - RULE-SET,netflix-domain,🎥 NETFLIX
   - RULE-SET,spotify-domain,🎧 Spotify
   - RULE-SET,tiktok-domain,🎵 TikTok
   - RULE-SET,bytedance-!cn-domain,🎵 TikTok
+  - RULE-SET,steam-domain,🎮 Games
+  - RULE-SET,epicgames-domain,🎮 Games
   - RULE-SET,paypal-domain,💶 PayPal
   - RULE-SET,speedtest-domain,✈️ Speedtest
 

@@ -231,7 +231,7 @@ spotify-icon: &spotify-icon "https://cdn.simpleicons.org/spotify?size=48"
 tiktok-icon: &tiktok-icon "https://cdn.simpleicons.org/tiktok?size=48"
 games-icon: &games-icon "https://fastly.jsdelivr.net/gh/bytedance/IconPark@master/source/Game/game.svg"
 speedtest-icon: &speedtest-icon "https://cdn.simpleicons.org/speedtest?size=48"
-direct-icon: &direct-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config/mihomo/icons/svg/direct.svg"
+direct-icon: &direct-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/direct.svg"
 fish-icon: &fish-icon "https://fastly.jsdelivr.net/gh/honego/workflows@master/config/mihomo/icons/svg/fish.svg"
 
 ## 代理分组锚点

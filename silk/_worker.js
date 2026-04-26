@@ -27,6 +27,11 @@ const html = `<!doctype html>
       type="image/png"
       href="https://m.360buyimg.com/i/jfs/t1/343134/32/18184/15071/68ff3492F23f6841a/7f13cf100e65096d.png"
     />
+    <script
+      defer
+      src="https://umami.honeok.com/script.js"
+      data-website-id="825b987b-6add-4b6a-b55d-c1cf19cd2690"
+    ></script>
     <style>
       * {
         box-sizing: border-box;
@@ -65,7 +70,8 @@ const html = `<!doctype html>
         align-items: center;
         justify-content: center;
         width: 100%;
-        min-height: 240px;
+        height: min(768px, calc(100dvh - 156px));
+        min-height: 420px;
         border-radius: 10px;
         background: #0f0f0f;
         box-shadow: 0 0 24px rgba(255, 255, 255, 0.18);
@@ -75,8 +81,9 @@ const html = `<!doctype html>
       img {
         display: block;
         width: 100%;
-        max-height: calc(100dvh - 150px);
+        height: 100%;
         object-fit: contain;
+        object-position: center;
         transition: opacity 0.2s ease;
       }
 
@@ -140,12 +147,13 @@ const html = `<!doctype html>
         }
 
         .image-stage {
-          min-height: 220px;
+          height: calc(100dvh - 132px);
+          min-height: 320px;
           border-radius: 8px;
         }
 
         img {
-          max-height: calc(100dvh - 130px);
+          height: 100%;
         }
 
         .actions button {
@@ -187,15 +195,17 @@ const html = `<!doctype html>
       const readyImages = [];
 
       let pendingPrefetches = 0;
+      let isLoading = false;
 
       function apiUrl() {
         return "/image?t=" + Date.now() + "&r=" + Math.random().toString(36).slice(2);
       }
 
       function setLoading(loading) {
-        nextBtn.disabled = loading && readyImages.length === 0;
-        nextBtn.textContent = loading && readyImages.length === 0 ? "加载中..." : "下一张";
-        image.style.opacity = loading && readyImages.length === 0 ? "0.55" : "1";
+        const needsWait = loading && readyImages.length === 0;
+        nextBtn.disabled = needsWait;
+        nextBtn.textContent = needsWait ? "加载中..." : "下一张";
+        image.style.opacity = needsWait ? "0.55" : "1";
       }
 
       async function fetchImageBlob() {
@@ -233,7 +243,29 @@ const html = `<!doctype html>
         }
       }
 
+      function showObjectUrl(nextObjectUrl) {
+        const oldObjectUrl = currentObjectUrl;
+
+        image.onload = function () {
+          if (oldObjectUrl) {
+            URL.revokeObjectURL(oldObjectUrl);
+          }
+        };
+
+        image.onerror = function () {
+          statusText.textContent = "图片加载失败，请重试";
+        };
+
+        currentObjectUrl = nextObjectUrl;
+        image.src = nextObjectUrl;
+      }
+
       async function loadImage() {
+        if (isLoading) {
+          return;
+        }
+
+        isLoading = true;
         statusText.textContent = "";
         setLoading(true);
 
@@ -243,25 +275,12 @@ const html = `<!doctype html>
             readyImages.push(URL.createObjectURL(blob));
           }
 
-          const nextObjectUrl = readyImages.shift();
-          const oldObjectUrl = currentObjectUrl;
-
-          image.onload = function () {
-            if (oldObjectUrl) {
-              URL.revokeObjectURL(oldObjectUrl);
-            }
-          };
-
-          image.onerror = function () {
-            statusText.textContent = "图片加载失败，请重试";
-          };
-
-          currentObjectUrl = nextObjectUrl;
-          image.src = nextObjectUrl;
+          showObjectUrl(readyImages.shift());
         } catch (error) {
           console.error(error);
           statusText.textContent = "图片加载失败，请重试";
         } finally {
+          isLoading = false;
           setLoading(false);
           fillPrefetchQueue();
         }

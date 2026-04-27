@@ -7,6 +7,7 @@ function imageApis() {
     "https://v2.xxapi.cn/api/heisi?return=302",
     "https://api.suyanw.cn/api/hs.php",
     "https://api.guiguiya.com/api/hook/heisi",
+    "https://api.nycnm.cn/API/heisi1.php",
   ];
 }
 

@@ -241,15 +241,15 @@ fish-icon: &fish-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config
 # ai-icon: &ai-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
 # google-icon: &google-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
 # github-icon: &github-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/GitHub.png"
-# gitlab-icon: &gitlab-icon ""
-# docker-icon: &docker-icon ""
+# gitlab-icon: &gitlab-icon "https://raw.githubusercontent.com/honego/workflows/master/config/mihomo/icons/png/gitlab.png"
+# docker-icon: &docker-icon "https://raw.githubusercontent.com/honego/workflows/master/config/mihomo/icons/png/docker.png"
 # microsoft-icon: &microsoft-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
 # onedrive-icon: &onedrive-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/OneDrive.png"
 # apple-icon: &apple-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
 # paypal-icon: &paypal-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/PayPal.png"
 # telegram-icon: &telegram-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
 # twitter-icon: &twitter-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png"
-# meta-icon: &meta-icon ""
+# meta-icon: &meta-icon "https://raw.githubusercontent.com/honego/workflows/master/config/mihomo/icons/png/meta.png"
 # bilibili-icon: &bilibili-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png"
 # netflix-icon: &netflix-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
 # spotify-icon: &spotify-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png"
@@ -257,7 +257,7 @@ fish-icon: &fish-icon "https://fastly.jsdelivr.net/gh/honeok/cross@master/config
 # game-icon: &game-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png"
 # speedtest-icon: &speedtest-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Speedtest.png"
 # direct-icon: &direct-icon "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png"
-# fish-icon: &fish-icon ""
+# fish-icon: &fish-icon "https://raw.githubusercontent.com/honego/workflows/master/config/mihomo/icons/png/fish.png"
 
 ## 代理分组锚点
 main: &main { type: select, include-all: true, proxies: [ 🚀 默认代理, ♻️ 自动选择, 🔯 故障转移, 🇭🇰 香港自动, 🇹🇼 台湾自动, 🇸🇬 狮城自动, 🇯🇵 日本自动, 🇰🇷 韩国自动, 🇺🇸 美国自动, 🇬🇧 英国自动, 🇳🇱 荷兰自动, 🇩🇪 德国自动, DIRECT ] }

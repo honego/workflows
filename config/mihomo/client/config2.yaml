@@ -198,6 +198,7 @@ airport_conf: &airport_conf
   health-check:
     enable: true
     interval: 300
+    # https://blog.clash-plus.com/post/clash-204-test-url
     url: "http://cp.cloudflare.com/generate_204" # 用于健康检查的 URL
     expected-status: 204 # 当健康检查返回状态码与期望值不符时认为节点不可用
 

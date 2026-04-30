@@ -107,11 +107,11 @@ dns-cn: &dns-cn
   - https://dns.alidns.com/dns-query
 
 dns-not-cn: &dns-not-cn
-  - https://one.one.one.one/dns-query#🚀 默认代理
+  - https://cloudflare-dns.com/dns-query#🚀 默认代理
   - https://dns.google/dns-query#🚀 默认代理
+  - https://dns.quad9.net/dns-query#🚀 默认代理
   - https://dns.adguard-dns.com/dns-query#🚀 默认代理
   - https://doh.dns.sb/dns-query#🚀 默认代理
-  - https://dns.quad9.net/dns-query#🚀 默认代理
 
 # https://www.nodeseek.com/post-609424-3#24
 dns:

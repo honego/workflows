@@ -156,7 +156,7 @@ dns:
   # 配置查询域名使用的DNS服务器
   nameserver-policy:
     "rule-set:cn-domain,private-domain": *dns-cn
-    "rule-set:hageziproplus-domain": "rcode://success"
+    "rule-set:hagezi-domain": "rcode://success"
 
 ## 节点信息
 proxies:
@@ -318,7 +318,7 @@ rules:
   - RULE-SET,httpdns-cn-domain,REJECT # 国内 HTTPDNS 劫持
   - RULE-SET,winspy-domain,REJECT # Windows 隐私追踪
   - RULE-SET,awaads-domain,REJECT # 广告拦截
-  - RULE-SET,hageziproplus-domain,REJECT # 广告恶意域名拦截
+  - RULE-SET,hagezi-domain,REJECT # 广告恶意域名拦截
   - RULE-SET,reject-list,REJECT # 拦截补充
 
   - RULE-SET,connectivity-check-domain,DIRECT # 连接性检查
@@ -399,7 +399,7 @@ rule-providers:
   gitlab-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gitlab.mrs" }
   google-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs" }
   google-cn-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/google.mrs" }
-  hageziproplus-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MiHomoer/MiHomo-Hagezi@release/HageziProPlus.mrs" }
+  hagezi-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MiHomoer/MiHomo-Hagezi@release/HageziPro.mrs" }
   httpdns-cn-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-httpdns-cn.mrs" }
   icloudprivaterelay-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/icloudprivaterelay.mrs" }
   instagram-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs" }

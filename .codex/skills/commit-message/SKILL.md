@@ -35,4 +35,5 @@ Commit message rules:
 - Keep the body concise and specific.
 - Add a `BREAKING CHANGE:` footer when the change is breaking.
 - Append `Refs: #123` when related issue or PR ids appear in context.
+- Append `Co-authored-by: Codex <noreply@openai.com>` as the final footer.
 - Do not invent issue ids, scopes, or breaking-change footers.

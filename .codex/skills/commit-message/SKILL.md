@@ -1,29 +1,24 @@
 ---
 name: commit-message
-description: Commit and push code changes with a Conventional Commit message. Use when the user asks Codex to commit, commit and push, generate a commit from current changes, or invokes this skill after code edits.
+description: Draft and print Conventional Commit messages for code changes. Use when the user asks Codex to write, generate, polish, or review a git commit message from git diff, staged changes, unstaged changes, PR context, issue ids, or repository changes.
 ---
 
 # Commit Message
 
-When this skill is invoked, commit and push the current changes directly. Do
-not output a draft commit message for the user to copy.
+When this skill is invoked, inspect the current changes and print the final
+commit message text for the user to commit manually.
 
 Workflow:
 
 - Run `git status --short` to inspect the worktree.
-- Prefer existing staged changes. If nothing is staged, stage the current
-  worktree changes with `git add -A`.
-- Inspect the staged changes with `git diff --staged` before committing.
-- If there are still no staged changes, stop and say there is nothing to
-  commit.
-- Generate a Conventional Commit message from the staged changes.
-- Run `git commit` with the generated message.
-- Run `git push` after the commit succeeds.
-- Do not ask for confirmation or print the generated message before
-  committing, unless command execution requires explicit tool approval or git
-  refuses to continue.
-- After success, keep the final response terse: say that the changes were
-  committed and pushed. Do not include the commit message unless asked.
+- Prefer existing staged changes and inspect them with `git diff --staged`.
+- If nothing is staged, inspect unstaged changes with `git diff`.
+- For untracked files, read the relevant file contents when needed.
+- Do not run `git add`, `git commit`, or `git push`.
+- If no changes are available, say there is nothing to commit.
+- Generate a Conventional Commit message from the available changes.
+- Output only the final commit message text. Do not use markdown, code
+  fences, or extra commentary.
 
 Commit message rules:
 

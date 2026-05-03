@@ -105,6 +105,8 @@ sniffer:
 dns-cn: &dns-cn
   - https://doh.pub/dns-query
   - https://dns.alidns.com/dns-query
+  - https://doh-pure.onedns.net/dns-query # 北京微步 / OneDNS 纯净版
+  - https://doh.18bit.cn/dns-query
 
 dns-not-cn: &dns-not-cn
   - https://cloudflare-dns.com/dns-query#🚀 默认代理

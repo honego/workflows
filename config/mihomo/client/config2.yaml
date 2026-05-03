@@ -315,11 +315,12 @@ rules:
   - RULE-SET,private-domain,DIRECT
 
   - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT # QUIC 拦截
-  - RULE-SET,icloudprivaterelay-domain,REJECT # iCloud 私有中继
+  - RULE-SET,icloudprivaterelay-domain,REJECT # iCloud 私有中继拦截
   - RULE-SET,httpdns-cn-domain,REJECT # 国内 HTTPDNS 劫持
   - RULE-SET,winspy-domain,REJECT # Windows 隐私追踪
   - RULE-SET,awaads-domain,REJECT # 广告拦截
   - RULE-SET,hagezi-domain,REJECT # 广告恶意域名拦截
+  # - RULE-SET,stun-domain,REJECT # STUN 拦截
   - RULE-SET,reject-list,REJECT # 拦截补充
 
   - RULE-SET,connectivity-check-domain,DIRECT # 连接性检查
@@ -415,6 +416,7 @@ rule-providers:
   speedtest-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/ookla-speedtest.mrs" }
   spotify-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/spotify.mrs" }
   steam-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs" }
+  # stun-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/Kwisma/rules@main/rules/mihomo/STUN/STUN_Domain.mrs" }
   telegram-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs" }
   threads-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/threads.mrs" }
   tiktok-domain: { <<: *domain, url: "https://fastly.jsdelivr.net/gh/DustinWin/ruleset_geodata@mihomo-ruleset/tiktok.mrs" }

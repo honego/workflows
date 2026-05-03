@@ -110,8 +110,11 @@ dns-not-cn: &dns-not-cn
   - https://cloudflare-dns.com/dns-query#🚀 默认代理
   - https://dns.google/dns-query#🚀 默认代理
   - https://dns.quad9.net/dns-query#🚀 默认代理
-  - https://dns.adguard-dns.com/dns-query#🚀 默认代理
+  - https://doh.opendns.com/dns-query#🚀 默认代理 # Cisco / OpenDNS
+  - https://wikimedia-dns.org/dns-query#🚀 默认代理
   - https://doh.dns.sb/dns-query#🚀 默认代理
+  - https://dns.adguard-dns.com/dns-query#🚀 默认代理
+  - https://doh-sg.blahdns.com/dns-query#🚀 默认代理
 
 # https://www.nodeseek.com/post-609424-3#24
 dns:

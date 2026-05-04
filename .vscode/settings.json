@@ -1,5 +1,5 @@
 {
-  // workbench
+  // Workbench
   "workbench.colorTheme": "Dark Modern",
   "workbench.iconTheme": "vscode-icons",
 
@@ -8,7 +8,7 @@
   "explorer.confirmDelete": false,
   "explorer.confirmPasteNative": false,
 
-  // editor setting
+  // Editor setting
   "editor.fontSize": 16,
   "editor.renderWhitespace": "selection",
   "editor.rulers": [80, 120],
@@ -23,14 +23,14 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
 
-  // git setting
+  // Git setting
   "git.enableSmartCommit": true,
   "git.alwaysSignOff": true,
   "git.confirmSync": false,
   "git.fetchOnPull": true,
   "git.pruneOnFetch": true,
 
-  // github copilot
+  // Github copilot
   "github.copilot.chat.commitMessageGeneration.instructions": [
     { "text": "Output only the final commit message text. No markdown, no code fences, no extra commentary." },
     { "text": "Use Conventional Commit format: <type>(<scope>): <subject>." },
@@ -43,14 +43,11 @@
     { "text": "If there is a related issue or PR id in context, append: Refs: #123." }
   ],
 
-  // error Lens
+  // Error Lens
   "errorLens.fontStyleItalic": true,
   "errorLens.messageBackgroundMode": "message",
 
-  // prettier
-  "prettier.useEditorConfig": true,
-
-  // go
+  // Go
   "[go]": {
     "editor.defaultFormatter": "golang.go",
     "editor.formatOnSave": true,
@@ -78,17 +75,15 @@
   // "go.inlayHints.parameterNames": true,
   // "go.inlayHints.rangeVariableTypes": true,
 
-  // lua
+  // Lua
   "[lua]": {
     "editor.defaultFormatter": "JohnnyMorganz.stylua"
   },
 
-  // nft
-  // "[nft]": {
-  //   "editor.defaultFormatter": "omBratteng.nftables"
-  // },
+  // Prettier
+  "prettier.useEditorConfig": true,
 
-  // python
+  // Python
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.codeActionsOnSave": {
@@ -97,7 +92,7 @@
     }
   },
 
-  // shell
+  // Shell
   "shellcheck.enable": true,
   "shellcheck.enableQuickFix": true,
   "shellcheck.run": "onSave",
@@ -108,7 +103,22 @@
     }
   },
 
-  // yaml
+  // Typescript
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Vue
+  "files.associations": {
+    "*.vue": "vue"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar",
+    "editor.formatOnSave": true
+  },
+
+  // Yaml
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },

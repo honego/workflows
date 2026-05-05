@@ -44,7 +44,7 @@ export default {
       try {
         const upstreamResponse = await fetchWithTimeout(
           upstreamUrl,
-          buildProxyRequestOptions(request, requestUrl),
+          buildProxyRequestOptions(request, requestUrl, upstreamUrl),
           UPSTREAM_TIMEOUT_MS,
         );
 
@@ -55,7 +55,7 @@ export default {
           return renderErrorPage(upstreamResponse.status);
         }
 
-        // 500 系列认为是后端节点异常 先尝试切换到下一个节点。
+        // 500 系列认为是后端节点异常 先尝试切换到下一个节点
         if (isRetryableMethod && RETRYABLE_STATUS_CODES.has(upstreamResponse.status)) {
           await safelyCancelResponseBody(upstreamResponse);
 
@@ -81,21 +81,27 @@ export default {
 };
 
 function buildUpstreamUrl(originalRequestUrl, originBaseUrl) {
-  const upstreamUrl = new URL(originalRequestUrl);
+  const requestUrl = new URL(originalRequestUrl);
   const originUrl = new URL(originBaseUrl);
 
-  upstreamUrl.protocol = originUrl.protocol;
-  upstreamUrl.hostname = originUrl.hostname;
-  upstreamUrl.port = originUrl.port;
-
-  return upstreamUrl.toString();
+  // 保留源站自己的协议 IP 端口
+  // 例如:
+  // http://86.38.200.13:1200 + /foo?bar=1
+  // => http://86.38.200.13:1200/foo?bar=1
+  return `${originUrl.origin}${requestUrl.pathname}${requestUrl.search}`;
 }
 
-function buildProxyRequestOptions(request, originalRequestUrl) {
+function buildProxyRequestOptions(request, originalRequestUrl, upstreamUrl) {
   const proxyHeaders = new Headers(request.headers);
+  const upstreamRequestUrl = new URL(upstreamUrl);
+
+  // 保持源站自己的 Host
+  // 例如:
+  // http://86.38.200.13:1200 => Host: 86.38.200.13:1200
+  // http://97.64.36.218:8880 => Host: 97.64.36.218:8880
+  proxyHeaders.set("Host", upstreamRequestUrl.host);
 
   // 清理不适合透传给源站的边缘层头部
-  proxyHeaders.delete("host");
   proxyHeaders.delete("connection");
   proxyHeaders.delete("upgrade");
   proxyHeaders.delete("cf-connecting-ip");
@@ -124,6 +130,7 @@ function buildProxyRequestOptions(request, originalRequestUrl) {
 
 async function fetchWithTimeout(url, requestOptions, timeoutMilliseconds) {
   const abortController = new AbortController();
+
   const timeoutId = setTimeout(() => abortController.abort(), timeoutMilliseconds);
 
   try {

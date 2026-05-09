@@ -1,14 +1,14 @@
 {
   "inbounds": [
     {
-      "tag": "VLESS-XHTTP-443.json",
-      "port": 443,
+      "tag": "VLESS-XHTTP-18443.json",
+      "port": 18443,
       "listen": "::",
       "protocol": "vless",
       "settings": {
         "clients": [
           {
-            "id": "3c9b8eff-7f61-4ae1-b1dd-2f66e2292d9d"
+            "id": "827867e4-dd69-44f0-8ac0-3e89f6e54935"
           }
         ],
         "decryption": "none"

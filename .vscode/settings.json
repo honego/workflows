@@ -122,7 +122,7 @@
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
-  "yaml.format.bracketSpacing": true, // 括号内侧保留空格
+  "yaml.format.bracketSpacing": true, // 控制对象 {} 内侧空格 不控制数组 [] 内侧空格
   "yaml.format.printWidth": 500,
-  "yaml.format.singleQuote": false // 优先使用单引号字符串
+  "yaml.format.singleQuote": false // 不强制优先使用单引号字符串
 }

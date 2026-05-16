@@ -28,7 +28,12 @@ Automatic update.
 (crontab -l 2>/dev/null; echo "0 7 * * * /bin/bash -c 'bash <(curl -Ls https://fastly.jsdelivr.net/gh/honeok/cross@master/config/xray/up.sh)'") | crontab -
 ```
 
+## conf.d
+
+[XHTTP][5] 配置
+
 [1]: https://github.com/XTLS
 [2]: https://github.com/XTLS/Xray-core
 [3]: https://github.com/XTLS/REALITY
 [4]: https://github.com/233boy/Xray
+[5]: https://github.com/XTLS/Xray-core/discussions/4113

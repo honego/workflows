@@ -156,6 +156,7 @@ RUN set -ex \
         openssl-dev \
         pax-utils \
         pcre2-dev \
+        zlib-dev \
     && apk add --no-cache \
         curl \
         ca-certificates \

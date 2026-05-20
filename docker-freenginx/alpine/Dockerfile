@@ -136,6 +136,14 @@ RUN set -ex \
     && apk del --no-network .build-deps \
     && rm -rf /var/cache/apk/* /tmp/* \
     && ln -sf /usr/sbin/nginx /usr/sbin/freenginx \
+# https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
+    && mkdir -p /usr/share/nginx \
+    && mv /etc/nginx/html /usr/share/nginx \
+    && ln -sf /usr/lib/nginx/modules /etc/nginx/modules \
+    && rm -rf /etc/nginx/*.default \
+	    rm -f /etc/nginx/koi-utf \
+	    rm -f /etc/nginx/koi-win \
+	    rm -f /etc/nginx/win-utf \
 # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \

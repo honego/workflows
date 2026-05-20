@@ -53,9 +53,9 @@ ARG NGINX_VERSION=""
 ARG ZSTD_VERSION=""
 ARG HEADERS_MORE_VERSION=""
 
-ENV NGINX_VERSION=${NGINX_VERSION}
-ENV ZSTD_VERSION=${ZSTD_VERSION}
-ENV HEADERS_MORE_VERSION=${HEADERS_MORE_VERSION}
+ENV NGINX_VERSION=$NGINX_VERSION
+ENV ZSTD_VERSION=$ZSTD_VERSION
+ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
 
 # https://github.com/nginx/pkg-oss/blob/master/alpine/Makefile
 ARG NGINX_BUILD_ARGS="\
@@ -101,3 +101,20 @@ ARG NGINX_BUILD_ARGS="\
     --with-stream_ssl_module \
     --with-stream_ssl_preread_module \
     "
+
+# https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
+# -Os                         Optimize for smaller binary size.
+# -fstack-clash-protection    Enable Stack Clash protection.
+# -Wformat                    Check printf/scanf-style format strings.
+# -Werror=format-security     Treat unsafe format-string warnings as errors.
+# -fno-plt                    Avoid PLT indirection on x86_64 for smaller/faster dynamic calls.
+# -g                          Generate debug symbols; usually stripped or split into debug packages.
+ARG NGX_CFLAGS='-Os -fstack-clash-protection -Wformat -Werror=format-security -fno-plt -g'
+ENV NGX_CFLAGS=$NGX_CFLAGS
+
+# -Wl,--as-needed             Only link libraries that are actually needed.
+# -Wl,-O1                     Enable basic linker optimizations.
+# -Wl,--sort-common           Sort common symbols during linking.
+# -Wl,-z,pack-relative-relocs Pack relative relocations to reduce ELF relocation size.
+ARG NGX_LDFLAGS='-Wl,--as-needed,-O1,--sort-common -Wl,-z,pack-relative-relocs'
+ENV NGX_LDFLAGS=$NGX_LDFLAGS

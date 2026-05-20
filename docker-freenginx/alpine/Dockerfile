@@ -3,6 +3,69 @@
 
 FROM alpine:3.23.4@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11 AS base
 
+FROM base AS builder
+
+ARG NGINX_VERSION=""
+ARG NJS_VERSION=""
+ARG ZSTD_VERSION=""
+ARG HEADERS_MORE_VERSION=""
+
+ENV NGINX_VERSION=$NGINX_VERSION
+ENV NJS_VERSION=$NJS_VERSION
+ENV ZSTD_VERSION=$ZSTD_VERSION
+ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
+
+ARG NGX_DYNAMIC_MODULE_ARGS="\
+    --with-http_xslt_module=dynamic \
+    --with-http_image_filter_module=dynamic \
+    --with-http_geoip_module=dynamic \
+    --with-stream_geoip_module=dynamic \
+    --add-dynamic-module=../ngx_brotli \
+    --add-dynamic-module=../zstd-nginx-module \
+    --add-dynamic-module=../njs-${NJS_VERSION}/nginx \
+    --add-dynamic-module=../headers-more-nginx-module-${HEADERS_MORE_VERSION} \
+    "
+
+RUN set -ex \
+    && apk add --update --no-cache --virtual .build-deps \
+        brotli-dev \
+        build-base \
+        curl \
+        git \
+        gd-dev \
+        geoip-dev \
+        lz4-dev \
+        libxml2-dev \
+        libxslt-dev \
+        openssl-dev \
+        pcre2-dev \
+        xz-dev \
+        zlib-dev \
+    && cd /tmp \
+    && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
+    && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
+    && git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli \
+    && curl -Ls https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION}/zstd-${ZSTD_VERSION}.tar.gz -o zstd-${ZSTD_VERSION}.tar.gz \
+    && tar fxz zstd-${ZSTD_VERSION}.tar.gz \
+    && cd zstd-${ZSTD_VERSION} \
+    && make clean \
+    && CFLAGS="-fPIC" make -j$(getconf _NPROCESSORS_ONLN) \
+    && make -j$(getconf _NPROCESSORS_ONLN) install \
+    && cd /tmp \
+    && git clone --depth=10 https://github.com/tokers/zstd-nginx-module.git \
+    && curl -Ls https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz -o headers-more-${HEADERS_MORE_VERSION}.tar.gz \
+    && tar fxz headers-more-${HEADERS_MORE_VERSION}.tar.gz \
+    && curl -Ls https://github.com/nginx/njs/archive/${NJS_VERSION}.tar.gz -o njs-${NJS_VERSION}.tar.gz \
+    && tar fxz njs-${NJS_VERSION}.tar.gz \
+    && cd freenginx-${NGINX_VERSION} \
+    && ./configure \
+        --with-compat \
+        ${NGX_DYNAMIC_MODULE_ARGS} \
+    && make modules \
+    && strip objs/*.so \
+    && apk del --no-network .build-deps \
+    && rm -rf /var/cache/apk/*
+
 FROM base AS dist
 
 LABEL org.opencontainers.image.authors="honeok <i@honeok.com>"
@@ -16,6 +79,8 @@ ENV NGINX_VERSION=$NGINX_VERSION
 ENV NJS_VERSION=$NJS_VERSION
 ENV ZSTD_VERSION=$ZSTD_VERSION
 ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
+
+COPY --from=builder /tmp/freenginx-${NGINX_VERSION}/objs/*.so /usr/lib/nginx/modules
 
 # https://freenginx.org/en/docs/configure.html
 # https://github.com/nginx/pkg-oss/blob/master/alpine/Makefile
@@ -63,17 +128,6 @@ ARG NGX_CONFIGURE_ARGS="\
     --with-stream_ssl_preread_module \
     "
 
-ARG NGX_DYNAMIC_MODULE_ARGS="\
-    --with-http_xslt_module=dynamic \
-    --with-http_image_filter_module=dynamic \
-    --with-http_geoip_module=dynamic \
-    --with-stream_geoip_module=dynamic \
-    --add-dynamic-module=../ngx_brotli \
-    --add-dynamic-module=../zstd-nginx-module \
-    --add-dynamic-module=../njs-${NJS_VERSION}/nginx \
-    --add-dynamic-module=../headers-more-nginx-module-${HEADERS_MORE_VERSION} \
-    "
-
 # https://sourceware.org/binutils/docs/ld/Options.html
 # -Os                         Optimize for smaller binary size.
 # -fstack-clash-protection    Enable Stack Clash protection.
@@ -95,19 +149,11 @@ RUN set -ex \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
     && apk add --update --no-cache --virtual .build-deps \
-        brotli-dev \
         build-base \
-        git \
-        gd-dev \
-        geoip-dev \
-        libxslt-dev \
         linux-headers \
-        lz4-dev \
         openssl-dev \
         pax-utils \
         pcre2-dev \
-        xz-dev \
-        zlib-dev \
     && apk add --no-cache \
         curl \
         ca-certificates \
@@ -116,21 +162,8 @@ RUN set -ex \
     && cd /tmp \
     && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
     && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
-    && git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli \
-    && curl -Ls https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION}/zstd-${ZSTD_VERSION}.tar.gz -o zstd-${ZSTD_VERSION}.tar.gz \
-    && tar fxz zstd-${ZSTD_VERSION}.tar.gz \
-    && cd zstd-${ZSTD_VERSION} \
-    && make clean \
-    && CFLAGS="-fPIC" make -j$(getconf _NPROCESSORS_ONLN) \
-    && make -j$(getconf _NPROCESSORS_ONLN) install \
-    && cd /tmp \
-    && git clone --depth=10 https://github.com/tokers/zstd-nginx-module.git \
-    && curl -Ls https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz -o headers-more-${HEADERS_MORE_VERSION}.tar.gz \
-    && tar fxz headers-more-${HEADERS_MORE_VERSION}.tar.gz \
-    && curl -Ls https://github.com/nginx/njs/archive/${NJS_VERSION}.tar.gz -o njs-${NJS_VERSION}.tar.gz \
-    && tar fxz njs-${NJS_VERSION}.tar.gz \
     && cd freenginx-${NGINX_VERSION} \
-    && eval ./configure ${NGX_CONFIGURE_ARGS} ${NGX_DYNAMIC_MODULE_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS} \
+    && eval ./configure ${NGX_CONFIGURE_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS} \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && make -j$(getconf _NPROCESSORS_ONLN) install \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in

@@ -144,7 +144,7 @@ RUN set -ex \
 
 # Copy nginx configuration files.
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine
-COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.default.conf /etc/nginx/conf.d/default.conf
 
 # https://github.com/nginx/docker-nginx/tree/master/entrypoint

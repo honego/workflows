@@ -20,7 +20,7 @@ jobs:
       - name: "Mirror to gitgud"
         uses: yesolutions/mirror-action@master
         with:
-          REMOTE: git@gitgud.io:${{ github.repository }}.git
+          REMOTE: git@ssh.gitgud.io:${{ github.repository }}.git
           GIT_SSH_PRIVATE_KEY: ${{ secrets.SYNC_PRIVATE_KEY }}
           PUSH_ALL_REFS: false
           GIT_SSH_NO_VERIFY_HOST: true

@@ -95,7 +95,6 @@ RUN set -ex \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
     && apk add --update --no-cache --virtual .build-deps \
-        bash \
         brotli-dev \
         build-base \
         git \
@@ -105,6 +104,7 @@ RUN set -ex \
         linux-headers \
         lz4-dev \
         openssl-dev \
+        pax-utils \
         pcre2-dev \
         xz-dev \
         zlib-dev \
@@ -150,6 +150,15 @@ RUN set -ex \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
 # create a docker-entrypoint.d directory
     && mkdir /docker-entrypoint.d \
+    && RUNDEPS="$( \
+        scanelf --needed --nobanner --format '%n#p' \
+            /usr/sbin/nginx \
+            /usr/lib/nginx/modules/*.so \
+        | tr ',' '\n' \
+        | sort -u \
+        | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )" \
+    && apk add --update --no-cache --virtual .rundeps ${RUNDEPS} \
     && apk del --no-network .build-deps \
     && rm -rf /var/cache/apk/* /tmp/*
 

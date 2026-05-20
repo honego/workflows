@@ -138,4 +138,6 @@ RUN set -ex \
     && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
     && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
     && cd freenginx-${NGINX_VERSION} \
-    && eval ./configure ${NGINX_BUILD_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS}
+    && eval ./configure ${NGINX_BUILD_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS} \
+    && make -j$(getconf _NPROCESSORS_ONLN) \
+    && make -j$(getconf _NPROCESSORS_ONLN) install

@@ -3,63 +3,23 @@
 
 FROM alpine:3.23.4@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11 AS base
 
-FROM base AS builder
-
-ARG NGINX_VERSION=""
-ARG ZSTD_VERSION=""
-ARG HEADERS_MORE_VERSION=""
-
-RUN set -ex \
-    && apk add --update --no-cache --virtual .build-deps \
-        brotli-dev \
-        build-base \
-        curl \
-        git \
-        lz4-dev \
-        openssl-dev \
-        pcre2-dev \
-        xz-dev \
-        zlib-dev \
-    && cd /tmp \
-    && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
-    && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
-    && git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli \
-    && curl -Ls https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION}/zstd-${ZSTD_VERSION}.tar.gz -o zstd-${ZSTD_VERSION}.tar.gz \
-    && tar fxz zstd-${ZSTD_VERSION}.tar.gz \
-    && cd zstd-${ZSTD_VERSION} \
-    && make clean \
-    && CFLAGS="-fPIC" make -j$(getconf _NPROCESSORS_ONLN) \
-    && make -j$(getconf _NPROCESSORS_ONLN) install \
-    && cd /tmp \
-    && git clone --depth=10 https://github.com/tokers/zstd-nginx-module.git \
-    && curl -Ls https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz -o v${HEADERS_MORE_VERSION}.tar.gz \
-    && tar fxz v${HEADERS_MORE_VERSION}.tar.gz \
-    && cd freenginx-${NGINX_VERSION} \
-    && ./configure \
-        --with-compat \
-        --add-dynamic-module=../ngx_brotli \
-        --add-dynamic-module=../zstd-nginx-module \
-        --add-dynamic-module=../headers-more-nginx-module-${HEADERS_MORE_VERSION} \
-    && make modules \
-    && strip objs/*.so \
-    && apk del --no-network .build-deps \
-    && rm -rf /var/cache/apk/*
-
 FROM base AS dist
 
 LABEL org.opencontainers.image.authors="honeok <i@honeok.com>"
 
 ARG NGINX_VERSION=""
+ARG NJS_VERSION=""
 ARG ZSTD_VERSION=""
 ARG HEADERS_MORE_VERSION=""
 
 ENV NGINX_VERSION=$NGINX_VERSION
+ENV NJS_VERSION=$NJS_VERSION
 ENV ZSTD_VERSION=$ZSTD_VERSION
 ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
 
 # https://freenginx.org/en/docs/configure.html
 # https://github.com/nginx/pkg-oss/blob/master/alpine/Makefile
-ARG NGINX_BUILD_ARGS="\
+ARG NGX_CONFIGURE_ARGS="\
     --prefix=/etc/nginx \
     --sbin-path=/usr/sbin/nginx \
     --modules-path=/usr/lib/nginx/modules \
@@ -103,6 +63,17 @@ ARG NGINX_BUILD_ARGS="\
     --with-stream_ssl_preread_module \
     "
 
+ARG NGX_DYNAMIC_MODULE_ARGS="\
+    --with-http_xslt_module=dynamic \
+    --with-http_image_filter_module=dynamic \
+    --with-http_geoip_module=dynamic \
+    --with-stream_geoip_module=dynamic \
+    --add-dynamic-module=../ngx_brotli \
+    --add-dynamic-module=../zstd-nginx-module \
+    --add-dynamic-module=../njs-${NJS_VERSION}/nginx \
+    --add-dynamic-module=../headers-more-nginx-module-${HEADERS_MORE_VERSION} \
+    "
+
 # https://sourceware.org/binutils/docs/ld/Options.html
 # -Os                         Optimize for smaller binary size.
 # -fstack-clash-protection    Enable Stack Clash protection.
@@ -110,7 +81,6 @@ ARG NGINX_BUILD_ARGS="\
 # -Werror=format-security     Treat unsafe format-string warnings as errors.
 # -g                          Generate debug symbols; usually stripped later.
 ARG NGX_CFLAGS="--with-cc-opt='-Os -fstack-clash-protection -Wformat -Werror=format-security -g'"
-ENV NGX_CFLAGS=$NGX_CFLAGS
 
 # -Wl,--as-needed             Only link libraries that are actually needed.
 # -Wl,-O1                     Enable basic linker optimizations.
@@ -118,7 +88,6 @@ ENV NGX_CFLAGS=$NGX_CFLAGS
 # -Wl,-z,relro                Make relocation sections read-only after linking.
 # -Wl,-z,now                  Resolve symbols at startup, enables full RELRO.
 ARG NGX_LDFLAGS="--with-ld-opt='-Wl,--as-needed,-O1,--sort-common -Wl,-z,relro -Wl,-z,now'"
-ENV NGX_LDFLAGS=$NGX_LDFLAGS
 
 RUN set -ex \
 # create nginx user/group first, to be consistent throughout docker variants
@@ -126,19 +95,43 @@ RUN set -ex \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
     && apk add --update --no-cache --virtual .build-deps \
+        brotli-dev \
         build-base \
+        git \
+        gd-dev \
+        geoip-dev \
+        libxslt-dev \
         linux-headers \
+        lz4-dev \
         openssl-dev \
         pcre2-dev \
+        xz-dev \
         zlib-dev \
     && apk add --no-cache \
         curl \
+        ca-certificates \
         gettext-envsubst \
         tzdata \
     && cd /tmp \
     && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
     && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
+    && git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli \
+    && curl -Ls https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION}/zstd-${ZSTD_VERSION}.tar.gz -o zstd-${ZSTD_VERSION}.tar.gz \
+    && tar fxz zstd-${ZSTD_VERSION}.tar.gz \
+    && cd zstd-${ZSTD_VERSION} \
+    && make clean \
+    && CFLAGS="-fPIC" make -j$(getconf _NPROCESSORS_ONLN) \
+    && make -j$(getconf _NPROCESSORS_ONLN) install \
+    && cd /tmp \
+    && git clone --depth=10 https://github.com/tokers/zstd-nginx-module.git \
+    && curl -Ls https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz -o headers-more-${HEADERS_MORE_VERSION}.tar.gz \
+    && tar fxz headers-more-${HEADERS_MORE_VERSION}.tar.gz \
+    && curl -Ls https://github.com/nginx/njs/archive/${NJS_VERSION}.tar.gz -o njs-${NJS_VERSION}.tar.gz \
+    && tar fxz njs-${NJS_VERSION}.tar.gz \
     && cd freenginx-${NGINX_VERSION} \
-    && eval ./configure ${NGINX_BUILD_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS} \
+    && eval ./configure ${NGX_CONFIGURE_ARGS} ${NGX_DYNAMIC_MODULE_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS} \
     && make -j$(getconf _NPROCESSORS_ONLN) \
-    && make -j$(getconf _NPROCESSORS_ONLN) install
+    && make -j$(getconf _NPROCESSORS_ONLN) install \
+    && strip /usr/lib/nginx/modules/*.so \
+    && apk del --no-network .build-deps \
+    && rm -rf /var/cache/apk/*

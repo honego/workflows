@@ -134,7 +134,7 @@ RUN set -ex \
     && make -j$(getconf _NPROCESSORS_ONLN) install \
     && strip --strip-unneeded /usr/lib/nginx/modules/*.so \
     && apk del --no-network .build-deps \
-    && rm -rf /var/cache/apk/* \
+    && rm -rf /var/cache/apk/* /tmp/* \
     && ln -sf /usr/sbin/nginx /usr/sbin/freenginx \
 # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \

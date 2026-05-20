@@ -109,7 +109,7 @@ ARG NGINX_BUILD_ARGS="\
 # -Wformat                    Check printf/scanf-style format strings.
 # -Werror=format-security     Treat unsafe format-string warnings as errors.
 # -g                          Generate debug symbols; usually stripped later.
-ARG NGX_CFLAGS='-Os -fstack-clash-protection -Wformat -Werror=format-security -g'
+ARG NGX_CFLAGS="--with-cc-opt='-Os -fstack-clash-protection -Wformat -Werror=format-security -g'"
 ENV NGX_CFLAGS=$NGX_CFLAGS
 
 # -Wl,--as-needed             Only link libraries that are actually needed.
@@ -117,18 +117,25 @@ ENV NGX_CFLAGS=$NGX_CFLAGS
 # -Wl,--sort-common           Sort common symbols during linking.
 # -Wl,-z,relro                Make relocation sections read-only after linking.
 # -Wl,-z,now                  Resolve symbols at startup, enables full RELRO.
-ARG NGX_LDFLAGS='-Wl,--as-needed,-O1,--sort-common -Wl,-z,relro -Wl,-z,now'
+ARG NGX_LDFLAGS="--with-ld-opt='-Wl,--as-needed,-O1,--sort-common -Wl,-z,relro -Wl,-z,now'"
 ENV NGX_LDFLAGS=$NGX_LDFLAGS
 
 RUN set -ex \
 # create nginx user/group first, to be consistent throughout docker variants
     && addgroup -g 101 -S nginx \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
+# https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
     && apk add --update --no-cache --virtual .build-deps \
         build-base \
+        linux-headers \
         openssl-dev \
+        pcre2-dev \
+        zlib-dev \
     && apk add --no-cache \
         curl \
         tzdata \
     && cd /tmp \
-    && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz
+    && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
+    && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
+    && cd freenginx-${NGINX_VERSION} \
+    && eval ./configure ${NGINX_BUILD_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS}

@@ -44,7 +44,7 @@ RUN set -ex \
         xz-dev \
         zlib-dev \
     && cd /tmp \
-    && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
+    && curl -Ls https://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
     && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
     && git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli \
     && curl -Ls https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION}/zstd-${ZSTD_VERSION}.tar.gz -o zstd-${ZSTD_VERSION}.tar.gz \
@@ -157,13 +157,13 @@ RUN set -ex \
         pax-utils \
         pcre2-dev \
         zlib-dev \
-    && apk add --no-cache \
+    && apk add --update --no-cache \
         curl \
         ca-certificates \
         gettext-envsubst \
         tzdata \
     && cd /tmp \
-    && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
+    && curl -Ls https://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \
     && tar fxz freenginx-${NGINX_VERSION}.tar.gz \
     && cd freenginx-${NGINX_VERSION} \
     && eval ./configure ${NGX_CONFIGURE_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS} \

@@ -132,6 +132,25 @@ RUN set -ex \
     && eval ./configure ${NGX_CONFIGURE_ARGS} ${NGX_DYNAMIC_MODULE_ARGS} ${NGX_CFLAGS} ${NGX_LDFLAGS} \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && make -j$(getconf _NPROCESSORS_ONLN) install \
-    && strip /usr/lib/nginx/modules/*.so \
+    && strip --strip-unneeded /usr/lib/nginx/modules/*.so \
     && apk del --no-network .build-deps \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && ln -sf /usr/sbin/nginx /usr/sbin/freenginx \
+# forward request and error logs to docker log collector
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log \
+# create a docker-entrypoint.d directory
+    && mkdir /docker-entrypoint.d
+
+COPY docker-entrypoint.sh /
+COPY 10-listen-on-ipv6-by-default.sh /docker-entrypoint.d
+COPY 15-local-resolvers.envsh /docker-entrypoint.d
+COPY 20-envsubst-on-templates.sh /docker-entrypoint.d
+COPY 30-tune-worker-processes.sh /docker-entrypoint.d
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+EXPOSE 80
+
+STOPSIGNAL SIGQUIT
+
+CMD ["freenginx", "-g", "daemon off;"]

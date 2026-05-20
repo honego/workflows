@@ -185,7 +185,7 @@ RUN set -ex \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
 # create a docker-entrypoint.d directory
     && mkdir /docker-entrypoint.d \
-    && RUNDEPS="$( \
+    && runDeps="$( \
         scanelf --needed --nobanner --format '%n#p' \
             /usr/sbin/nginx \
             /usr/lib/nginx/modules/*.so \
@@ -193,7 +193,7 @@ RUN set -ex \
         | sort -u \
         | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )" \
-    && apk add --update --no-cache --virtual .rundeps ${RUNDEPS} \
+    && apk add --update --no-cache --virtual .rundeps ${runDeps} \
     && apk del --no-network .build-deps \
     && rm -rf /var/cache/apk/* /tmp/*
 

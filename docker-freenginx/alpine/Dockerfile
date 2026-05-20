@@ -62,7 +62,7 @@ RUN set -ex \
         --with-compat \
         ${NGX_DYNAMIC_MODULE_ARGS} \
     && make modules \
-    && strip objs/*.so \
+    && strip --strip-unneeded objs/*.so \
     && apk del --no-network .build-deps \
     && rm -rf /var/cache/apk/*
 
@@ -177,7 +177,6 @@ RUN set -ex \
         /etc/nginx/koi-utf \
         /etc/nginx/koi-win \
         /etc/nginx/win-utf \
-    && strip --strip-unneeded /usr/lib/nginx/modules/*.so \
     && chown -R nginx:nginx /var/cache/nginx /var/log/nginx \
 # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \

@@ -103,19 +103,32 @@ ARG NGINX_BUILD_ARGS="\
     --with-compat \
     "
 
-# https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
+# https://sourceware.org/binutils/docs/ld/Options.html
 # -Os                         Optimize for smaller binary size.
 # -fstack-clash-protection    Enable Stack Clash protection.
 # -Wformat                    Check printf/scanf-style format strings.
 # -Werror=format-security     Treat unsafe format-string warnings as errors.
-# -fno-plt                    Avoid PLT indirection on x86_64 for smaller/faster dynamic calls.
-# -g                          Generate debug symbols; usually stripped or split into debug packages.
-ARG NGX_CFLAGS='-Os -fstack-clash-protection -Wformat -Werror=format-security -fno-plt -g'
+# -g                          Generate debug symbols; usually stripped later.
+ARG NGX_CFLAGS='-Os -fstack-clash-protection -Wformat -Werror=format-security -g'
 ENV NGX_CFLAGS=$NGX_CFLAGS
 
 # -Wl,--as-needed             Only link libraries that are actually needed.
 # -Wl,-O1                     Enable basic linker optimizations.
 # -Wl,--sort-common           Sort common symbols during linking.
-# -Wl,-z,pack-relative-relocs Pack relative relocations to reduce ELF relocation size.
-ARG NGX_LDFLAGS='-Wl,--as-needed,-O1,--sort-common -Wl,-z,pack-relative-relocs'
+# -Wl,-z,relro                Make relocation sections read-only after linking.
+# -Wl,-z,now                  Resolve symbols at startup, enables full RELRO.
+ARG NGX_LDFLAGS='-Wl,--as-needed,-O1,--sort-common -Wl,-z,relro -Wl,-z,now'
 ENV NGX_LDFLAGS=$NGX_LDFLAGS
+
+RUN set -ex \
+# create nginx user/group first, to be consistent throughout docker variants
+    && addgroup -g 101 -S nginx \
+    && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
+    && apk add --update --no-cache --virtual .build-deps \
+        build-base \
+        openssl-dev \
+    && apk add --no-cache \
+        curl \
+        tzdata \
+    && cd /tmp \
+    && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz

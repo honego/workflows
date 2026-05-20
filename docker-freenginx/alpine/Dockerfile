@@ -133,6 +133,7 @@ RUN set -ex \
         zlib-dev \
     && apk add --no-cache \
         curl \
+        gettext-envsubst \
         tzdata \
     && cd /tmp \
     && curl -Ls http://freenginx.org/download/freenginx-${NGINX_VERSION}.tar.gz -o freenginx-${NGINX_VERSION}.tar.gz \

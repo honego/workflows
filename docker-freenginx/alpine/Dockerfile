@@ -150,7 +150,6 @@ RUN set -ex \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
     && apk add --update --no-cache --virtual .build-deps \
-        bash \
         build-base \
         linux-headers \
         openssl-dev \
@@ -170,7 +169,7 @@ RUN set -ex \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && make -j$(getconf _NPROCESSORS_ONLN) install \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
-    && mkdir -p /var/cache/nginx/{client_temp,proxy_temp,fastcgi_temp,uwsgi_temp,scgi_temp} /usr/share/nginx \
+    && mkdir -p /usr/share/nginx \
     && mv /etc/nginx/html /usr/share/nginx \
     && ln -sf /usr/sbin/nginx /usr/sbin/freenginx \
     && ln -sf /usr/lib/nginx/modules /etc/nginx/modules \

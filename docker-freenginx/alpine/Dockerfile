@@ -16,6 +16,8 @@ ENV ZSTD_VERSION=$ZSTD_VERSION
 ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
 
 ARG NGX_DYNAMIC_MODULE_ARGS="\
+    --with-compat \
+    --with-stream \
     --with-http_xslt_module=dynamic \
     --with-http_image_filter_module=dynamic \
     --with-http_geoip_module=dynamic \
@@ -59,7 +61,6 @@ RUN set -ex \
     && tar fxz njs-${NJS_VERSION}.tar.gz \
     && cd freenginx-${NGINX_VERSION} \
     && ./configure \
-        --with-compat \
         ${NGX_DYNAMIC_MODULE_ARGS} \
     && make modules \
     && strip --strip-unneeded objs/*.so \

@@ -80,7 +80,7 @@ ENV NJS_VERSION=$NJS_VERSION
 ENV ZSTD_VERSION=$ZSTD_VERSION
 ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
 
-COPY --from=builder /tmp/freenginx-${NGINX_VERSION}/objs/*.so /usr/lib/nginx/modules
+COPY --from=builder /tmp/freenginx-${NGINX_VERSION}/objs/*.so /usr/lib/nginx/modules/
 
 # https://freenginx.org/en/docs/configure.html
 # https://github.com/nginx/pkg-oss/blob/master/alpine/Makefile
@@ -149,6 +149,7 @@ RUN set -ex \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
     && apk add --update --no-cache --virtual .build-deps \
+        bash \
         build-base \
         linux-headers \
         openssl-dev \

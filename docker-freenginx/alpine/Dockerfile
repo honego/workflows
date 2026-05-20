@@ -169,7 +169,7 @@ RUN set -ex \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && make -j$(getconf _NPROCESSORS_ONLN) install \
 # https://github.com/nginx/pkg-oss/blob/master/alpine/alpine/APKBUILD-base.in
-    && mkdir -p /usr/share/nginx \
+    && mkdir -p /var/cache/nginx /usr/share/nginx \
     && mv /etc/nginx/html /usr/share/nginx \
     && ln -sf /usr/sbin/nginx /usr/sbin/freenginx \
     && ln -sf /usr/lib/nginx/modules /etc/nginx/modules \

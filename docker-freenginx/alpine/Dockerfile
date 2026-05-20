@@ -212,6 +212,8 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 80
 
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -Ls http://localhost || exit 1
+
 # Use SIGQUIT instead of default SIGTERM to cleanly drain requests.
 # https://github.com/nginx/docker-nginx/issues/377
 STOPSIGNAL SIGQUIT

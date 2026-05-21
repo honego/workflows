@@ -13,6 +13,10 @@ The freenginx sources and documentation are distributed under the [2-clause BSD-
 
 ## Quick Start
 
+```shell
+docker run -d --name nginx -p 80:80 honeok/freenginx:alpine
+```
+
 See [Documentation][4].
 
 ## Acknowledgements

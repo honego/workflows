@@ -22,6 +22,6 @@ NGINX is a registered trademark of [F5, Inc][6]. The names nginx and NGINX are u
 [1]: https://freenginx.org
 [2]: http://sysoev.ru/en
 [3]: https://freenginx.org/LICENSE
-[4]: mailto:mdounin@mdounin.ru
-[5]: mailto:i@honeok.com
+[4]: https://mdounin.ru
+[5]: https://www.honeok.com
 [6]: https://www.f5.com

@@ -6,7 +6,7 @@
 
 The sources and documentation are distributed under the [2-clause BSD-like license][3].
 
-[![freenginx](https://freenginx.org/nginx.png)](https://freenginx.org)
+[![freenginx](./assets/nginx.png)](https://freenginx.org)
 
 [1]: https://freenginx.org
 [2]: http://sysoev.ru/en

@@ -109,8 +109,8 @@ jobs:
         with:
           images: ${{ env.DOCKERHUB_REPO }}
           tags: |
-            type=raw,value=${{ needs.check.outputs.nginx_version }}-alpine,priority=1000
-            type=raw,value=alpine,priority=900
+            type=raw,value=alpine
+            type=raw,value=${{ needs.check.outputs.nginx_version }}-alpine
           labels: |
             org.opencontainers.image.title=freenginx
             org.opencontainers.image.description=Free and Open Nginx HTTP, Reverse Proxy, Mail Proxy, and TCP/UDP Proxy Server
@@ -181,8 +181,8 @@ jobs:
         with:
           images: ${{ env.DOCKERHUB_REPO }}
           tags: |
-            type=raw,value=${{ needs.check.outputs.nginx_version }}-alpine,priority=1000
-            type=raw,value=alpine,priority=900
+            type=raw,value=alpine
+            type=raw,value=${{ needs.check.outputs.nginx_version }}-alpine
           labels: |
             org.opencontainers.image.title=freenginx
             org.opencontainers.image.description=Free and Open Nginx HTTP, Reverse Proxy, Mail Proxy, and TCP/UDP Proxy Server

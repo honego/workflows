@@ -34,6 +34,11 @@ jobs:
           - ubuntu:26.04
           - ubuntu:rolling
           - ubuntu:devel
+
+          # kali
+          - kalilinux/kali-last-release # stable
+          - kalilinux/kali-rolling # rolling
+          - kalilinux/kali-experimental # experimental
         branch:
           - ""
           - "--mainline"

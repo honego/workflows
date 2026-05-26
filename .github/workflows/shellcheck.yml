@@ -30,6 +30,8 @@ jobs:
           fetch-depth: 0
 
       - name: "Install shellcheck"
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           SHELLCHECK_VERSION="$(gh release view -R koalaman/shellcheck --json tagName -q .tagName | sed 's#v##')"
           wget -qO- "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.$(uname -s | tr '[:upper:]' '[:lower:]').$(uname -m).tar.xz" \

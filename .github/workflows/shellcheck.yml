@@ -1,0 +1,39 @@
+---
+name: "Run shellcheck"
+
+on:
+  push:
+    branches:
+      - "*"
+    paths:
+      - "**/*.sh"
+      - ".github/workflows/shellcheck.yml"
+  pull_request:
+    paths:
+      - "**/*.sh"
+      - ".github/workflows/shellcheck.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shellcheck:
+    name: "Run shellcheck"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: "Install shellcheck"
+        run: |
+          SHELLCHECK_VERSION="$(gh release view -R koalaman/shellcheck --json tagName -q .tagName | sed 's#v##')"
+          wget -qO- "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.$(uname -s | tr '[:upper:]' '[:lower:]').$(uname -m).tar.xz" \
+            | sudo tar -xJf - -C /tmp --strip-components=1 shellcheck-v${SHELLCHECK_VERSION}/shellcheck
+
+      - name: "Run shellcheck"
+        run: find . -type f -name "*.sh" -print0 | xargs -0 /tmp/shellcheck

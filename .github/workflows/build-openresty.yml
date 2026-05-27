@@ -37,7 +37,7 @@ jobs:
       acme_version: ${{ steps.vers.outputs.acme_version }}
 
     steps:
-      - name: "Get version and decide"
+      - name: "Resolve upstream versions"
         id: vers
         env:
           GH_TOKEN: ${{ github.token }}
@@ -210,7 +210,7 @@ jobs:
       acme_version: ${{ steps.vers.outputs.acme_version }}
 
     steps:
-      - name: "Get version and decide"
+      - name: "Resolve upstream versions"
         id: vers
         env:
           GH_TOKEN: ${{ github.token }}

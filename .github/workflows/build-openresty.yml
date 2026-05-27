@@ -1,5 +1,5 @@
 ---
-name: "Build OpenResty"
+name: "Build openresty"
 
 on:
   workflow_dispatch:

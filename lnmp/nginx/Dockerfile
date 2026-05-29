@@ -4,6 +4,8 @@
 # Description: This dockerfile is used to add third-party modules to nginx and recompile the nginx web server.
 # Copyright (c) 2024-2026 honeok <i@honeok.com>
 
+ARG NGINX_VERSION=""
+
 FROM alpine:3.23.4@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11 AS builder
 
 ARG NGINX_VERSION=""

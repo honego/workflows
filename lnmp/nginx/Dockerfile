@@ -8,8 +8,6 @@ ARG NGINX_VERSION=""
 
 FROM alpine:3.23.4@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11 AS builder
 
-LABEL maintainer="honeok <i@honeok.com>"
-
 ARG NGINX_VERSION=""
 ARG GEOIP2_VERSION=""
 ARG ZSTD_VERSION=""
@@ -31,6 +29,7 @@ RUN set -ex \
         curl \
         git \
         lz4-dev \
+        libmaxminddb-dev \
         openssl-dev \
         pcre2-dev \
         xz-dev \
@@ -65,3 +64,15 @@ LABEL org.opencontainers.image.authors="honeok <i@honeok.com>"
 ARG NGINX_VERSION=""
 
 COPY --from=builder /tmp/nginx-${NGINX_VERSION}/objs/*.so /usr/lib/nginx/modules/
+
+RUN set -ex \
+    && find /usr/lib/nginx/modules/ -type f -name '*-debug.so' -delete \
+    && runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' \
+            /usr/sbin/nginx \
+            /usr/lib/nginx/modules/*.so \
+        | tr ',' '\n' \
+        | sort -u \
+        | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )" \
+    && apk add --update --no-cache --virtual .runDeps ${runDeps}

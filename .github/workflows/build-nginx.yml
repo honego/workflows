@@ -46,12 +46,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -eEuxo pipefail
+          set -eEuo pipefail
 
           RENEW="false"
           LATEST_VER="$(gh api 'repos/nginx/nginx/tags?per_page=100' --jq '.[].name' | sed -nE 's#^release-([0-9]+\.[0-9]+\.[0-9]+)$#\1#p' | sort -V | tail -n 1)"
           LATEST_IMG_VER="$(docker run --rm nginx:${LATEST_VER}-alpine sh -c "nginx -v 2>&1" 2>/dev/null | awk -F'[/ ]' '{print $NF}' || true)"
-          CURRENT_VER="$(skopeo list-tags "docker://docker.io/$DOCKERHUB_REPO" 2>/dev/null | jq -r '.Tags[]' | grep -oP '(?<![0-9.])1\.\d{1,2}\.\d{1,2}(?![0-9.])' | sort -uV | tail -n1)"
+          CURRENT_VER="$(skopeo list-tags "docker://docker.io/$DOCKERHUB_REPO" 2>/dev/null | jq -r '.Tags[]' | grep -oP '(?<![0-9.])1\.\d{1,2}\.\d{1,2}(?![0-9.])' | sort -uV | tail -n1 || true)"
           ZSTD_VERSION="$(gh release view -R facebook/zstd --json tagName -q .tagName | sed 's#v##')"
           HEADERS_MORE_VERSION="$(gh api 'repos/openresty/headers-more-nginx-module/tags?per_page=100' --jq '.[].name' | sed 's#^v##' | grep -E '^[0-9]+(\.[0-9]+){1,2}$' | sort -V | tail -1)"
           GEOIP2_VERSION="$(gh api 'repos/leev/ngx_http_geoip2_module/tags?per_page=100' --jq '.[].name' | grep -E '^v?[0-9]+(\.[0-9]+){1,2}$' | sort -V | tail -1)"

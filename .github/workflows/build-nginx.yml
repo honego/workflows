@@ -46,7 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -eEuo pipefail
+          set -eEuxo pipefail
 
           RENEW="false"
           LATEST_VER="$(gh api 'repos/nginx/nginx/tags?per_page=100' --jq '.[].name' | sed -nE 's#^release-([0-9]+\.[0-9]+\.[0-9]+)$#\1#p' | sort -V | tail -n 1)"

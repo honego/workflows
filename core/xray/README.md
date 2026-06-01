@@ -1,6 +1,6 @@
 # Xray
 
-[![GitHub Release](https://img.shields.io/github/v/tag/XTLS/Xray-core.svg?logo=github)](https://github.com/XTLS/Xray-core/releases)
+[![GitHub Release](https://img.shields.io/github/v/tag/XTLS/Xray-core.svg?label=release&logo=github)](https://github.com/XTLS/Xray-core/releases)
 [![Docker Pulls](https://img.shields.io/docker/pulls/honeok/xray.svg?logo=docker&color=blue&logoColor=white)](https://hub.docker.com/r/honeok/xray)
 [![Docker Image Size](https://img.shields.io/docker/image-size/honeok/xray.svg?logo=docker&color=blue&logoColor=white)](https://hub.docker.com/r/honeok/xray)
 [![Docker Image Version](https://img.shields.io/docker/v/honeok/xray.svg?logo=docker&color=blue&logoColor=white)](https://hub.docker.com/r/honeok/xray)

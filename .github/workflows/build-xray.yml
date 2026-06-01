@@ -127,12 +127,12 @@ jobs:
         run: |
           set -Eexuo pipefail
 
-          binary_name="xray-${GOOS}-${GOARCH}${GOARM:+v${GOARM}}"
-          platform_pair="${binary_name#xray-}"
-          mv -f -- xray "${binary_name}"
-          chmod 0755 "${binary_name}"
-          printf 'BINARY_NAME=%s\nPLATFORM_PAIR=%s\n' "${binary_name}" "${platform_pair}" >> "$GITHUB_ENV"
-          echo "Prepared: ${binary_name}"
+          PLATFORM_PAIR="$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")"
+          BINARY_NAME="xray-${GOARCH}${GOARM:+v${GOARM}}"
+          mv -f -- xray "$BINARY_NAME"
+          chmod 0755 "$BINARY_NAME"
+          echo "BINARY_NAME=$BINARY_NAME" >> "$GITHUB_ENV"
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
 
       - name: "Upload artifact"
         uses: actions/upload-artifact@v7
@@ -150,24 +150,29 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        include:
-          - { platform: linux/386, binary_name: linux-386 }
-          - { platform: linux/amd64, binary_name: linux-amd64 }
-          - { platform: linux/arm/v6, binary_name: linux-armv6 }
-          - { platform: linux/arm/v7, binary_name: linux-armv7 }
-          - { platform: linux/arm64, binary_name: linux-arm64 }
-          - { platform: linux/ppc64le, binary_name: linux-ppc64le }
-          - { platform: linux/riscv64, binary_name: linux-riscv64 }
-          - { platform: linux/s390x, binary_name: linux-s390x }
+        platform:
+          - linux/386
+          - linux/amd64
+          - linux/arm/v6
+          - linux/arm/v7
+          - linux/arm64
+          - linux/ppc64le
+          - linux/riscv64
+          - linux/s390x
 
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v6
 
+      - name: "Set platform pair"
+        run: |
+          PLATFORM_PAIR=$(awk -F/ '{print $1"-"$2$3}' <<< "${{ matrix.platform }}")
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> "$GITHUB_ENV"
+
       - name: "Download binary"
         uses: actions/download-artifact@v8
         with:
-          name: xray-${{ matrix.binary_name }}
+          name: xray-${{ env.PLATFORM_PAIR }}
           path: ${{ env.WORK_DIR }}
 
       - name: "Prepare build context"
@@ -175,8 +180,8 @@ jobs:
         run: |
           set -Eexuo pipefail
 
-          test -f "xray-${{ matrix.binary_name }}"
-          chmod 0755 "xray-${{ matrix.binary_name }}"
+          test -f xray*
+          chmod 0755 xray*
           for g in geoip geosite; do
             curl -L -O "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/$g.dat"
             curl -L -O "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/$g.dat.sha256sum"
@@ -191,7 +196,7 @@ jobs:
 
       - name: "Login to DockerHub"
         uses: docker/login-action@v4
-        if: ${{ github.ref_name == 'master' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref_name == 'master' }}
         with:
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -221,10 +226,10 @@ jobs:
           context: ${{ env.WORK_DIR }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.DOCKERHUB_REPO }},push-by-digest=${{ github.ref_name == 'master' }},name-canonical=${{ github.ref_name == 'master' }},push=${{ github.ref_name == 'master' }}
+          outputs: type=image,name=${{ env.DOCKERHUB_REPO }},push-by-digest=${{ github.event_name != 'pull_request' && github.ref_name == 'master' }},name-canonical=${{ github.event_name != 'pull_request' && github.ref_name == 'master' }},push=${{ github.event_name != 'pull_request' && github.ref_name == 'master' }}
 
       - name: "Export digest"
-        if: ${{ github.ref_name == 'master' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref_name == 'master' }}
         run: |
           rm -rf /tmp/digests
           mkdir -p /tmp/digests
@@ -232,10 +237,10 @@ jobs:
           touch "/tmp/digests/${digest#sha256:}"
 
       - name: "Upload artifact"
-        if: ${{ github.ref_name == 'master' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref_name == 'master' }}
         uses: actions/upload-artifact@v7
         with:
-          name: digest-${{ matrix.binary_name }}
+          name: digest-${{ env.PLATFORM_PAIR }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -244,7 +249,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Merge manifest"
     needs: [check, build-image]
-    if: ${{ github.ref_name == 'master' }}
+    if: ${{ github.event_name != 'pull_request' && github.ref_name == 'master' }}
 
     steps:
       - name: "Download digests"

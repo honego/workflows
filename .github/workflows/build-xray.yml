@@ -106,15 +106,18 @@ jobs:
           check-latest: true
           cache-dependency-path: ${{ env.SRC_DIR }}/go.sum
 
+      - name: "Download dependencies"
+        working-directory: ${{ env.SRC_DIR }}
+        run: go mod download
+
       - name: "Compile Xray"
         working-directory: ${{ env.SRC_DIR }}
         run: |
-          set -Eeuo pipefail
+          set -Eexuo pipefail
 
           short_id="$(git rev-parse --short HEAD)"
           echo "GOOS: ${GOOS} GOARCH: ${GOARCH} GOARM: ${GOARM:-}"
 
-          go mod download
           go build -v -trimpath -o xray -buildvcs=false -gcflags="all=-l=4" \
             -ldflags="-X github.com/xtls/xray-core/core.build=${short_id} -s -w -buildid=" \
             ./main
@@ -122,7 +125,7 @@ jobs:
       - name: "Prepare assets"
         working-directory: ${{ env.SRC_DIR }}
         run: |
-          set -Eeuo pipefail
+          set -Eexuo pipefail
 
           binary_name="xray-${GOOS}-${GOARCH}${GOARM:+v${GOARM}}"
           platform_pair="${binary_name#xray-}"
@@ -170,9 +173,9 @@ jobs:
       - name: "Prepare build context"
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          set -Eeuo pipefail
+          set -Eexuo pipefail
 
-          test -f "xray-${{ matrix.binary_name }}"s
+          test -f "xray-${{ matrix.binary_name }}"
           chmod 0755 "xray-${{ matrix.binary_name }}"
           for g in geoip geosite; do
             curl -L -O "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/$g.dat"

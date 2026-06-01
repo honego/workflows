@@ -10,7 +10,7 @@ RUN set -ex \
     && mkdir -p /etc/xray/ /var/log/xray
 COPY --chmod=755 xray-$TARGETARCH$TARGETVARIANT /usr/bin/xray
 COPY --chmod=644 *.dat /usr/share/xray/
-COPY --from=teddysun/xray --chmod=644 /etc/xray/config.json /etc/xray/config.json
+ADD https://fastly.jsdelivr.net/gh/teddysun/across@master/docker/xray/config.json /etc/xray/config.json
 ENV TZ=Asia/Shanghai
 VOLUME /etc/xray
 CMD ["/usr/bin/xray", "-config", "/etc/xray/config.json"]

@@ -1,0 +1,65 @@
+# Based on: https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus.yml
+# References: https://github.com/prometheus/prometheus/blob/main/config/testdata/conf.good.yml
+
+---
+## 全局配置
+global:
+  # 默认的目标抓取频率 默认值 1m, 控制主动抓取目标 /metrics 的频率
+  # 间隔越短,监控粒度和告警发现速度越高, 但也会增加样本写入量, 存储, 查询和 exporter 压力
+  scrape_interval: 15s
+
+  # 默认的目标抓取超时时间 默认值 10s, 控制单次抓取目标 /metrics 等待响应的最长时间
+  # 该值不能大于 `scrape_interval`, 过短容易导致慢 exporter 抓取失败, 过长会拖慢采集周期并堆积请求
+  scrape_timeout: 10s
+
+  # 默认的规则评估间隔 默认值 1m, 控制 `recording rules` 和 `alerting rules` 的计算频率
+  # 间隔越短规则结果和告警状态更新越快, 但也会增加 PromQL 查询计算, CPU 和存储读取压力
+  evaluation_interval: 15s
+
+  # 默认的外部系统附加标签 默认无, 用于给 remote_write, federation 和 Alertmanager 发送的数据标记来源
+  # 例如多个 Prometheus 对接同一远程存储或告警系统时, 可通过该标签区分指标和告警来自哪个环境或实例
+  external_labels:
+    environment: production
+
+  # 用于记录 PromQL 查询的文件, 重新加载配置将重新打开该文件 默认无
+  # 通用生产环境不建议默认启用, 仅在排查慢查询, 高成本查询或审计时开启, 注意文件权限磁盘增长和查询内容泄露风险
+  # query_log_file: /var/log/prometheus/query.log
+
+  # 用于记录抓取失败的文件, 重新加载配置将重新打开文件 默认无
+  # 通用生产环境不建议默认启用, 仅在排查 exporter 异常, 网络抖动或采集失败时开启, 注意文件权限和磁盘增长风险
+  # scrape_failure_log_file: /var/log/prometheus/scrape-failure.log
+
+  # 默认的单次抓取样本数量限制 默认值 0, 表示不限制每次 scrape 接收的样本数量
+  # 常用于限制自研, 第三方或高基数 exporter, 防止异常指标暴增导致 Prometheus 写入, 存储和查询压力失控
+  # sample_limit: 0
+
+  # 默认的单条样本标签数量限制 默认值 0, 表示不限制每条指标样本可携带的 label 数量
+  # 常用于限制自研或第三方 exporter, 防止异常样本携带过多标签导致抓取失败, 存储膨胀和查询性能下降
+  # label_limit: 0
+
+## Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+        # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+        labels:
+          app: "prometheus"

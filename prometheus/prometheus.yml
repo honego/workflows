@@ -49,6 +49,12 @@ global:
   # 例如服务发现或 relabel 配置异常, 本应发现 100 个目标却匹配出 10000 个, 超过限制后目标会被标记失败且不会抓取
   # target_limit: 0
 
+runtime:
+  # 配置 Prometheus 运行时的 Go GC 触发比例, 对应 GOGC, 默认 75
+  # 值越低 GC 越频繁, 内存占用更稳但 CPU 开销更高; 值越高则相反
+  # 通用生产环境建议保持默认, 内存紧张时可适当调低, CPU 紧张且内存充足时可适当调高
+  gogc: 75
+
 ## Alertmanager configuration
 alerting:
   alertmanagers:

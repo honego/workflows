@@ -1,7 +1,7 @@
+# yaml-language-server: $schema=https://json.schemastore.org/prometheus.json
 # Based on: https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus.yml
 # References: https://github.com/prometheus/prometheus/blob/main/config/testdata/conf.good.yml
 
----
 ## 全局配置
 global:
   # 默认的目标抓取频率 默认值 1m, 控制主动抓取目标 /metrics 的频率
@@ -27,7 +27,7 @@ global:
 
   # 用于记录抓取失败的文件, 重新加载配置将重新打开文件 默认无
   # 通用生产环境不建议默认启用, 仅在排查 exporter 异常, 网络抖动或采集失败时开启, 注意文件权限和磁盘增长风险
-  # scrape_failure_log_file: /var/log/prometheus/scrape-failure.log
+  # scrape_failure_log_file: /var/log/prometheus/fail.log
 
   # 默认的单次抓取样本数量限制 默认值 0, 表示不限制每次 scrape 接收的样本数量
   # 常用于限制自研, 第三方或高基数 exporter, 防止异常指标暴增导致 Prometheus 写入, 存储和查询压力失控
@@ -36,6 +36,18 @@ global:
   # 默认的单条样本标签数量限制 默认值 0, 表示不限制每条指标样本可携带的 label 数量
   # 常用于限制自研或第三方 exporter, 防止异常样本携带过多标签导致抓取失败, 存储膨胀和查询性能下降
   # label_limit: 0
+
+  # 默认的标签名长度限制 默认值 0, 表示不限制每个 label name 的字节长度
+  # 主要用于防止异常 exporter 生成过长或动态标签名, 超过限制会导致该 target 本次抓取整体失败
+  # label_name_length_limit: 0
+
+  # 默认的标签值长度限制 默认值 0, 表示不限制每个 label value 的字节长度
+  # 主要用于防止异常 exporter 写入完整 URL, Token, SQL, 错误堆栈等过长标签值, 超过限制会导致该 target 本次抓取整体失败
+  # label_value_length_limit: 0
+
+  # 默认的目标数量限制 默认值 0, 表示不限制每个 scrape_config 可接受的 target 数量
+  # 例如服务发现或 relabel 配置异常, 本应发现 100 个目标却匹配出 10000 个, 超过限制后目标会被标记失败且不会抓取
+  # target_limit: 0
 
 ## Alertmanager configuration
 alerting:

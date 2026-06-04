@@ -1,0 +1,26 @@
+# https://salsa.debian.org/go-team/packages/prometheus-node-exporter/-/blob/debian/sid/debian/prometheus-node-exporter.service
+# https://gitlab.archlinux.org/archlinux/packaging/packages/prometheus-node-exporter/-/blob/main/prometheus-node-exporter.service
+
+[Unit]
+Description=Prometheus exporter for machine metrics
+Documentation=https://github.com/prometheus/node_exporter
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Type=simples
+# User=node_exporter
+# Group=node_exporter
+ExecStart=/usr/local/bin/node_exporter
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+# Security Hardening
+NoNewPrivileges=true
+ProtectHome=read-only
+ProtectSystem=strict
+
+[Install]
+WantedBy=multi-user.target

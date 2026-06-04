@@ -49,35 +49,118 @@ global:
   # 例如服务发现或 relabel 配置异常, 本应发现 100 个目标却匹配出 10000 个, 超过限制后目标会被标记失败且不会抓取
   # target_limit: 0
 
-runtime:
-  # 配置 Prometheus 运行时的 Go GC 触发比例, 对应 GOGC, 默认 75
-  # 值越低 GC 越频繁, 内存占用更稳但 CPU 开销更高; 值越高则相反
-  # 通用生产环境建议保持默认, 内存紧张时可适当调低, CPU 紧张且内存充足时可适当调高
-  gogc: 75
+# runtime:
+#   # 配置 Prometheus 运行时的 Go GC 触发比例, 对应 GOGC, 默认 75
+#   # 值越低 GC 越频繁, 内存占用更稳但 CPU 开销更高; 值越高则相反
+#   # 通用生产环境建议保持默认, 内存紧张时可适当调低, CPU 紧张且内存充足时可适当调高
+#   gogc: 75
 
-## Alertmanager configuration
+## 规则文件配置, 用于从外部文件加载告警规则和记录规则
+# 默认无, 用于加载 `recording rules` 和 `alerting rules`, 支持 glob 通配符匹配多个规则文件
+# 例如把告警规则和预聚合规则放到 /etc/prometheus/rules/*.yml, 配置 reload 时会一起重新加载
+rule_files:
+  # - /etc/prometheus/rules/*.yml
+
+## 抓取配置文件配置, 用于从外部文件加载 `scrape_configs`, 便于按业务、组件或环境拆分采集任务
+# 抓取配置文件列表 默认无, 支持 glob 通配符匹配多个文件, 匹配到的 `scrape_configs` 会追加到主配置 `scrape_configs` 中
+# 例如把不同组件的采集任务放到 /etc/prometheus/scrape.d/*.yml, 配置 reload 时会一起重新加载
+scrape_config_files:
+  # https://docs.cloud.google.com/distributed-cloud/connected/latest/docs/logs-metrics
+  # - /etc/prometheus/scrape.d/*.yml
+
+## 抓取任务配置
+# https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+# 用于定义 Prometheus 要抓取哪些目标, 以及每个目标如何抓取和处理标签, 默认无 每个 job 表示一组采集任务, 例如 Prometheus 自身, node_exporter, nginx_exporter 等
+# 通用生产环境建议按组件拆分 job, 大量任务可配合 `scrape_config_files` 拆到外部文件维护
+scrape_configs:
+  # 当前抓取任务名称 必填, 默认会作为 job="<job_name>" 标签添加到该任务采集到的所有时间序列
+  # 例如 job_name 为 prometheus 时, 该任务下所有指标都会带 job="prometheus", 建议使用稳定且能表达组件用途的名称
+  - job_name: "prometheus"
+
+    # 当前任务的抓取频率 默认继承 `global.scrape_interval`, 控制该 job 下所有目标 `/metrics` 的抓取间隔
+    # 例如核心服务可单独设置更短间隔提升监控粒度, 普通服务建议继承全局配置, 避免采集和存储压力过大
+    # scrape_interval: 15s
+
+    # 当前任务的抓取超时时间 默认继承 `global.scrape_timeout`, 控制该 job 单次抓取 `/metrics` 等待响应的最长时间
+    # 该值不能大于当前任务的 `scrape_interval`, 过短容易抓取失败, 过长可能拖慢采集周期并堆积请求
+    # scrape_timeout: 10s
+
+    # 当前任务的指标抓取路径 默认值 `/metrics`, 控制 Prometheus 请求目标时使用的 HTTP path
+    # 例如 `blackbox_exporter` 使用 /probe 执行 HTTP, TCP, ICMP 等探测任务, 普通 exporter 通常保持默认
+    metrics_path: /metrics
+
+    # 当前任务的标签冲突处理方式 默认值 false, 控制抓取数据中已有标签与 Prometheus 自动附加的 job, instance 等标签冲突时如何处理
+    # 普通 exporter 建议保持 false, 冲突标签会改名为 exported_xxx, 仅 federation 或 Pushgateway 等需保留目标原始标签时设为 true
+    # honor_labels: false
+
+    # 当前任务是否保留目标暴露的原始时间戳 默认值 true, 控制 Prometheus 是否使用指标中自带的 timestamp
+    # 普通 exporter 建议保持默认, 设为 false 会忽略目标时间戳并使用抓取时间, 适合修正异常或不可信时间戳
+    # honor_timestamps: true
+
+    # 当前任务是否跟踪显式时间戳指标的陈旧状态 默认值 false, 控制目标指标消失或 target down 时是否写入 staleness marker
+    # 仅对带原始 timestamp 的指标有意义, 普通 exporter 建议保持默认, 避免额外陈旧标记影响查询结果
+    # track_timestamps_staleness: false
+
+    # 当前任务的请求协议 默认值 http, 控制 Prometheus 抓取目标时使用 http 还是 https
+    # 例如 exporter 暴露在 HTTPS 入口或经过 TLS 反代时可设为 https, 普通内网 exporter 通常保持默认
+    # scheme: http
+
+    # 当前任务是否启用抓取响应压缩 默认值 true, 控制 Prometheus 请求目标时是否允许压缩传输
+    # 普通生产环境建议保持默认, 可减少网络传输量, 仅在目标压缩实现异常或排查响应问题时临时关闭
+    # enable_compression: true
+
+    # 当前任务的抓取失败日志文件 默认无, 用于把该 job 的目标抓取失败记录到指定文件, reload 会重新打开文件
+    # 例如排查某个 exporter 间歇性超时, 连接失败或返回异常时可临时开启, 注意文件权限和磁盘增长
+    # scrape_failure_log_file: /var/log/prometheus/fail.log
+
+    # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#static_config
+    # 当前任务的静态目标配置, 用于手动指定固定 targets 和它们共享的 labels
+    # 适合少量固定 `exporter`, 例如 Prometheus 自身, node_exporter, nginx_exporter 等不依赖服务发现的目标
+    static_configs:
+      # 静态目标列表, 用于指定该 job 要抓取的主机和端口, 默认使用当前 job 的 scheme 和 metrics_path
+      - targets:
+          - "localhost:9090"
+
+        # 静态目标公共标签, 会添加到这些 targets 采集到的所有时间序列上, 便于按应用, 环境或节点分组查询
+        # 例如同一个 job 下有多个实例时, 可通过 app, env, region 等标签区分来源, 不建议放 user_id, token 等高基数字段
+        labels:
+          app: "prometheus"
+
+    # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
+    # 当前任务的目标重标记配置, 用于在抓取前按顺序改写 target 的标签, 地址, 路径或参数
+    # 例如修改 instance, 过滤不需要的目标, 保留服务发现的元数据, 或给 blackbox_exporter 传递探测目标
+    relabel_configs:
+      # 当前重标记规则的源标签列表 默认无, 用于从 target 标签中取值并按 separator 拼接后参与 regex 匹配
+      # 例如 source_labels: [__address__] 会读取目标地址, 可配合 replace, keep, drop 等动作改写或过滤 target
+      - source_labels: [__address__]
+
+        # 当前重标记规则的源标签拼接分隔符 默认值 ;, 用于多个 source_labels 取值后拼成一个字符串再参与 regex 匹配
+        # 例如 `source_labels: [job, __address__]` 默认会拼成 job_value;address_value, 一般保持默认即可
+        # separator: ";"
+
+        # 当前重标记规则的目标标签 默认无, 用于把 replace 动作生成的结果写入指定 label
+        # replace 动作必须设置该值, 可配合 regex 捕获组改写 instance, __address__, __scheme__, __metrics_path__ 等标签
+        target_label: instance
+
+        # 当前重标记规则的正则表达式 默认值 (.*), 用于匹配 source_labels 拼接后的结果
+        # 例如匹配 __address__ 中的主机或端口, 可配合 replacement 捕获组改写标签, keep/drop 也依赖该匹配结果
+        regex: "(.*)"
+
+        # 当前重标记规则的哈希取模值 默认无, 仅用于 action: hashmod, 会把 source_labels 的 hash 结果按该值取余后写入 target_label
+        # 例如 modulus: 2 可把 targets 分成 0/1 两组, 通常再配合 keep 实现多 Prometheus 分片采集
+        # modulus: 2
+
+        # 当前重标记规则的替换值 默认值 $1, 当 regex 匹配成功后用于生成写入 target_label 的新值
+        # 可使用正则捕获组, 例如 regex: "(.+):9100" 配合 replacement: "$1" 可把 instance 从 IP:端口 改为 IP
+        replacement: "$1"
+
+        # 当前重标记规则的执行动作 默认值 replace, 控制 regex 匹配后对 target 标签执行改写, 保留, 丢弃或清理等操作
+        # 常用 replace 改写标签, keep/drop 过滤目标, labeldrop/labelkeep 清理标签, hashmod 用于分片采集
+        action: replace
+
+## 指定与 Alertmanager 相关的设置
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
           # - alertmanager:9093
-
-# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
-rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
-
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
-scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: "prometheus"
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-
-    static_configs:
-      - targets: ["localhost:9090"]
-        # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
-        labels:
-          app: "prometheus"

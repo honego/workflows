@@ -129,44 +129,44 @@ scrape_configs:
     # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
     # 当前任务的目标重标记配置, 用于在抓取前按顺序改写 target 的标签, 地址, 路径或参数
     # 例如修改 instance, 过滤不需要的目标, 保留服务发现的元数据, 或给 blackbox_exporter 传递探测目标
-    relabel_configs:
-      # 当前重标记规则的源标签列表 默认无, 用于从 target 标签中取值并按 separator 拼接后参与 regex 匹配
-      # 例如 source_labels: [__address__] 会读取目标地址, 可配合 replace, keep, drop 等动作改写或过滤 target
-      - source_labels: [__address__]
+    # relabel_configs:
+    #   # 当前重标记规则的源标签列表 默认无, 用于从 target 标签中取值并按 separator 拼接后参与 regex 匹配
+    #   # 例如 source_labels: [__address__] 会读取目标地址, 可配合 replace, keep, drop 等动作改写或过滤 target
+    #   - source_labels: [__address__]
 
-        # 当前重标记规则的源标签拼接分隔符 默认值 ;, 用于多个 source_labels 取值后拼成一个字符串再参与 regex 匹配
-        # 例如 `source_labels: [job, __address__]` 默认会拼成 job_value;address_value, 一般保持默认即可
-        # separator: ";"
+    #     # 当前重标记规则的源标签拼接分隔符 默认值 ;, 用于多个 source_labels 取值后拼成一个字符串再参与 regex 匹配
+    #     # 例如 `source_labels: [job, __address__]` 默认会拼成 job_value;address_value, 一般保持默认即可
+    #     separator: ";"
 
-        # 当前重标记规则的目标标签 默认无, 用于把 replace 动作生成的结果写入指定 label
-        # replace 动作必须设置该值, 可配合 regex 捕获组改写 instance, __address__, __scheme__, __metrics_path__ 等标签
-        target_label: instance
+    #     # 当前重标记规则的目标标签 默认无, 用于把 replace 动作生成的结果写入指定 label
+    #     # replace 动作必须设置该值, 可配合 regex 捕获组改写 instance, __address__, __scheme__, __metrics_path__ 等标签
+    #     target_label: instance
 
-        # 当前重标记规则的正则表达式 默认值 (.*), 用于匹配 source_labels 拼接后的结果
-        # 例如匹配 __address__ 中的主机或端口, 可配合 replacement 捕获组改写标签, keep/drop 也依赖该匹配结果
-        regex: "(.*)"
+    #     # 当前重标记规则的正则表达式 默认值 (.*), 用于匹配 source_labels 拼接后的结果
+    #     # 例如匹配 __address__ 中的主机或端口, 可配合 replacement 捕获组改写标签, keep/drop 也依赖该匹配结果
+    #     regex: "(.*)"
 
-        # 当前重标记规则的哈希取模值 默认无, 仅用于 action: hashmod, 会把 source_labels 的 hash 结果按该值取余后写入 target_label
-        # 例如 modulus: 2 可把 targets 分成 0/1 两组, 通常再配合 keep 实现多 Prometheus 分片采集
-        # modulus: 2
+    #     # 当前重标记规则的哈希取模值 默认无, 仅用于 action: hashmod, 会把 source_labels 的 hash 结果按该值取余后写入 target_label
+    #     # 例如 modulus: 2 可把 targets 分成 0/1 两组, 通常再配合 keep 实现多 Prometheus 分片采集
+    #     # modulus: 2
 
-        # 当前重标记规则的替换值 默认值 $1, 当 regex 匹配成功后用于生成写入 target_label 的新值
-        # 可使用正则捕获组, 例如 regex: "(.+):9100" 配合 replacement: "$1" 可把 instance 从 IP:端口 改为 IP
-        replacement: "$1"
+    #     # 当前重标记规则的替换值 默认值 $1, 当 regex 匹配成功后用于生成写入 target_label 的新值
+    #     # 可使用正则捕获组, 例如 regex: "(.+):9100" 配合 replacement: "$1" 可把 instance 从 IP:端口 改为 IP
+    #     replacement: "$1"
 
-        # 当前重标记规则的执行动作 默认值 replace, 控制 regex 匹配后对 target 标签执行改写, 保留, 丢弃或清理等操作
-        # 常用 replace 改写标签, keep/drop 过滤目标, labeldrop/labelkeep 清理标签, hashmod 用于分片采集
-        action: replace
+    #     # 当前重标记规则的执行动作 默认值 replace, 控制 regex 匹配后对 target 标签执行改写, 保留, 丢弃或清理等操作
+    #     # 常用 replace 改写标签, keep/drop 过滤目标, labeldrop/labelkeep 清理标签, hashmod 用于分片采集
+    #     action: replace
 
     # 当前任务的指标重标记配置, 在抓取完成后, 样本写入 TSDB 前按顺序处理 metric 和 label
     # 语法与 relabel_configs 相同, 常用于丢弃高成本指标, 删除无用标签或改写指标名, 不作用于 up 等自动生成指标
-    metric_relabel_configs:
+    # metric_relabel_configs:
 
 ## 指定与 Alertmanager 相关的设置
 alerting:
   # 告警重标记配置, 在告警发送到 Alertmanager 前按顺序处理告警标签
   # 语法与 relabel_configs 相同, 常用于删除副本差异标签, 改写告警标签或丢弃不需要发送的告警
-  alert_relabel_configs:
+  # alert_relabel_configs:
 
   # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#alertmanager_config
   # Alertmanager 目标配置, 用于定义 Prometheus 告警发送到哪些 Alertmanager 实例

@@ -18,8 +18,8 @@ global:
 
   # 默认的外部系统附加标签 默认无, 用于给 remote_write, federation 和 Alertmanager 发送的数据标记来源
   # 例如多个 Prometheus 对接同一远程存储或告警系统时, 可通过该标签区分指标和告警来自哪个环境或实例
-  external_labels:
-    environment: production
+  # external_labels:
+  #   environment: production
 
   # 用于记录 PromQL 查询的文件, 重新加载配置将重新打开该文件 默认无
   # 通用生产环境不建议默认启用, 仅在排查慢查询, 高成本查询或审计时开启, 注意文件权限磁盘增长和查询内容泄露风险
@@ -158,9 +158,58 @@ scrape_configs:
         # 常用 replace 改写标签, keep/drop 过滤目标, labeldrop/labelkeep 清理标签, hashmod 用于分片采集
         action: replace
 
+    # 当前任务的指标重标记配置, 在抓取完成后, 样本写入 TSDB 前按顺序处理 metric 和 label
+    # 语法与 relabel_configs 相同, 常用于丢弃高成本指标, 删除无用标签或改写指标名, 不作用于 up 等自动生成指标
+    metric_relabel_configs:
+
 ## 指定与 Alertmanager 相关的设置
 alerting:
+  # 告警重标记配置, 在告警发送到 Alertmanager 前按顺序处理告警标签
+  # 语法与 relabel_configs 相同, 常用于删除副本差异标签, 改写告警标签或丢弃不需要发送的告警
+  alert_relabel_configs:
+
+  # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#alertmanager_config
+  # Alertmanager 目标配置, 用于定义 Prometheus 告警发送到哪些 Alertmanager 实例
+  # 支持 static_configs 固定目标, 也支持服务发现动态发现, relabel_configs 可筛选或改写告警发送目标
   alertmanagers:
-    - static_configs:
+    # 当前 Alertmanager 目标的告警推送超时时间 默认值 10s, 控制 Prometheus 向单个 Alertmanager 发送告警时等待响应的最长时间
+    # 例如 Alertmanager 网络较慢或跨地域部署时可适当调大, 过短可能导致告警发送失败, 过长会拖慢失败切换
+    - timeout: 10s
+
+      # 当前 Alertmanager API 版本 默认值 v2, 控制 Prometheus 向 Alertmanager 发送告警时使用的接口版本
+      # 通用生产环境建议保持默认, v2 是当前主流版本, 仅兼容旧版 Alertmanager 时才考虑调整
+      # api_version: v2
+
+      # 当前 Alertmanager HTTP 路径前缀 默认值 /, 控制 Prometheus 向 Alertmanager 推送告警时使用的 URL 前缀
+      # 例如 Alertmanager 被反代到 /alertmanager 子路径时可设置, 普通直连或容器内访问通常保持默认
+      # path_prefix: /
+
+      # 当前 Alertmanager 请求协议 默认值 http, 控制 Prometheus 向 Alertmanager 推送告警时使用 http 还是 https
+      # 例如 Alertmanager 暴露在 HTTPS 入口或经过 TLS 反代时可设为 https, 普通内网直连通常保持默认
+      # scheme: http
+
+      # 当前 Alertmanager 静态目标配置 默认无, 用于手动写死 Prometheus 要发送告警的 Alertmanager 地址
+      # 例如单机或固定集群可直接配置 alertmanager:9093, 多个目标可写多条用于告警发送冗余
+      static_configs:
         - targets:
           # - alertmanager:9093
+          # - alertmanager:9093
+          # - alertmanager:9093
+
+# 可运行时重载的存储相关设置
+storage:
+  tsdb:
+    # TSDB 乱序样本允许窗口 默认值 0s, 表示不接受超出当前 TSDB 最大时间窗口的迟到样本
+    # 例如 Prometheus 作为 remote write 接收端或 Agent 场景存在延迟数据时可按需设置, 通用生产环境建议保持默认
+    # out_of_order_time_window: 0s
+
+    # TSDB 数据保留配置, 用于控制本地块数据按时间, 大小或磁盘占比自动清理
+    # 修改后会立即更新策略, 但旧 block 删除会在下一次 block reload 或 compaction 后自动执行
+    # retention:
+    #   # TSDB 样本保留时长 默认值 15d, 未设置 time 和 size 时自动使用该默认值, 设置为 0 表示禁用按时间保留
+    #   # 生产环境建议显式配置, 配置文件优先于已废弃的 --storage.tsdb.retention.time 启动参数
+    #   time: 15d
+
+    #   # TSDB 块数据最大保留大小 默认值 0, 表示禁用按容量保留, 必须带单位, 例如 20GB, 512MB
+    #   # 可用于防止磁盘被历史数据占满, 配置文件优先于已废弃的 --storage.tsdb.retention.size 启动参数
+    #   size: 20GB

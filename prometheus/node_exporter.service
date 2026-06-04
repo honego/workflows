@@ -4,7 +4,7 @@
 [Unit]
 Description=Prometheus exporter for machine metrics
 Documentation=https://github.com/prometheus/node_exporter
-Requires=network-online.target
+Wants=network-online.target
 After=network-online.target
 
 [Service]

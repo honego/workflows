@@ -1,0 +1,43 @@
+# /etc/systemd/system/prometheus.service
+# https://src.fedoraproject.org/rpms/prometheus/raw/epel9/f/prometheus.service
+# https://gitlab.archlinux.org/archlinux/packaging/packages/prometheus/-/blob/main/prometheus.service
+# https://sources.debian.org/src/prometheus/2.53.5%2Bds1-4/debian/service
+
+[Unit]
+Description=Prometheus service
+Documentation=https://prometheus.io/docs/prometheus
+Wants=network-online.target
+After=network-online.target time-sync.target nss-lookup.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/bin/prometheus \
+    --config.file=/etc/prometheus/prometheus.yml \
+    --web.listen-address=[::]:9090 \
+    --web.max-connections=1024 \
+    --web.enable-lifecycle \
+    --storage.tsdb.path=/var/lib/prometheus/ \
+    --query.timeout=2m \
+    --query.max-concurrency=20 \
+    --log.level=warn
+ExecReload=/bin/kill -HUP $MAINPID
+LimitNOFILE=65535
+LimitNPROC=65535
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+
+# Security Hardening
+NoNewPrivileges=true
+ProtectHome=true
+ProtectSystem=full
+ProtectHostname=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

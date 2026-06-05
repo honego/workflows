@@ -1,0 +1,19 @@
+# https://quay.io/repository/prometheus/node-exporter
+# https://hub.docker.com/r/prom/node-exporter
+
+---
+services:
+  node_exporter:
+    image: prom/node-exporter:v1.11.1 # quay.io/prometheus/node-exporter:v1.11.1
+    container_name: node_exporter
+    restart: unless-stopped
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      - "/:/host:ro,rslave"
+    command:
+      - "--path.rootfs=/host"
+      - "--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)"
+    pid: host
+    network_mode: host

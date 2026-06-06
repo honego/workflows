@@ -13,7 +13,7 @@ services:
     volumes:
       - "/:/host:ro,rslave"
     command:
+      - --collector.filesystem.mount-points-exclude='^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+|var/lib/containerd/.+|var/lib/kubelet/.+)($|/)'
       - "--path.rootfs=/host"
-      - "--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)"
     pid: host
     network_mode: host

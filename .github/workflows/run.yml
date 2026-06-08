@@ -1,0 +1,15 @@
+name: "run"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "run"
+        run: |
+          curl -I -L https://blog.honeok.com/feed/
+          echo "----"
+          curl -v -L https://blog.honeok.com/feed/ -o /tmp/feed.xml

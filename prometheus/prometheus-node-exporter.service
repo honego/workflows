@@ -10,8 +10,8 @@ After=network-online.target
 
 [Service]
 Type=simple
-# User=node_exporter
-# Group=node_exporter
+User=node_exporter
+Group=node_exporter
 ExecStart=/usr/local/bin/node_exporter \
     --collector.filesystem.mount-points-exclude="^/(dev|proc|sys|run/(credentials/.+|containerd/.+|docker/.+)|var/lib/(docker|containerd|containers/storage|kubelet)/.+)($|/)" \
     --collector.netclass.ignored-devices="^(lo|veth.*|docker.*|br-.*|podman.*|cni.*|cali.*|cilium.*|flannel.*|kube-ipvs.*|tun.*|tap.*|wg.*)$" \

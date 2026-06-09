@@ -20,6 +20,7 @@ services:
       - "--collector.netdev.device-exclude=^(lo|veth.*|docker.*|br-.*|podman.*|cni.*|cali.*|cilium.*|flannel.*|kube-ipvs.*|tun.*|tap.*|wg.*)$"
       - "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector"
       - "--path.rootfs=/host"
+      - "--path.udev.data=/host/run/udev/data"
       - "--no-collector.timex"
       - "--web.listen-address=:9100"
       - "--log.level=warn"

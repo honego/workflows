@@ -1,5 +1,6 @@
 # https://quay.io/repository/prometheus/node-exporter
 # https://hub.docker.com/r/prom/node-exporter
+# https://github.com/prometheus/node_exporter/blob/master/Dockerfile
 
 ---
 services:
@@ -12,8 +13,17 @@ services:
       - 1.1.1.1
     volumes:
       - "/:/host:ro,rslave"
+      - "$PWD/textfile_collector:/var/lib/node_exporter/textfile_collector:ro"
     command:
-      - --collector.filesystem.mount-points-exclude='^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+|var/lib/containerd/.+|var/lib/kubelet/.+)($|/)'
+      - '--collector.filesystem.mount-points-exclude="^/(dev|proc|sys|run/(credentials/.+|containerd/.+|docker/.+)|var/lib/(docker|containerd|containers/storage|kubelet)/.+)($|/)"'
+      - '--collector.netclass.ignored-devices="^(lo|veth.*|docker.*|br-.*|podman.*|cni.*|cali.*|cilium.*|flannel.*|kube-ipvs.*|tun.*|tap.*|wg.*)$"'
+      - '--collector.netdev.device-exclude="^(lo|veth.*|docker.*|br-.*|podman.*|cni.*|cali.*|cilium.*|flannel.*|kube-ipvs.*|tun.*|tap.*|wg.*)$"'
+      - "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector"
       - "--path.rootfs=/host"
+      - "--no-collector.timex"
+      - "--web.listen-address=:9100"
+      - "--log.level=warn"
     pid: host
+    # cap_add:
+    #   - SYS_TIME
     network_mode: host

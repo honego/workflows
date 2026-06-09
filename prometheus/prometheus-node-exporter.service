@@ -12,7 +12,15 @@ After=network-online.target
 Type=simple
 # User=node_exporter
 # Group=node_exporter
-ExecStart=/usr/local/bin/node_exporter
+ExecStart=/usr/local/bin/node_exporter \
+    --collector.filesystem.mount-points-exclude="^/(dev|proc|sys|run/(credentials/.+|containerd/.+|docker/.+)|var/lib/(docker|containerd|containers/storage|kubelet)/.+)($|/)" \
+    --collector.netclass.ignored-devices="^(lo|veth.*|docker.*|br-.*|podman.*|cni.*|cali.*|cilium.*|flannel.*|kube-ipvs.*|tun.*|tap.*|wg.*)$" \
+    --collector.netdev.device-exclude="^(lo|veth.*|docker.*|br-.*|podman.*|cni.*|cali.*|cilium.*|flannel.*|kube-ipvs.*|tun.*|tap.*|wg.*)$" \
+# https://www.robustperception.io/using-the-textfile-collector-from-a-shell-script
+    --collector.textfile.directory="/var/lib/node_exporter/textfile_collector" \
+    --collector.systemd \
+    --web.listen-address=:9100 \
+    --log.level=warn
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 TimeoutStopSec=20s

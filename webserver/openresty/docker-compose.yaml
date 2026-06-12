@@ -9,6 +9,7 @@ services:
     volumes:
       - $PWD/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
       - $PWD/conf.d:/etc/nginx/conf.d
+      - $PWD/lua:/etc/nginx/lua:ro
       - $PWD/certs:/etc/nginx/certs
       - $PWD/html:/usr/local/openresty/nginx/html
       - $PWD/logs:/usr/local/openresty/nginx/logs

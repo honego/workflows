@@ -1,7 +1,8 @@
-_"The river does not rush to be first, but strives to flow endlessly."_
+# workflows
 
-<!-- | <img src="https://github-readme-stats.vercel.app/api?username=honeok&show_icons=true&include_all_commits=true&hide_border=true&hide=contribs&theme=default&icon_color=0366d6&title_color=0366d6" alt="honeok's github stats" /> | <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=honeok&layout=compact&hide_border=true&hide=javascript,html,css&theme=default&icon_color=0366d6&title_color=0366d6" /> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -->
+![License](https://img.shields.io/github/license/honego/workflows.svg?logo=github)
+![Last Commit](https://img.shields.io/github/last-commit/honego/workflows.svg?logo=github)
 
-| <img src="https://github-readme-stats-psi-sepia-18.vercel.app/api?username=honeok&show_icons=true&include_all_commits=true&hide_border=true&hide=contribs&theme=default&icon_color=0366d6&title_color=0366d6" alt="honeok's github stats" /> | <img src="https://github-readme-stats-psi-sepia-18.vercel.app/api/top-langs/?username=honeok&layout=compact&hide_border=true&hide=javascript,html,css&theme=default&icon_color=0366d6&title_color=0366d6" /> |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+Сука блядь
+
+[![Docker Pulls](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fhub.docker.com%2Fv2%2Frepositories%2Fhoneok%2Fopenresty%2F&query=%24.pull_count&label=docker%20pulls&logo=docker&color=2496ED&logoColor=white)](https://hub.docker.com/r/honeok/openresty)

@@ -10,7 +10,7 @@ local exit = ngx.exit
 local get_method = ngx.req.get_method
 local log = ngx.log
 local regex_find = ngx.re.find
-local string_match = string.match
+local string_byte = string.byte
 
 -- 拦截敏感路径和文件
 local sensitive_path_pattern = [[
@@ -19,10 +19,6 @@ local sensitive_path_pattern = [[
     \.(?!well-known(?:/|$))[^/]+
     |
     (?:web|meta)-inf
-    |
-    [^/]+\.(?:conf(?:ig)?|ini|properties|toml)
-    |
-    [^/]+\.log(?:\.\d+)?
     |
     [^/]*(?:
       config|settings?|secrets?|credentials?|database
@@ -35,17 +31,12 @@ local sensitive_path_pattern = [[
     [^/]+[-.]lock(?:[-.][^/]+)?
     |
     [^/]+\.(?:
-      bak|backup|bkp|old|orig|save|copy|tmp|temp|sw[op]
-      |sql|db|dump|sqlite3?|py[co]|inc|src
+      log(?:\.\d+)?|bak|backup|bkp|old|orig|save|copy|tmp|temp|sw[op]
+      |sql|db|dump|sqlite3?|py[co]|inc|src|tfstate|tfvars(?:\.json)?
+      |conf(?:ig)?|ini|properties|toml|key|p12|pfx|jks|keystore
     )
     |
     [^/]+~
-    |
-    [^/]+\.tfstate
-    |
-    [^/]+\.tfvars(?:\.json)?
-    |
-    [^/]+\.(?:key|p12|pfx|jks|keystore)
     |
     [^/]*(?:private[-_.]?key|service[-_.]?account|client[-_.]?(?:secret|credentials?))[^/]*\.pem
     |
@@ -60,19 +51,14 @@ local sensitive_path_pattern = [[
   (?:[;/]|$)
 ]]
 
-local method = get_method() or ""
+local first_byte = string_byte(get_method() or "", 1)
 
--- 拦截格式错误的请求方法
-if method == "" or not string_match(method, "^[A-Za-z0-9!#$%%&'*+%.%^_`|~%-]+$") then
+-- 拦截请求方法异常的探测请求
+if not first_byte or first_byte < 65 or first_byte > 90 then
   return exit(444)
 end
 
 local uri = ngx.var.uri or ""
-
--- 拦截过长路径
-if #uri > 1024 then
-  return exit(444)
-end
 
 -- 拦截敏感路径
 local matched, _, err = regex_find(uri, sensitive_path_pattern, "ijox")

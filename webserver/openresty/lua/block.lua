@@ -1,31 +1,34 @@
 -- block.lua
 
--- 将openresty的正则匹配函数绑定到本地变量减少全局查找开销
 local ngx = ngx
-local regex_match = ngx.re.match
+local exit = ngx.exit
+local get_method = ngx.req.get_method
+local regex_find = ngx.re.find
+local string_byte = string.byte
 
--- 获取当前请求的URI路径不包括查询字符串
-local request_uri = ngx.var.uri or ""
-local request_line = ngx.var.request or ""
+-- 拦截隐藏文件、敏感配置和备份文件
+local sensitive_path_pattern = [[
+  (?:^|/)
+  (?:
+    \.(?!well-known(?:/|$))[^/]*(?:/|$)
+    |
+    (?:
+      composer\.(?:json|lock)|package\.json|yarn\.lock|wp-config\.php|config\.php|settings\.php
+      |database\.yml|secrets\.yaml|Thumbs\.db
+    )$
+    |
+    [^/]+\.(?:bak|old|swp|sql|db|dump|pyc|pyo|sqlite|php~|conf~|ini~|log~|~)$
+  )
+]]
 
--- 乱码请求快速关闭连接
-if string.match(request_line, "^[^A-Z]") then
-  return ngx.exit(444)
+local first_byte = string_byte(get_method(), 1)
+
+-- 拦截请求方法异常的探测请求
+if first_byte and (first_byte < 65 or first_byte > 90) then
+  return exit(444)
 end
 
--- 定义敏感文件
-local sensitive_files = {
-  "^/\\.(?!well-known)(env|git|gitignore|htaccess|hg|svn|bzr|editorconfig|npmrc|bashrc|bash_profile|bash_history|[^/]+)$",
-  "composer\\.(json|lock)$",
-  "package\\.json$",
-  "yarn\\.lock$",
-  "\\.(bak|old|swp|~$|sql|db|dump|php~|conf~|ini~|log~|pyc|pyo|sqlite)$",
-  "^/(wp-config\\.php|config\\.php|settings\\.php|database\\.yml|secrets\\.yaml)$",
-  "^/(\\.DS_Store|Thumbs\\.db|\\.idea|\\.vscode)$"
-}
-
-for _, pattern in ipairs(sensitive_files) do
-  if regex_match(request_uri, pattern, "ioj") then
-    return ngx.exit(444)
-  end
+-- 命中敏感路径后直接关闭连接
+if regex_find(ngx.var.uri or "", sensitive_path_pattern, "ijox") then
+  return exit(444)
 end

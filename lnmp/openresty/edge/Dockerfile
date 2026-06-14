@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # SPDX-License-Identifier: BSD-2-Clause
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 #
@@ -6,9 +5,6 @@
 # https://github.com/openresty/docker-openresty
 # https://github.com/nginx/docker-nginx
 # https://github.com/teddysun/openresty
-# Acknowledgements:
-# openresty and it's author agentzh <agentzh@gmail.com>
-#                                   <admin@openresty.com>
 
 FROM alpine:3.24.0@sha256:a2d49ea686c2adfe3c992e47dc3b5e7fa6e6b5055609400dc2acaeb241c829f4 AS base
 

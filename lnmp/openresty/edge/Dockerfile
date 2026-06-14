@@ -38,6 +38,7 @@ RUN set -ex \
         clang-dev \
         curl \
         git \
+        libmaxminddb-dev \
         linux-headers \
         lz4-dev \
         openssl-dev \

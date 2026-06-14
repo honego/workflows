@@ -35,6 +35,7 @@ jobs:
       resty_version: ${{ steps.vers.outputs.resty_version }}
       zstd_version: ${{ steps.vers.outputs.zstd_version }}
       acme_version: ${{ steps.vers.outputs.acme_version }}
+      geoip2_version: ${{ steps.vers.outputs.geoip2_version }}
 
     steps:
       - name: "Resolve upstream versions"
@@ -211,6 +212,7 @@ jobs:
       resty_version: ${{ steps.vers.outputs.resty_version }}
       zstd_version: ${{ steps.vers.outputs.zstd_version }}
       acme_version: ${{ steps.vers.outputs.acme_version }}
+      geoip2_version: ${{ steps.vers.outputs.geoip2_version }}
 
     steps:
       - name: "Resolve upstream versions"

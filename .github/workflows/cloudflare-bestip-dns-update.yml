@@ -1,9 +1,9 @@
 ---
-name: "Update cloudflare bestip dns"
+name: "Cloudflare bestip dns sync"
 
 on:
   push:
-    branches: [master, dev]
+    branches: [master]
     paths:
       - ".github/workflows/cloudflare-bestip-dns-update.yml"
       - "scripts/cloudflare-bestip-dns-update.sh"
@@ -22,8 +22,8 @@ env:
   TZ: Asia/Shanghai
 
 jobs:
-  build:
-    name: "Update cloudflare bestip dns"
+  sync:
+    name: "Sync dns records"
     runs-on: ubuntu-latest
 
     steps:
@@ -32,10 +32,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "Update cloudflare bestip dns"
+      - name: "Run bestip dns sync"
         working-directory: scripts
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           CLOUDFLARE_RECORD_NAME: ${{ secrets.CLOUDFLARE_RECORD_NAME }}
-        run: bash cloudflare-bestip-dns-update.sh
+        run: bash -x cloudflare-bestip-dns-update.sh

@@ -1,11 +1,13 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0
+#
+# Description: The script is used to automatically update cloudflare dns records with optimized ip addresses.
 # Copyright (c) 2026 honeok <i@honeok.com>
 #
 # Thanks:
 # https://ip.v2too.top
 
-set -eEu
+set -eEuo pipefail
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 

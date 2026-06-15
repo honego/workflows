@@ -1,0 +1,51 @@
+---
+settings:
+  log:
+    level: WARNING
+    timestamps: true
+  data:
+    database_file: /app/data/argus.db
+  web:
+    listen_host: 0.0.0.0
+    listen_port: 8080
+    route_prefix: /
+    basic_auth:
+      username: "honeok"
+      password: "Un*xdgE4bbSD5yz"
+    disabled_routes: []
+    favicon:
+      png: "https://fastly.jsdelivr.net/gh/cncf/artwork@main/projects/kubernetes/icon/color/kubernetes-icon-color.png"
+      svg: "https://fastly.jsdelivr.net/gh/cncf/artwork@main/projects/kubernetes/icon/color/kubernetes-icon-color.svg"
+
+notify:
+  bark:
+    type: bark
+    options:
+      message: >-
+        {{ service_id }} 发现新版本 {{ version }}{% if web_url %}
+        - {{ web_url }}{% endif %}
+    url_fields:
+      DeviceKey: "TAje5RUGmaiYQB4sBQNkuW"
+      Host: "bark.honeok.de"
+    params:
+      Scheme: https
+      Title: "Release"
+      URL: "{{ web_url }}"
+
+  notify:
+    telegram:
+      type: telegram
+      options:
+        message: >-
+          {{ service_id }} 发现新版本 {{ version }}{% if web_url %}
+          - {{ web_url }}{% endif %}
+      url_fields:
+        Token: 7718937420:AAHpozXlpjK1cvPZvbCojQjQsQW2iiP-LwY
+      params:
+        Chats: "6485476975"
+        Notification: yes
+        ParseMode: None
+        Preview: yes
+        Title: "Release"
+
+service:

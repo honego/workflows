@@ -22,7 +22,7 @@ indent_style = space
 indent_size = 4
 space_redirects = true
 
-[*.{css,html,j2,Jenkinsfile,js,json,lua,nft,proto,toml,ts,tsx,vue,xml,yml,yaml}]
+[{*.{css,html,j2,js,json,lua,nft,proto,toml,ts,tsx,vue,xml,yml,yaml},Jenkinsfile}]
 indent_style = space
 indent_size = 2
 

@@ -1,4 +1,4 @@
----
+--
 -- SPDX-License-Identifier: Apache-2.0
 -- Description: OpenResty Redis-backed IP ban check with shared-dict L1 cache.
 -- Copyright (c) 2026 honeok <i@honeok.com>

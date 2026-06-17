@@ -12,10 +12,6 @@ local ERR = ngx.ERR
 local WARN = ngx.WARN
 local strlen = string.len
 
-local RE_OPTS = "ijox"
-local BLOCK_STATUS = 444
-local MAX_UA_LEN = 512
-
 local function request_value(value)
   if value == nil or value == "" then
     return "-"
@@ -39,11 +35,11 @@ end
 
 local function reject(reason, user_agent)
   log_reject(reason, user_agent)
-  return exit(BLOCK_STATUS)
+  return exit(444)
 end
 
 local function regex_found(pattern, user_agent)
-  local from, _, err = re_find(user_agent, pattern, RE_OPTS)
+  local from, _, err = re_find(user_agent, pattern, "ijox")
 
   if err then
     log(
@@ -58,36 +54,16 @@ local function regex_found(pattern, user_agent)
       ", error=",
       err
     )
-    return exit(BLOCK_STATUS)
+    return exit(444)
   end
 
   return from ~= nil
-end
-
-local user_agent = var.http_user_agent
-
--- 空 UA 基本都是探测 脚本或异常客户端 直接断开
-if user_agent == nil or user_agent == "" or user_agent == "-" then
-  return reject("empty_user_agent", user_agent)
-end
-
--- 异常超长 UA 没有正常业务价值 避免日志污染和规则绕过。
-if strlen(user_agent) > MAX_UA_LEN then
-  return reject("oversized_user_agent", user_agent)
-end
-
-if regex_found([[ ^ \s* $ ]], user_agent) then
-  return reject("empty_user_agent", user_agent)
 end
 
 -- 本地监控固定放行 避免健康检查被后续规则误伤
 local allowed_ua_pattern = [[
   ^ Uptime-Kuma (?: / [A-Za-z0-9._+-]+ )? $
 ]]
-
-if regex_found(allowed_ua_pattern, user_agent) then
-  return
-end
 
 -- 拦截特征明确的 UA
 local deny_rules = {
@@ -216,12 +192,32 @@ local deny_rules = {
   },
 }
 
-for i = 1, #deny_rules do
-  local rule = deny_rules[i]
+return function()
+  local user_agent = var.http_user_agent
 
-  if regex_found(rule.pattern, user_agent) then
-    return reject(rule.reason, user_agent)
+  -- 空 UA 基本都是探测 脚本或异常客户端 直接断开
+  if user_agent == nil or user_agent == "" or user_agent == "-" then
+    return reject("empty_user_agent", user_agent)
+  end
+
+  -- 异常超长 UA 没有正常业务价值 避免日志污染和规则绕过。
+  if strlen(user_agent) > 512 then
+    return reject("oversized_user_agent", user_agent)
+  end
+
+  if regex_found([[ ^ \s* $ ]], user_agent) then
+    return reject("empty_user_agent", user_agent)
+  end
+
+  if regex_found(allowed_ua_pattern, user_agent) then
+    return
+  end
+
+  for i = 1, #deny_rules do
+    local rule = deny_rules[i]
+
+    if regex_found(rule.pattern, user_agent) then
+      return reject(rule.reason, user_agent)
+    end
   end
 end
-
-return

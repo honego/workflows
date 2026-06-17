@@ -13,5 +13,10 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-dofile("./block_sensitive_paths.lua")
-dofile("./block_ua.lua")
+local block_malformed_methods = require("access.block_malformed_methods")
+local block_ua = require("access.block_ua")
+local block_sensitive_paths = require("access.block_sensitive_paths")
+
+block_malformed_methods()
+block_ua()
+block_sensitive_paths()

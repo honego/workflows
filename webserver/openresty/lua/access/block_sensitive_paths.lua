@@ -1,6 +1,6 @@
 --
 -- SPDX-License-Identifier: Apache-2.0
--- Description: The lua file is an OpenResty sensitive path blocking rule set based on OWASP Core Rule Set 3.4.0.
+-- Description: The lua file blocks access to sensitive paths, path traversal, and sensitive files in OpenResty.
 -- Copyright (c) 2026 honeok <i@honeok.com>
 
 local ngx = ngx

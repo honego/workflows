@@ -60,7 +60,7 @@ local function regex_found(pattern, user_agent)
   return from ~= nil
 end
 
--- 本地监控固定放行 避免健康检查被后续规则误伤
+-- 本地监控固定放行 避免被后续 UA 规则误伤
 local allowed_ua_pattern = [[
   ^ Uptime-Kuma (?: / [A-Za-z0-9._+-]+ )? $
 ]]

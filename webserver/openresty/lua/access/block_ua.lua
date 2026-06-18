@@ -60,9 +60,39 @@ local function regex_found(pattern, user_agent)
   return from ~= nil
 end
 
--- 本地监控固定放行 避免被后续 UA 规则误伤
+-- 本地监控和指定 AI UA 固定放行 避免被后续 UA 规则误伤
 local allowed_ua_pattern = [[
-  ^ Uptime-Kuma (?: / [A-Za-z0-9._+-]+ )? $
+  (?:
+    ^ Uptime-Kuma (?: / [A-Za-z0-9._+-]+ )? $
+
+    | (?: ^ | [^A-Za-z0-9] )
+      (?:
+        GPTBot
+        | OAI-SearchBot
+        | OAI-AdsBot
+        | ChatGPT-User
+        | ClaudeBot
+        | Claude-User
+        | Claude-SearchBot
+        | anthropic-ai
+        | PerplexityBot
+        | Perplexity-User
+        | Applebot-Extended
+        | GoogleOther
+        | Google-CloudVertexBot
+        | Bytespider
+        | CCBot
+        | Diffbot
+        | omgilibot
+        | YouBot
+        | Meta-ExternalAgent
+        | meta-externalagent
+        | meta-externalfetcher
+        | cohere-ai
+        | AI2Bot
+      )
+      (?: / | [^A-Za-z0-9] | $ )
+  )
 ]]
 
 -- 拦截特征明确的 UA
@@ -158,49 +188,24 @@ local deny_rules = {
       )
     ]],
   },
-  {
-    reason = "ai_crawler_user_agent",
-    pattern = [[
-      (?: ^ | [^A-Za-z0-9] )
-      (?:
-        GPTBot
-        | OAI-SearchBot
-        | OAI-AdsBot
-        | ChatGPT-User
-        | ClaudeBot
-        | Claude-User
-        | Claude-SearchBot
-        | anthropic-ai
-        | PerplexityBot
-        | Perplexity-User
-        | Applebot-Extended
-        | GoogleOther
-        | Google-CloudVertexBot
-        | Bytespider
-        | CCBot
-        | Diffbot
-        | omgilibot
-        | YouBot
-        | Meta-ExternalAgent
-        | meta-externalagent
-        | meta-externalfetcher
-        | cohere-ai
-        | AI2Bot
-      )
-      (?: / | [^A-Za-z0-9] | $ )
-    ]],
-  },
 }
 
 return function()
   local user_agent = var.http_user_agent
+  local uri = var.uri
+  local method = var.request_method
+
+  -- 公开爬虫策略文件 允许正常读取
+  if uri == "/robots.txt" and (method == "GET" or method == "HEAD") then
+    return
+  end
 
   -- 空 UA 基本都是探测 脚本或异常客户端 直接断开
   if user_agent == nil or user_agent == "" or user_agent == "-" then
     return reject("empty_user_agent", user_agent)
   end
 
-  -- 异常超长 UA 没有正常业务价值 避免日志污染和规则绕过。
+  -- 异常超长 UA 没有正常业务价值 避免日志污染和规则绕过
   if strlen(user_agent) > 512 then
     return reject("oversized_user_agent", user_agent)
   end

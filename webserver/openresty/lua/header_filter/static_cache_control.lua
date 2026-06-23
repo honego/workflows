@@ -1,3 +1,8 @@
+--
+-- SPDX-License-Identifier: Apache-2.0
+-- Description: The lua file applies Cache-Control headers by uri extension when upstream does not provide caching headers in OpenResty.
+-- Copyright (c) 2026 honeok <i@honeok.com>
+
 -- 从 nginx 变量中读取静态资源兜底缓存策略
 local static_cache_control = ngx.var.static_cache_control
 
@@ -9,9 +14,6 @@ end
 -- 当前响应状态码
 local response_status = ngx.status
 
--- 当前响应头对象
-local response_headers = ngx.header
-
 -- 只处理正常响应和 Range 响应
 -- 200: 普通成功响应
 -- 206: Range / Partial Content 响应, 常见于媒体 断点请求等
@@ -19,6 +21,9 @@ local is_cacheable_status = response_status == 200 or response_status == 206
 if not is_cacheable_status then
   return
 end
+
+-- 当前响应头对象
+local response_headers = ngx.header
 
 -- 如果上游返回了 Set-Cookie, 说明响应可能和用户状态有关 不补缓存
 local has_set_cookie = response_headers["Set-Cookie"] ~= nil

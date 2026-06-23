@@ -3,6 +3,8 @@
 -- Description: The lua file applies Cache-Control headers by uri extension when upstream does not provide caching headers in OpenResty.
 -- Copyright (c) 2026 honeok <i@honeok.com>
 
+local ngx = ngx
+
 -- 从 nginx 变量中读取静态资源兜底缓存策略
 local static_cache_control = ngx.var.static_cache_control
 

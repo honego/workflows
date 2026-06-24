@@ -7,11 +7,14 @@
 set -eEuo pipefail
 
 # 各变量默认值
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-BOT_TOKEN=""
-CHAT_ID=""
-BARK_URL=""
-BARK_TOKEN=""
+: "${SCRIPT_DIR:=$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" && pwd -P)}"
+: "${USER_AGENT:="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"}"
+
+# Variables required for the notification
+TELEGRAM_BOT_TOKEN=""
+TELEGRAM_CHAT_ID=""
+: "${BARK_API_URL:="api.day.app"}"
+BARK_API_TOKEN=""
 
 # 设置PATH环境变量
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
@@ -23,48 +26,49 @@ die() {
     exit 1
 }
 
-_exists() {
-    local _CMD="$1"
-    if type "$_CMD" > /dev/null 2>&1; then
-        return
-    elif command -v "$_CMD" > /dev/null 2>&1; then
-        return
-    elif which "$_CMD" > /dev/null 2>&1; then
-        return
-    else
-        return 1
-    fi
+get_cmd_path() {
+    # arch 云镜像不带 which
+    # command -v 包括脚本里面的方法
+    # ash 无效
+    type -f -p "$1"
+}
+
+is_have_cmd() {
+    get_cmd_path "$1" > /dev/null 2>&1
 }
 
 curl() {
-    local RET
+    local rc
+
+    # 添加 --fail 不然404退出码也为0
+    # 32位cygwin已停止更新, 证书可能有问题, 添加 --insecure
+    # centos7 curl 不支持 --retry-connrefused --retry-all-errors 因此手动 retry
     for ((i = 1; i <= 3; i++)); do
         command curl --connect-timeout 10 --fail --insecure "$@"
-        RET="$?"
-        if [ "$RET" -eq 0 ]; then
+        rc="$?"
+        if [ "$rc" -eq 0 ]; then
             return
         else
-            if [ "$RET" -eq 22 ] || [ "$i" -eq 5 ]; then
-                return "$RET"
+            # 403 404 错误或达到重试次数
+            if [ "$rc" -eq 22 ] || [ "$i" -eq 5 ]; then
+                return "$rc"
             fi
-            sleep 1
+            sleep 0.5
         fi
     done
 }
 
-pkg_install() {
+install_pkg() {
     for pkg in "$@"; do
-        if _exists dnf; then
+        if is_have_cmd dnf; then
             dnf install -y "$pkg"
-        elif _exists yum; then
+        elif is_have_cmd yum; then
             yum install -y "$pkg"
-        elif _exists apt-get; then
+        elif is_have_cmd apt-get; then
             apt-get update
             apt-get install -y -q "$pkg"
-        elif _exists apk; then
+        elif is_have_cmd apk; then
             apk add --no-cache "$pkg"
-        elif _exists pacman; then
-            pacman -S --noconfirm --needed "$pkg"
         else
             die "The package manager is not supported."
         fi
@@ -78,22 +82,23 @@ check_root() {
 }
 
 check_cmd() {
-    local -a INSTALL_PKG
-    INSTALL_PKG=("curl" "gzip")
+    local -a deps_pkg
+    deps_pkg=("curl" "gzip")
 
-    for pkg in "${INSTALL_PKG[@]}"; do
-        if ! _exists "$pkg" > /dev/null 2>&1; then
-            pkg_install "$pkg"
+    for pkg in "${deps_pkg[@]}"; do
+        if ! is_have_cmd "$pkg" > /dev/null 2>&1; then
+            install_pkg "$pkg"
         fi
     done
 }
 
 check_srv() {
-    local -a WEB_SRV
-    WEB_SRV=("nginx" "openresty" "tengine")
-    for ((i = 0; i < ${#WEB_SRV[@]}; i++)); do
-        if docker ps --filter "name=${WEB_SRV[i]}" -q | grep -q .; then
-            CONTAINER_NAME="${WEB_SRV[i]}"
+    local -a web_srvs
+    web_srvs=("freenginx" "nginx" "openresty" "tengine")
+
+    for ((i = 0; i < ${#web_srvs[@]}; i++)); do
+        if docker ps --filter "name=${web_srvs[i]}" -q | grep -q .; then
+            CONTAINER_NAME="${web_srvs[i]}"
             break
         fi
     done
@@ -105,69 +110,68 @@ check_srv() {
 
 # 日志截断
 log_rotate() {
-    local START_TIME
-    START_TIME="$(date +%Y-%m-%d-%S)"
+    local start_time
+    start_time="$(date -u '+%Y-%m-%d-%S' -d '+8 hours')"
 
     cd "${SCRIPT_DIR:?}" > /dev/null 2>&1 || die "Cannot enter directory."
-    mv -f logs/access.log "logs/access_$START_TIME.log" > /dev/null 2>&1
-    mv -f logs/error.log "logs/error_$START_TIME.log" > /dev/null 2>&1
+    mv -f logs/access.log "logs/access_$start_time.log" > /dev/null 2>&1
+    mv -f logs/error.log "logs/error_$start_time.log" > /dev/null 2>&1
     docker exec "$CONTAINER_NAME" nginx -s reopen > /dev/null 2>&1
-    gzip "logs/access_$START_TIME.log" > /dev/null 2>&1
-    gzip "logs/error_$START_TIME.log" > /dev/null 2>&1
+    gzip "logs/access_$start_time.log" > /dev/null 2>&1
+    gzip "logs/error_$start_time.log" > /dev/null 2>&1
     find logs -type f -name "*.log.gz" -mtime +7 -exec rm -f {} \; > /dev/null 2>&1
 }
 
 send_msg() {
-    local MESSAGE="$1"
+    local message="$1"
 
-    if [[ -n "$BOT_TOKEN" && -n "$CHAT_ID" ]]; then
-        curl -Ls -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+    if [[ -n "$TELEGRAM_BOT_TOKEN" && -n "$TELEGRAM_CHAT_ID" ]]; then
+        curl -Ls -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\":\"$CHAT_ID\",\"text\":\"$MESSAGE\"}" > /dev/null 2>&1 || true
+            -d "{\"chat_id\":\"$TELEGRAM_CHAT_ID\",\"text\":\"$message\"}" > /dev/null 2>&1 || true
     fi
-    if [ -n "$BARK_TOKEN" ]; then
-        curl -Ls -X POST "https://${BARK_URL:-api.day.app}/$BARK_TOKEN" \
+    if [ -n "$BARK_API_TOKEN" ]; then
+        curl -Ls -X POST "https://$BARK_API_URL/$BARK_API_TOKEN" \
+            -A "$USER_AGENT" \
             -H "Content-Type: application/json" \
-            -d "{\"title\":\"$CONTAINER_NAME\",\"body\":\"${MESSAGE//$'\n'/\\n}\"}" > /dev/null 2>&1 || true
+            -d "{\"title\":\"$CONTAINER_NAME\",\"body\":\"${message//$'\n'/\\n}\"}" > /dev/null 2>&1 || true
     fi
 }
 
 ip_address() {
-    local IPV4_ADDRESS IPV6_ADDRESS
+    local ipv4_addr ipv6_addr
+    ipv4_addr="$(curl -Ls -4 http://www.qualcomm.cn/cdn-cgi/trace 2> /dev/null | grep -i '^ip=' | cut -d'=' -f2 || true)"
+    ipv6_addr="$(curl -Ls -6 http://www.qualcomm.cn/cdn-cgi/trace 2> /dev/null | grep -i '^ip=' | cut -d'=' -f2 || true)"
 
-    IPV4_ADDRESS="$(curl -Ls -4 http://www.qualcomm.cn/cdn-cgi/trace 2> /dev/null | grep -i '^ip=' | cut -d'=' -f2 || true)"
-    IPV6_ADDRESS="$(curl -Ls -6 http://www.qualcomm.cn/cdn-cgi/trace 2> /dev/null | grep -i '^ip=' | cut -d'=' -f2 || true)"
-
-    if [[ -n "$IPV4_ADDRESS" && "$IPV4_ADDRESS" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-        PUBLIC_IP="$IPV4_ADDRESS"
-        MASKED_IP="$(awk -F. 'NF==4{print $1"."$2".*.*"} NF!=4{print ""}' <<< "$IPV4_ADDRESS")"
+    if [[ -n "$ipv4_addr" && "$ipv4_addr" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        PUBLIC_IP="$ipv4_addr"
+        MASKED_IP="$(awk -F. 'NF==4{print $1"."$2".*.*"} NF!=4{print ""}' <<< "$ipv4_addr")"
         return
     fi
-    if [[ -n "$IPV6_ADDRESS" && "$IPV6_ADDRESS" == *":"* ]]; then
-        PUBLIC_IP="[$IPV6_ADDRESS]"
-        MASKED_IP="$(awk -F: '{print $1":"$2":"$3":*:*:*:*:*"}' <<< "$IPV6_ADDRESS")"
+    if [[ -n "$ipv6_addr" && "$ipv6_addr" == *":"* ]]; then
+        PUBLIC_IP="[$ipv6_addr]"
+        MASKED_IP="$(awk -F: '{print $1":"$2":"$3":*:*:*:*:*"}' <<< "$ipv6_addr")"
         return
     fi
-
     die "No valid public ip."
 }
 
 ip_info() {
-    local IP_API
+    local ip_api
 
-    IP_API="$(curl -Ls "https://api.ipbase.com/v1/json/$PUBLIC_IP")"
-    SERVER_CITY="$(sed -En 's/.*"(city_name|cityName|city)":[ ]*"([^"]+)".*/\2/p' <<< "$IP_API")"
+    ip_api="$(curl -Ls "https://api.ipbase.com/v1/json/$PUBLIC_IP")"
+    SERVER_CITY="$(sed -En 's/.*"(city_name|cityName|city)":[ ]*"([^"]+)".*/\2/p' <<< "$ip_api")"
 }
 
 # 构建消息推送
 const_msg() {
-    local END_TIME
-    END_TIME="$(date -u '+%Y-%m-%d %H:%M:%S' -d '+8 hours')"
+    local end_time
+    end_time="$(date -u '+%Y-%m-%d %H:%M:%S' -d '+8 hours')"
 
     ip_address
     ip_info
 
-    send_msg "$END_TIME
+    send_msg "$end_time
 $MASKED_IP $SERVER_CITY
 $CONTAINER_NAME complete log rotation!"
 }

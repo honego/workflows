@@ -1,4 +1,4 @@
-# K8S Core Images
+# Kubernetes Core Images
 
 ```shell
 registry.k8s.io/pause:3.10.2

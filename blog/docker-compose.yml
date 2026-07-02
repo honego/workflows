@@ -34,7 +34,7 @@ services:
       - $PWD/mysql/data:/var/lib/mysql
       - $PWD/mysql/logs:/var/log/mysql
     healthcheck:
-      test: ["CMD-SHELL", 'mysql --user=root --password=8aDdVzUzXwjEAOhifFW6yg --execute "SELECT 1"']
+      test: ["CMD-SHELL", 'mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent']
       interval: 10s
       timeout: 10s
       retries: 3
@@ -56,8 +56,12 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
   redis:
+    # https://redis.io/docs/latest/operate/oss_and_stack/management/admin
+    # Set the Linux kernel overcommit memory setting to 1. Add vm.overcommit_memory = 1 to /etc/sysctl.conf
     image: ghcr.io/valkey-io/valkey:9.1.0-alpine
     container_name: redis
     restart: unless-stopped
@@ -66,7 +70,15 @@ services:
     environment:
       TZ: Asia/Shanghai
     volumes:
+      - $PWD/redis/valkey.conf:/usr/local/etc/valkey/valkey.conf
       - $PWD/redis/data:/data
+    command: ["valkey-server", "/usr/local/etc/valkey/valkey.conf"]
+    healthcheck:
+      test: ["CMD", "valkey-cli", "-h", "127.0.0.1", "-p", "6379", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     networks:
       - web
 

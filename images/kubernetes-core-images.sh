@@ -8,7 +8,6 @@ set -eEuo pipefail
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 CORE_IMAGES_FILE="./kubernetes-core-images.md"
 : "${ALIYUN_REGISTRY:?missing ALIYUN_REGISTRY}"
 : "${ALIYUN_NAMESPACE:="$GITHUB_REPOSITORY_OWNER"}"
@@ -84,41 +83,27 @@ update_img_ver() {
 sync_img() {
     local img="$1" tag="$2"
 
-    docker pull "registry.k8s.io/$img:$tag"
-    docker tag "registry.k8s.io/$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
+    docker pull "$img:$tag"
+    docker tag "$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
     docker push "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
-    docker rmi --force "registry.k8s.io/$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
+    docker rmi --force "$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
 }
 
-# Bump pause image version
-update_pause() {
-    local latest_ver current_ver
+KUBERNETES_CORE_IMAGES=(
+    "registry.k8s.io/pause"
+    "registry.k8s.io/kube-apiserver"
+    "registry.k8s.io/kube-controller-manager"
+    "registry.k8s.io/kube-scheduler"
+    "registry.k8s.io/kube-proxy"
+    "registry.k8s.io/etcd"
+    "registry.k8s.io/coredns/coredns"
+)
 
-    latest_ver="$(get_latest_ver "registry.k8s.io/pause")"
-    current_ver="$(get_current_ver "registry.k8s.io/pause")"
-    ver_gt "$latest_ver" "$current_ver" || return
-    _log "Pause update: $current_ver -> $latest_ver"
-    update_img_ver "registry.k8s.io/pause" "$latest_ver"
-    sync_img "pause" "$latest_ver"
-}
-
-# change working dir to script dir
-cd "$SCRIPT_DIR" || _die "Failed to change dir to $SCRIPT_DIR"
-
-update_pause
-
-# get_latest_ver "registry.k8s.io/pause"
-# get_latest_ver "registry.k8s.io/kube-apiserver"
-# get_latest_ver "registry.k8s.io/kube-controller-manager"
-# get_latest_ver "registry.k8s.io/kube-scheduler"
-# get_latest_ver "registry.k8s.io/kube-proxy"
-# get_latest_ver "registry.k8s.io/etcd"
-# get_latest_ver "registry.k8s.io/coredns/coredns"
-
-# get_current_ver "registry.k8s.io/pause"
-# get_current_ver "registry.k8s.io/kube-apiserver"
-# get_current_ver "registry.k8s.io/kube-controller-manager"
-# get_current_ver "registry.k8s.io/kube-scheduler"
-# get_current_ver "registry.k8s.io/kube-proxy"
-# get_current_ver "registry.k8s.io/etcd"
-# get_current_ver "registry.k8s.io/coredns/coredns"
+for i in "${KUBERNETES_CORE_IMAGES[@]}"; do
+    latest_ver="$(get_latest_ver "$i")"
+    current_ver="$(get_current_ver "$i")"
+    ver_gt "$latest_ver" "$current_ver" || continue
+    _log "$i update: $current_ver -> $latest_ver"
+    update_img_ver "$i" "$latest_ver"
+    sync_img "$i" "$latest_ver"
+done

@@ -64,7 +64,6 @@ get_current_ver() {
             ;;
         esac
     fi
-
     awk -F: -v img="$img" '$1 == img { print $2; exit }' "$CORE_IMAGES_FILE" | grep -E -- "$regex"
 }
 

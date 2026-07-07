@@ -11,6 +11,8 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 CORE_IMAGES_FILE="./kubernetes-core-images.md"
 : "${ALIYUN_REGISTRY:?missing ALIYUN_REGISTRY}"
 : "${ALIYUN_NAMESPACE:="$GITHUB_REPOSITORY_OWNER"}"
+: "${ALIYUN_USERNAME:="$GITHUB_REPOSITORY_OWNER"}"
+: "${ALIYUN_PASSWORD:?missing ALIYUN_PASSWORD}"
 
 _die() {
     printf '[%s] %s\n' "$(date '+%F %T')" "[ERROR] $*"
@@ -89,6 +91,7 @@ sync_img() {
     docker rmi --force "$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/${img##*/}:$tag"
 }
 
+## Main logic.
 KUBERNETES_CORE_IMAGES=(
     "registry.k8s.io/pause"
     "registry.k8s.io/kube-apiserver"
@@ -99,6 +102,7 @@ KUBERNETES_CORE_IMAGES=(
     "registry.k8s.io/coredns/coredns"
 )
 
+docker login "$ALIYUN_REGISTRY" -u "$ALIYUN_USERNAME" --password-stdin <<< "$ALIYUN_PASSWORD" 2> /dev/null
 for i in "${KUBERNETES_CORE_IMAGES[@]}"; do
     latest_ver="$(get_latest_ver "$i")"
     current_ver="$(get_current_ver "$i")"

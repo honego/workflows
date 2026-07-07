@@ -22,13 +22,12 @@ _log() {
     printf '[%s] %s\n' "$(date '+%F %T')" "INFO: $*"
 }
 
-get_latest_version() {
-    local img regex latest_version
+get_latest_ver() {
+    local img regex
 
     img="$1"
-    regex='^v?[0-9]+(\.[0-9]+){1,2}(-[0-9]+)?$'
-    latest_version="$(skopeo list-tags "docker://$img" | jq -r '.Tags[]?' | grep -E -- "$regex" | sort -V | tail -n 1)"
-    echo "$latest_version"
+    regex="$2"
+    skopeo list-tags "docker://$img" | jq -r '.Tags[]?' | grep -E -- "$regex" | sort -V | tail -n 1
 }
 
 sync_img() {
@@ -42,21 +41,25 @@ sync_img() {
 
 # Bump pause image version
 update_pause() {
-    local latest_version current_version
+    local latest_ver current_ver
 
-    latest_version="$(get_latest_version "registry.k8s.io/pause")"
-    current_version="$(sed -En 's#^(.*/)?pause:([0-9]+(\.[0-9]+){1,2}(-[0-9]+)?)$#\2#p' "$CORE_IMAGES_FILE")"
+    latest_ver="$(get_latest_ver "registry.k8s.io/pause" '^[0-9]+(\.[0-9]+){1,2}$')"
+    current_ver="$(sed -En 's#^(.*/)?pause:([0-9]+(\.[0-9]+){1,2}(-[0-9]+)?)$#\2#p' "$CORE_IMAGES_FILE")"
 
-    if [[ "$(printf '%s\n%s\n' "$latest_version" "$current_version" | sort -V | head -n 1)" == "$latest_version" ]]; then
+    if [[ "$(printf '%s\n%s\n' "$latest_ver" "$current_ver" | sort -V | head -n 1)" == "$latest_ver" ]]; then
         return
     fi
 
-    _log "Pause update: $current_version -> $latest_version"
-    sed -Ei "s#^((.*/)?pause:)[0-9]+(\.[0-9]+){1,2}(-[0-9]+)?\$#\1${latest_version}#" "$CORE_IMAGES_FILE"
-    sync_img "pause" "$latest_version"
+    _log "Pause update: $current_ver -> $latest_ver"
+    sed -Ei "s#^((.*/)?pause:)[0-9]+(\.[0-9]+){1,2}(-[0-9]+)?\$#\1${latest_ver}#" "$CORE_IMAGES_FILE"
+    sync_img "pause" "$latest_ver"
 }
 
 # change working dir to script dir
 cd "$SCRIPT_DIR" || _die "Failed to change dir to $SCRIPT_DIR"
 
 update_pause
+
+# get_latest_ver "registry.k8s.io/kube-apiserver" '^v[0-9]+(\.[0-9]+){2}$'
+# get_latest_ver "registry.k8s.io/etcd" '^[0-9]+(\.[0-9]+){2}-[0-9]+$'
+# get_latest_ver "registry.k8s.io/coredns/coredns" '^v[0-9]+(\.[0-9]+){2}$'

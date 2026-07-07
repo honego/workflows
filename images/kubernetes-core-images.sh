@@ -61,9 +61,6 @@ get_current_ver() {
         *etcd)
             regex='^[0-9]+(\.[0-9]+){2}-[0-9]+$'
             ;;
-        *)
-            return 1
-            ;;
         esac
     fi
 

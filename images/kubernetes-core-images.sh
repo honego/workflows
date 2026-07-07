@@ -22,6 +22,15 @@ _log() {
     printf '[%s] %s\n' "$(date '+%F %T')" "INFO: $*"
 }
 
+get_latest_version() {
+    local img regex latest_version
+
+    img="$1"
+    regex='^v?[0-9]+(\.[0-9]+){1,2}(-[0-9]+)?$'
+    latest_version="$(skopeo list-tags "docker://$img" | jq -r '.Tags[]?' | grep -E -- "$regex" | sort -V | tail -n 1)"
+    echo "$latest_version"
+}
+
 sync_img() {
     local img="$1" tag="$2"
 
@@ -35,7 +44,7 @@ sync_img() {
 update_pause() {
     local latest_version current_version
 
-    latest_version="$(skopeo list-tags docker://registry.k8s.io/pause | jq -r '.Tags[]' | grep -E '^[0-9]+(\.[0-9]+){1,2}$' | sort -V | tail -n 1)"
+    latest_version="$(get_latest_version "registry.k8s.io/pause")"
     current_version="$(sed -En 's#^(.*/)?pause:([0-9]+(\.[0-9]+){1,2}(-[0-9]+)?)$#\2#p' "$CORE_IMAGES_FILE")"
 
     if [[ "$(printf '%s\n%s\n' "$latest_version" "$current_version" | sort -V | head -n 1)" == "$latest_version" ]]; then

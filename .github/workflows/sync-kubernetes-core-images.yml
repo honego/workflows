@@ -4,8 +4,7 @@ name: "Sync kubernetes core images"
 on:
   push:
     branches: [master]
-    paths:
-      - "images/kubernetes-core-images.md"
+    paths: ["images/kubernetes-core-images.md"]
   schedule:
     - cron: "0 16 * * *"
   workflow_dispatch:

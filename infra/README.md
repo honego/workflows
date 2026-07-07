@@ -9,7 +9,7 @@
   <a href="https://github.com/honeok/kubernetes-config"
     ><img
       alt="Kubernetes"
-      width="250px"
+      width="300px"
       src="https://cdn.jsdelivr.net/gh/cncf/artwork@40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/stacked/color/kubernetes-stacked-color.svg"
   /></a>
 </div>

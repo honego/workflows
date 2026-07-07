@@ -10,7 +10,7 @@
     ><img
       alt="Kubernetes"
       width="200px"
-      src="https://fastly.jsdelivr.net/gh/cncf/artwork@40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg"
+      src="https://cdn.jsdelivr.net/gh/cncf/artwork@40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/stacked/color/kubernetes-stacked-color.svg"
   /></a>
 </div>
 

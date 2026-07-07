@@ -41,6 +41,9 @@ jobs:
 
       - name: "Sync kubernetes core images"
         id: update
+        env:
+          ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
+          ALIYUN_NAMESPACE: ${{ secrets.ALIYUN_NAMESPACE }}
         shell: bash
         run: bash images/kubernetes-core-images.sh
 

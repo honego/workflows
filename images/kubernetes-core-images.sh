@@ -25,10 +25,10 @@ _log() {
 sync_img() {
     local img="$1" tag="$2"
 
-    docker "pull registry.k8s.io/$img":"$tag"
-    docker tag "registry.k8s.io/$img":"$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img":"$tag"
-    docker push "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img":"$tag"
-    docker rmi --force "registry.k8s.io/$img":"$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img":"$tag"
+    docker pull "registry.k8s.io/$img:$tag"
+    docker tag "registry.k8s.io/$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
+    docker push "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
+    docker rmi --force "registry.k8s.io/$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$img:$tag"
 }
 
 # Bump pause image version

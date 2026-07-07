@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Description:
+# Description: The script updates kubernetes core image versions and syncs newer images to alibaba cloud container registry.
 # Copyright (c) 2026 honeok <i@honeok.com>
 
 set -eEuo pipefail

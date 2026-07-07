@@ -13,12 +13,12 @@ CORE_IMAGES_FILE="./kubernetes-core-images.md"
 : "${ALIYUN_NAMESPACE:="$GITHUB_REPOSITORY_OWNER"}"
 
 _die() {
-    printf '[%s] %s\n' "$(date '+%F %T')" "ERROR: $*"
+    printf '[%s] %s\n' "$(date '+%F %T')" "[ERROR] $*"
     exit 1
 }
 
 _log() {
-    printf '[%s] %s\n' "$(date '+%F %T')" "INFO: $*"
+    printf '[%s] %s\n' "$(date '+%F %T')" "[INFO] $*"
 }
 
 ## functions library

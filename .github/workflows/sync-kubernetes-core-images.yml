@@ -40,5 +40,17 @@ jobs:
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: "Sync kubernetes core images"
+        id: update
         shell: bash
         run: bash images/kubernetes-core-images.sh
+
+      - name: "Commit and push changes"
+        if: steps.update.outputs.bump_version != ''
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "docs: sync kubernetes core images by github actions [no ci]"
+          commit_options: "--no-verify --signoff"
+          file_pattern: "images/kubernetes-core-images.md"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"

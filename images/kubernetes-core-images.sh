@@ -22,6 +22,7 @@ _log() {
     printf '[%s] %s\n' "$(date '+%F %T')" "INFO: $*"
 }
 
+## functions library
 get_latest_ver() {
     local img regex
 
@@ -67,6 +68,14 @@ get_current_ver() {
     awk -F: -v img="$img" '$1 == img { print $2; exit }' "$CORE_IMAGES_FILE" | grep -E -- "$regex"
 }
 
+update_img_ver() {
+    local img="$1" ver="$2"
+
+    sed -Ei "s#^($(printf '%s\n' "$img" | sed 's#[][(){}.^$*+?|/\\]#\\&#g')):[^[:space:]]+\$#\1:${ver}#" "$CORE_IMAGES_FILE"
+    # Pass environment variables to github to trigger automatic commits.
+    echo "bump_version=1" >> "$GITHUB_OUTPUT"
+}
+
 sync_img() {
     local img="$1" tag="$2"
 
@@ -88,7 +97,7 @@ update_pause() {
     fi
 
     _log "Pause update: $current_ver -> $latest_ver"
-    sed -Ei "s#^((.*/)?pause:)[0-9]+(\.[0-9]+){1,2}(-[0-9]+)?\$#\1${latest_ver}#" "$CORE_IMAGES_FILE"
+    update_img_ver "registry.k8s.io/pause" "$latest_ver"
     sync_img "pause" "$latest_ver"
 }
 

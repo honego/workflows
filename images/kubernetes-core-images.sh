@@ -8,11 +8,17 @@ set -eEuo pipefail
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 : "${ALIYUN_REGISTRY:?missing ALIYUN_REGISTRY}"
 : "${ALIYUN_NAMESPACE:="$GITHUB_REPOSITORY_OWNER"}"
 
+_die() {
+    printf '[%s] %s\n' "$(date '+%F %T')" "ERROR: $*"
+    exit 1
+}
+
 _log() {
-    printf '[%s] %s\n' "$(date '+%F %T')" "$*"
+    printf '[%s] %s\n' "$(date '+%F %T')" "INFO: $*"
 }
 
 sync_img() {
@@ -38,5 +44,8 @@ update_pause() {
     sed -Ei "s#^((.*/)?pause:)[0-9]+(\.[0-9]+){1,2}(-[0-9]+)?\$#\1${latest_version}#" kubernetes-core-images.md
     sync_img "pause" "$latest_version"
 }
+
+# change working dir to script dir
+cd "$SCRIPT_DIR" || _die "Failed to change dir to $SCRIPT_DIR"
 
 update_pause

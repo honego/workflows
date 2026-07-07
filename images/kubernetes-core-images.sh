@@ -68,6 +68,12 @@ get_current_ver() {
     awk -F: -v img="$img" '$1 == img { print $2; exit }' "$CORE_IMAGES_FILE" | grep -E -- "$regex"
 }
 
+ver_gt() {
+    local l="$1" c="$2"
+
+    [[ "$l" != "$c" && "$(printf '%s\n' "$l" "$c" | sort -V | tail -n 1)" == "$l" ]]
+}
+
 update_img_ver() {
     local img="$1" ver="$2"
 
@@ -91,11 +97,7 @@ update_pause() {
 
     latest_ver="$(get_latest_ver "registry.k8s.io/pause")"
     current_ver="$(get_current_ver "registry.k8s.io/pause")"
-
-    if [[ "$(printf '%s\n%s\n' "$latest_ver" "$current_ver" | sort -V | head -n 1)" == "$latest_ver" ]]; then
-        return
-    fi
-
+    ver_gt "$latest_ver" "$current_ver" || return
     _log "Pause update: $current_ver -> $latest_ver"
     update_img_ver "registry.k8s.io/pause" "$latest_ver"
     sync_img "pause" "$latest_ver"

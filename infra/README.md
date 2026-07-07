@@ -1,5 +1,6 @@
 # kubernetes config
 
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)](https://github.com/honeok/kubernetes-config)
 [![Lines of Code](https://www.aschey.tech/tokei/github/honeok/kubernetes-config?category=code&style=flat&logo=https://cdn.simpleicons.org/github/white)](https://github.com/aschey/vercel-tokei)
 [![GitHub Repo Size](https://img.shields.io/github/repo-size/honeok/kubernetes-config?logo=github)](https://github.com/honeok/kubernetes-config)
 [![GitHub License](https://img.shields.io/github/license/honeok/kubernetes-config.svg?logo=github)](https://github.com/honeok/kubernetes-config)

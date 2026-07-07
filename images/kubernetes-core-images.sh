@@ -82,11 +82,14 @@ update_img_ver() {
 
 sync_img() {
     local img="$1" tag="$2"
+    local dst
 
+    dst="$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/${img##*/}:$tag"
+    docker buildx imagetools inspect "$dst" > /dev/null 2>&1 && _log "$dst already exists, skip." && return
     docker pull "$img:$tag"
-    docker tag "$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/${img##*/}:$tag"
-    docker push "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/${img##*/}:$tag"
-    docker rmi --force "$img:$tag" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/${img##*/}:$tag"
+    docker tag "$img:$tag" "$dst"
+    docker push "$dst"
+    docker rmi --force "$img:$tag" "$dst"
 }
 
 ## Main logic.

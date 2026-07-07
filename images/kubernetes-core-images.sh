@@ -26,7 +26,21 @@ get_latest_ver() {
     local img regex
 
     img="$1"
-    regex="$2"
+    regex="${2:-}"
+
+    if [ -z "$regex" ]; then
+        case "$img" in
+        *pause)
+            regex='^[0-9]+(\.[0-9]+){1,2}$'
+            ;;
+        *kube-apiserver | *kube-controller-manager | *kube-scheduler | *kube-proxy | *coredns/coredns)
+            regex='^v[0-9]+(\.[0-9]+){2}$'
+            ;;
+        *etcd)
+            regex='^[0-9]+(\.[0-9]+){2}-[0-9]+$'
+            ;;
+        esac
+    fi
     skopeo list-tags "docker://$img" | jq -r '.Tags[]?' | grep -E -- "$regex" | sort -V | tail -n 1
 }
 
@@ -43,7 +57,7 @@ sync_img() {
 update_pause() {
     local latest_ver current_ver
 
-    latest_ver="$(get_latest_ver "registry.k8s.io/pause" '^[0-9]+(\.[0-9]+){1,2}$')"
+    latest_ver="$(get_latest_ver "registry.k8s.io/pause")"
     current_ver="$(sed -En 's#^(.*/)?pause:([0-9]+(\.[0-9]+){1,2}(-[0-9]+)?)$#\2#p' "$CORE_IMAGES_FILE")"
 
     if [[ "$(printf '%s\n%s\n' "$latest_ver" "$current_ver" | sort -V | head -n 1)" == "$latest_ver" ]]; then
@@ -60,6 +74,10 @@ cd "$SCRIPT_DIR" || _die "Failed to change dir to $SCRIPT_DIR"
 
 update_pause
 
-# get_latest_ver "registry.k8s.io/kube-apiserver" '^v[0-9]+(\.[0-9]+){2}$'
-# get_latest_ver "registry.k8s.io/etcd" '^[0-9]+(\.[0-9]+){2}-[0-9]+$'
-# get_latest_ver "registry.k8s.io/coredns/coredns" '^v[0-9]+(\.[0-9]+){2}$'
+# get_latest_ver "registry.k8s.io/pause"
+# get_latest_ver "registry.k8s.io/kube-apiserver"
+# get_latest_ver "registry.k8s.io/kube-controller-manager"
+# get_latest_ver "registry.k8s.io/kube-scheduler"
+# get_latest_ver "registry.k8s.io/kube-proxy"
+# get_latest_ver "registry.k8s.io/etcd"
+# get_latest_ver "registry.k8s.io/coredns/coredns"

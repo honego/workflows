@@ -33,7 +33,7 @@ get_latest_ver() {
         *pause)
             regex='^[0-9]+(\.[0-9]+){1,2}$'
             ;;
-        *kube-apiserver | *kube-controller-manager | *kube-scheduler | *kube-proxy | *coredns/coredns)
+        *kube-apiserver | *kube-controller-manager | *kube-scheduler | *kube-proxy | *coredns)
             regex='^v[0-9]+(\.[0-9]+){2}$'
             ;;
         *etcd)
@@ -55,7 +55,7 @@ get_current_ver() {
         *pause)
             regex='^[0-9]+(\.[0-9]+){1,2}$'
             ;;
-        *kube-apiserver | *kube-controller-manager | *kube-scheduler | *kube-proxy | *coredns/coredns)
+        *kube-apiserver | *kube-controller-manager | *kube-scheduler | *kube-proxy | *coredns)
             regex='^v[0-9]+(\.[0-9]+){2}$'
             ;;
         *etcd)

@@ -23,11 +23,18 @@ rules:
   comments:
     min-spaces-from-content: 1
 
+  # Use this rule to require or forbid the use of document start marker (---).
+  document-start: disable
+
   # Use this rule to control the indentation.
   indentation:
     spaces: 2
 
   # Use this rule to set a limit to lines length.
   line-length:
-    max: 120
+    max: 500
     allow-non-breakable-inline-mappings: true
+
+  # Use this rule to forbid non-explicitly typed truthy values other than allowed ones (by default: true and false), for example YES or off.
+  truthy:
+    check-keys: false

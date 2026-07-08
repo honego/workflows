@@ -54,7 +54,7 @@ keep-alive-idle: 600 # 设置TCP连接的空闲超时时间为600秒
 
 # 缓解移动设备耗电问题
 # https://github.com/vernesong/OpenClash/issues/2614
-keep-alive-interval: 1800 # 设置TCP保活探测的间隔时间
+keep-alive-interval: 30 # 设置TCP保活探测的间隔时间
 
 profile:
   store-selected: true # 存储select选择记录

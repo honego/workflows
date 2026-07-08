@@ -23,9 +23,6 @@ rules:
   comments:
     min-spaces-from-content: 1
 
-  # Use this rule to require or forbid the use of document start marker (---).
-  document-start: disable
-
   # Use this rule to control the indentation.
   indentation:
     spaces: 2

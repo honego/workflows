@@ -1,0 +1,33 @@
+# https://yamllint.readthedocs.io/en/stable/configuration.html
+
+---
+extends: default
+
+rules:
+  # Use this rule to control the use of flow mappings or number of spaces inside braces ({ and }).
+  braces:
+    forbid: false
+    min-spaces-inside: 1
+    max-spaces-inside: 1
+    min-spaces-inside-empty: 0
+    max-spaces-inside-empty: 0
+
+  # Use this rule to control the use of flow sequences or the number of spaces inside brackets ([ and ]).
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: 0
+    max-spaces-inside-empty: 0
+
+  # Use this rule to control the position and formatting of comments.
+  comments:
+    min-spaces-from-content: 1
+
+  # Use this rule to control the indentation.
+  indentation:
+    spaces: 2
+
+  # Use this rule to set a limit to lines length.
+  line-length:
+    max: 120
+    allow-non-breakable-inline-mappings: true

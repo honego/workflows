@@ -1,0 +1,39 @@
+---
+name: "Run yamllint"
+
+on:
+  push:
+    branches: ["*"]
+    paths: ["**/*.yml", "**/*.yaml"]
+  pull_request:
+    paths: ["**/*.yml", "**/*.yaml"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  yamllint:
+    name: "Run yamllint"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: "Run yamllint"
+        id: yamllint
+        uses: step-security/action-yamllint@v3
+        with:
+          config_file: .yamllint.yaml
+          format: github
+
+      - name: "Print yamllint log"
+        if: always()
+        run: echo ${{ steps.yamllint.outputs.logfile }}

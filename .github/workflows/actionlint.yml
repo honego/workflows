@@ -1,5 +1,5 @@
 ---
-name: "Actionlint"
+name: "Run actionlint"
 
 on:
   push:
@@ -33,6 +33,7 @@ jobs:
         uses: raven-actions/actionlint@v2
         with:
           matcher: true
+          group-result: false
           fail-on-error: true
           shellcheck: true
           pyflakes: true
@@ -47,4 +48,5 @@ jobs:
           printf '[%s] %s\n' "$(date '+%F %T')" "Actionlint found errors: ${{ steps.actionlint.outputs.total-errors }}"
           printf '[%s] %s\n' "$(date '+%F %T')" "Actionlint checked files: ${{ steps.actionlint.outputs.total-files }}"
           printf '[%s] %s\n' "$(date '+%F %T')" "Actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+          # shellcheck disable=SC2242
           exit ${{ steps.actionlint.outputs.exit-code }}

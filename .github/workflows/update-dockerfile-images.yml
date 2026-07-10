@@ -18,42 +18,45 @@ jobs:
       contents: write
 
     steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
       - name: "Setup updatecli"
         uses: updatecli/updatecli-action@main
 
-      - name: "Update and commit images"
+      - name: "Update dockerfile images"
         shell: bash
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          UPDATECLI_REPOSITORY: ${{ github.event.repository.name }}
-          UPDATECLI_BRANCH: ${{ inputs.ref != '' && inputs.ref || github.ref_name }}
         run: |
           set -eEuo pipefail
           cat > "$RUNNER_TEMP/updatecli.yaml" <<'EOF'
-          name: "Update and commit images"
-          scms:
-            default:
-              kind: github
-              spec:
-                owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
-                repository: '{{ requiredEnv "UPDATECLI_REPOSITORY" }}'
-                branch: '{{ requiredEnv "UPDATECLI_BRANCH" }}'
-                token: '{{ requiredEnv "GITHUB_TOKEN" }}'
-                username: '{{ requiredEnv "GITHUB_ACTOR" }}'
-                user: "github-actions[bot]"
-                email: "41898282+github-actions[bot]@users.noreply.github.com"
-                workingBranch: false
-                force: false
-                commitUsingApi: true
-                commitmessage:
-                  footers: |
-                    Signed-off-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-
+          name: "Update dockerfile images"
           autodiscovery:
-            groupby: all
-            scmid: default
             crawlers:
               dockerfile:
                 digest: true
           EOF
           updatecli pipeline apply --config "$RUNNER_TEMP/updatecli.yaml"
+
+      - name: "Show changes"
+        shell: bash
+        id: diff
+        run: |
+          set -eEuo pipefail
+          git diff --stat
+          git diff
+          changed="$(
+            [ -n "$(git status --porcelain)" ] && echo true
+          )"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+      - name: "Commit and push changes"
+        if: steps.diff.outputs.changed != ''
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit --no-verify --signoff -m "chore(deps): bump images version by github actions [no ci]"
+          git push ${{ inputs.ref }}

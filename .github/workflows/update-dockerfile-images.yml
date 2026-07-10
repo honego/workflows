@@ -46,10 +46,7 @@ jobs:
           set -eEuo pipefail
           git diff --stat
           git diff
-          changed="$(
-            [ -n "$(git status --porcelain)" ] && echo true
-          )"
-          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          [ -z "$(git status --porcelain)" ] || echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: "Commit and push changes"
         if: steps.diff.outputs.changed != ''

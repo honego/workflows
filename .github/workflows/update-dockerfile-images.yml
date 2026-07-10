@@ -46,10 +46,6 @@ jobs:
                 force: false
                 commitUsingApi: true
                 commitmessage:
-                  type: chore
-                  scope: deps
-                  squash: true
-                  body: "[skip ci]"
                   footers: |
                     Signed-off-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
 

@@ -1,0 +1,53 @@
+---
+name: "Update images"
+
+on:
+  push:
+  workflow_call:
+
+jobs:
+  update:
+    name: "Update images"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v7
+
+      - name: "Setup updatecli"
+        uses: updatecli/updatecli-action@v3.3.0
+
+      - name: "Update images"
+        shell: bash
+        run: |
+          set -eEuo pipefail
+          cat > "$RUNNER_TEMP/updatecli.yaml" <<'EOF'
+          name: "Update images"
+          autodiscovery:
+            crawlers:
+              dockerfile:
+                digest: true
+          EOF
+          updatecli apply --config "$RUNNER_TEMP/updatecli.yaml"
+
+      - name: "Show changes"
+        shell: bash
+        id: diff
+        run: |
+          set -eEuo pipefail
+          git diff --stat
+          git diff
+          changed="$(
+            [ -n "$(git status --porcelain)" ] && echo true
+          )"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+      - name: "Commit and push changes"
+        if: steps.diff.outputs.changed != ''
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore(deps): bump images version by github actions [no ci]"
+          commit_options: "--no-verify --signoff"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"

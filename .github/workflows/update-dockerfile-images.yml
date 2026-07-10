@@ -1,0 +1,63 @@
+---
+name: "Update dockerfile images"
+
+on:
+  push:
+  workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  update:
+    name: "Update dockerfile images"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: "Setup updatecli"
+        uses: updatecli/updatecli-action@main
+
+      - name: "Update and commit images"
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          UPDATECLI_REPOSITORY: ${{ github.event.repository.name }}
+          UPDATECLI_BRANCH: ${{ inputs.ref != '' && inputs.ref || github.ref_name }}
+        run: |
+          set -eEuo pipefail
+          cat > "$RUNNER_TEMP/updatecli.yaml" <<'EOF'
+          name: "Update and commit images"
+          scms:
+            default:
+              kind: github
+              spec:
+                owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+                repository: '{{ requiredEnv "UPDATECLI_REPOSITORY" }}'
+                branch: '{{ requiredEnv "UPDATECLI_BRANCH" }}'
+                token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+                username: '{{ requiredEnv "GITHUB_ACTOR" }}'
+                user: "github-actions[bot]"
+                email: "41898282+github-actions[bot]@users.noreply.github.com"
+                workingBranch: false
+                force: false
+                commitUsingApi: true
+                commitmessage:
+                  type: chore
+                  scope: deps
+                  squash: true
+                  body: "[skip ci]"
+                  footers: |
+                    Signed-off-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+
+          autodiscovery:
+            groupby: all
+            scmid: default
+            crawlers:
+              dockerfile:
+                digest: true
+          EOF
+          updatecli pipeline apply --config "$RUNNER_TEMP/updatecli.yaml"

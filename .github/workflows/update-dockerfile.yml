@@ -1,0 +1,31 @@
+---
+name: "Refresh dockerfile images"
+
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        required: false
+        type: string
+        default: stable
+      go-version-file:
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: "Update and pin image references"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v7
+
+      - name: "Setup Go"
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ inputs.go-version && inputs.go-version-file == '' || '' }}
+          go-version-file: ${{ inputs.go-version-file }}
+
+      - name: "Install dockerfile-pin"
+        run: go install github.com/azu/dockerfile-pin@latest

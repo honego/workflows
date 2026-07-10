@@ -39,7 +39,7 @@ jobs:
           EOF
           updatecli pipeline apply --config "$RUNNER_TEMP/updatecli.yaml"
 
-      - name: "Show changes"
+      - name: "Check for changes"
         shell: bash
         id: diff
         run: |

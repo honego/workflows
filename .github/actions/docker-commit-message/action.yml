@@ -1,0 +1,18 @@
+---
+name: "Generate commit message"
+description: "Generate a Dependabot-style commit message"
+
+outputs:
+  file:
+    description: "Commit message file"
+    value: ${{ steps.generate.outputs.file }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Generate commit message"
+      id: generate
+      shell: bash
+      run: |
+        python3 "$GITHUB_ACTION_PATH/docker-commit-message.py" > "$RUNNER_TEMP/commit.log"
+        echo "file="$RUNNER_TEMP/commit.log"" >> "$GITHUB_OUTPUT"

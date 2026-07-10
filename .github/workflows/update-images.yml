@@ -4,15 +4,24 @@ name: "Update images"
 on:
   push:
   workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   update:
     name: "Update images"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: "Setup updatecli"
         uses: updatecli/updatecli-action@v3.3.0

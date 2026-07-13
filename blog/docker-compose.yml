@@ -4,9 +4,10 @@ services:
     image: honeok/openresty:1.31.2.1-alpine-edge
     container_name: openresty
     restart: unless-stopped
-    environment:
-      TZ: Asia/Shanghai
+    # environment:
+    #   TZ: Asia/Shanghai
     volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
       - $PWD/nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
       - $PWD/nginx/conf.d:/etc/nginx/conf.d
       - $PWD/nginx/lua:/etc/nginx/lua
@@ -22,13 +23,14 @@ services:
     image: percona/percona-server:8.4.10-10.1
     container_name: mysql
     restart: unless-stopped
+    user: 1001:1001
     environment:
-      TZ: Asia/Shanghai
+      # TZ: Asia/Shanghai
       MYSQL_ROOT_PASSWORD: 8aDdVzUzXwjEAOhifFW6yg # openssl rand -base64 16
       MYSQL_USER: honeok
       MYSQL_PASSWORD: 4siz2vOewdLbww # openssl rand -base64 10
     volumes:
-      - /etc/localtime:/etc/localtime:ro
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
       - $PWD/mysql/my.cnf:/etc/my.cnf
       - $PWD/mysql/my.cnf.d:/etc/my.cnf.d
       - $PWD/mysql/data:/var/lib/mysql
@@ -39,20 +41,19 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    networks:
-      - web
+    networks: ["web"]
 
   php:
     image: honeok/php:8.5.6-fpm-alpine
     container_name: php
     restart: unless-stopped
-    environment:
-      TZ: Asia/Shanghai
+    # environment:
+    #   TZ: Asia/Shanghai
     volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
       - $PWD/nginx/html:/var/www/html
       - php-socket:/run/php
-    networks:
-      - web
+    networks: ["web"]
     depends_on:
       mysql:
         condition: service_healthy
@@ -62,25 +63,27 @@ services:
   redis:
     # https://redis.io/docs/latest/operate/oss_and_stack/management/admin
     # Set the Linux kernel overcommit memory setting to 1. Add vm.overcommit_memory = 1 to /etc/sysctl.conf
-    image: ghcr.io/valkey-io/valkey:9.1.0-alpine
+    image: percona/valkey:9.1.0
     container_name: redis
     restart: unless-stopped
+    user: 998:998
     # ports:
     #   - 127.0.0.1:6379:6379
-    environment:
-      TZ: Asia/Shanghai
+    # environment:
+    #   TZ: Asia/Shanghai
     volumes:
-      - $PWD/redis/valkey.conf:/usr/local/etc/valkey/valkey.conf
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      # https://hub.docker.com/layers/percona/valkey/9-hardened/images/sha256-2bb7ba14386ee3c843870fd5d128c5b4033502235feb5bf0c17e6cb44abf8799
+      - $PWD/redis/valkey.conf:/etc/valkey/valkey.conf
       - $PWD/redis/data:/data
-    command: ["valkey-server", "/usr/local/etc/valkey/valkey.conf"]
+    command: ["valkey-server", "/etc/valkey/valkey.conf"]
     healthcheck:
       test: ["CMD", "valkey-cli", "-h", "127.0.0.1", "-p", "6379", "ping"]
       interval: 10s
       timeout: 3s
       retries: 3
       start_period: 5s
-    networks:
-      - web
+    networks: ["web"]
 
 volumes:
   php-socket:

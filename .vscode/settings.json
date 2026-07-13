@@ -9,6 +9,7 @@
   "explorer.confirmPasteNative": false,
 
   // Editor setting
+  "editor.fontFamily": "Consolas",
   "editor.fontSize": 16,
   "editor.renderWhitespace": "selection",
   "editor.rulers": [80, 120],

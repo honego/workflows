@@ -8,7 +8,7 @@ ipv6: true
 
 listeners:
   # VLESS + REALITY + Vision
-  - name: "vless-reality-in"
+  - name: "VLESS-REALITY-IN"
     type: vless
     port: 10817
     listen: "::"

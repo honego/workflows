@@ -16,7 +16,13 @@ services:
       - $PWD/nginx/logs:/usr/local/openresty/nginx/logs
       - php-socket:/run/php
     tmpfs:
-      - /var/cache/openresty:rw,noexec,nosuid,size=512m
+      - /var/cache/openresty:rw,noexec,nosuid,size=1024m
+    healthcheck:
+      test: ["CMD", "nc", "-z", "-w", "2", "127.0.0.1", "80"]
+      interval: 30s # 每隔约 30 秒执行一次健康检查
+      timeout: 3s # 每次健康检查最多允许运行 3 秒
+      retries: 3
+      start_period: 10s # 容器刚启动后的前 10 秒属于启动宽限期
     network_mode: host
 
   mysql:
@@ -37,10 +43,10 @@ services:
       - $PWD/mysql/logs:/var/log/mysql
     healthcheck:
       test: ["CMD-SHELL", 'mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent']
-      interval: 10s
-      timeout: 10s
+      interval: 10s # 每隔约 10 秒执行一次健康检查
+      timeout: 10s # 每次健康检查最多允许运行 10 秒
       retries: 3
-      start_period: 10s
+      start_period: 10s # 容器刚启动后的前 10 秒属于启动宽限期
     networks: ["web"]
 
   php:
@@ -54,6 +60,12 @@ services:
       - $PWD/nginx/html:/var/www/html
       - php-socket:/run/php
     networks: ["web"]
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@stream_socket_client('unix:///run/php/php-fpm.sock') ? 0 : 1);"]
+      interval: 30s # 每隔约 30 秒执行一次健康检查
+      timeout: 3s # 每次健康检查最多允许运行 3 秒
+      retries: 3
+      start_period: 10s # 容器刚启动后的前 10 秒属于启动宽限期
     depends_on:
       mysql:
         condition: service_healthy
@@ -79,10 +91,10 @@ services:
     command: ["valkey-server", "/etc/valkey/valkey.conf"]
     healthcheck:
       test: ["CMD", "valkey-cli", "-h", "127.0.0.1", "-p", "6379", "ping"]
-      interval: 10s
-      timeout: 3s
+      interval: 10s # 每隔约 10 秒执行一次健康检查
+      timeout: 3s # 每次健康检查最多允许运行 3 秒
       retries: 3
-      start_period: 5s
+      start_period: 5s # 容器刚启动后的前 5 秒属于启动宽限期
     networks: ["web"]
 
 volumes:

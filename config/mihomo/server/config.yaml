@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (c) 2026 honeok <i@honeok.com>
+
+---
+mode: rule
+log-level: warning
+ipv6: true
+
+listeners:
+  # VLESS + REALITY + Vision
+  - name: "vless-reality-in"
+    type: vless
+    port: 10817
+    listen: "::"
+    users:
+      - uuid: "cat /proc/sys/kernel/random/uuid"
+        flow: xtls-rprx-vision
+    reality-config:
+      dest: www.tesla.com:443
+      private-key: "mihomo generate reality-keypair"
+      short-id: ["openssl rand -hex 8"]
+      server-names: ["www.tesla.com"]
+
+rules:
+  - MATCH,DIRECT

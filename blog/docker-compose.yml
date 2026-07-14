@@ -63,10 +63,10 @@ services:
   redis:
     # https://redis.io/docs/latest/operate/oss_and_stack/management/admin
     # Set the Linux kernel overcommit memory setting to 1. Add vm.overcommit_memory = 1 to /etc/sysctl.conf
-    image: percona/valkey:9.1.0
+    image: ghcr.io/valkey-io/valkey:9.1.0-alpine
     container_name: redis
     restart: unless-stopped
-    user: 998:998
+    user: 999:999
     # ports:
     #   - 127.0.0.1:6379:6379
     # environment:

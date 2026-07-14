@@ -22,7 +22,7 @@ fi
 
 # redis
 if [ -d "$PWD/redis/data" ]; then
-    chown -R 998:998 "$PWD/redis/data"
+    chown -R 999:1000 "$PWD/redis/data"
 fi
 
 docker compose up -d

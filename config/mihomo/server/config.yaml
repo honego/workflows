@@ -20,6 +20,18 @@ profile:
   store-fake-ip: false
 
 listeners:
+  # Socks5
+  - name: "Socks5-IN"
+    type: socks
+    port: 10808
+    listen: "::"
+    # proxy: proxy # 如果不为空则直接将该入站流量交由指定 proxy 处理
+    udp: false # 默认值: true
+    # 如果不填写users项, 则遵从全局 authentication 设置, 如果填写会忽略全局设置, 如想跳过该入站的验证可填写 users: []
+    users:
+      - username: "openssl rand -hex 8"
+        password: "openssl rand -base64 24 | tr -d '\n' | tr '/+' '_-'"
+
   # Shadowsocks
   # cipher 支持:
   # aes-128-gcm aes-192-gcm aes-256-gcm
@@ -32,6 +44,7 @@ listeners:
     type: shadowsocks
     port: 10813
     listen: "::"
+    # proxy: proxy # 如果不为空则直接将该入站流量交由指定 proxy 处理
     password: "openssl rand -base64 32"
     cipher: chacha20-ietf-poly1305
 
@@ -48,6 +61,31 @@ listeners:
       private-key: "mihomo generate reality-keypair"
       short-id: ["openssl rand -hex 8"]
       server-names: ["www.tesla.com"]
+
+  # VLESS + XHTTP + Encryption
+  - name: "VLESS-XHTTP-Encryption-IN"
+    type: vless
+    port: 10818
+    listen: "::"
+    users:
+      - uuid: "cat /proc/sys/kernel/random/uuid"
+        flow: xtls-rprx-vision
+    # 如果不为空则开启 XHTTP 传输层
+    xhttp-config:
+      path: "/apis/networking.k8s.io/v1/namespaces/default/ingresses"
+      host: "www.tesla.com"
+      mode: "auto" # Available: "stream-one" "stream-up" or "packet-up"
+      x-padding-obfs-mode: true
+      x-padding-key: "_dc"
+      x-padding-header: "X-Cache"
+      x-padding-placement: "queryInHeader" # Available: queryInHeader, cookie, header, query
+      x-padding-method: "tokenish" # Available: repeat-x, tokenish
+    # vless encryption 服务端配置:
+    # 使用 mihomo generate vless-x25519 生成传统 X25519 认证 或 mihomo generate vless-mlkem768 生成 ML-KEM-768 后量子认证
+    decryption: "mlkem768x25519plus.native/xorpub/random.600s(300-600s)/0s.(padding len).(padding gap).(X25519 PrivateKey).(ML-KEM-768 Seed)..."
+    # 下面两项如果填写则开启 tls, 需要同时填写
+    certificate: ./certificate.crt # 证书 PEM 格式, 或证书的路径
+    private-key: ./private.key # 证书对应的私钥 PEM 格式, 或私钥路径
 
 rules:
   - GEOSITE,category-ads-all,REJECT

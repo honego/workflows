@@ -3,6 +3,9 @@
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 # SPDX-License-Identifier: MIT
 
+# References:
+# https://sources.debian.org/src/bash/*/debian/skel.bashrc
+
 # 非交互模式下跳过执行
 [ -z "$PS1" ] && return
 
@@ -17,15 +20,15 @@ HISTSIZE=500            # 当前终端会话内存中保留的最大命令数量
 HISTFILESIZE=1000       # 历史记录文件 ~/.bash_history 中保留的最大命令数量
 HISTTIMEFORMAT='%F %T ' # 为历史记录显示添加时间戳
 
-shopt -s histappend   # 终端退出时将本次的命令历史追加到历史文件中而不是覆盖它
+shopt -s histappend   # Shell 退出时将本次命令历史追加到历史文件而不是覆盖
 shopt -s dirspell     # 补全目录名时尝试纠正轻微拼写错误
-shopt -s checkwinsize # 自动更新终端窗口尺寸
+shopt -s checkwinsize # 执行外部命令后自动更新终端窗口尺寸
 
-# 配置 less 智能预览非文本文件
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+# 启用 less 输入预处理, 支持查看压缩包和部分非文本文件
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh /usr/bin/lesspipe)"
 
-# 设置 chroot 环境变量以显示在提示符
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+# 设置用于标识当前 chroot 环境的变量
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 	debian_chroot="$(cat /etc/debian_chroot)"
 fi
 

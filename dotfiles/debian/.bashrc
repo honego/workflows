@@ -27,32 +27,32 @@ shopt -s checkwinsize # 执行外部命令后自动更新终端窗口尺寸
 # 启用 less 输入预处理, 支持查看压缩包和部分非文本文件
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh /usr/bin/lesspipe)"
 
-# 设置用于标识当前 chroot 环境的变量
+# 读取 chroot 环境名称供命令提示符显示
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-	debian_chroot="$(cat /etc/debian_chroot)"
+    debian_chroot="$(< /etc/debian_chroot)"
 fi
 
-# 检查终端是否支持彩色提示符
-if [ -x /usr/bin/tput ] && tput setaf 1 >/dev/null 2>&1; then
-	color_prompt=yes
+# 检测终端是否支持彩色提示符
+if command -v tput > /dev/null 2>&1 && tput setaf 1 > /dev/null 2>&1; then
+    color_prompt=yes
 fi
 
 # 设置提示符格式, 包含 chroot 信息
 if [ "${color_prompt:-}" = yes ]; then
-	PS1='\[\033[01;33m\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt
 
 # 设置终端标题为 user@host:dir 针对 xterm / rxvt 终端
 case "$TERM" in
 xterm* | rxvt*)
-	PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-	;;
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
 *)
-	:
-	;;
+    :
+    ;;
 esac
 
 # 自定义 root 提示符和文件权限掩码 默认由 /etc/profile 设置
@@ -63,20 +63,20 @@ esac
 
 # 启用 ls 的颜色支持, 并添加实用的别名
 if [ -x /usr/bin/dircolors ]; then
-	# 加载用户或系统默认颜色配置
-	if [ -r ~/.dircolors ]; then
-		eval "$(dircolors -b ~/.dircolors)"
-	else
-		eval "$(dircolors -b)"
-	fi
-	alias ls='ls --color=auto' # 定义 ls 彩色输出别名
-	alias dir='dir --color=auto'
-	alias vdir='vdir --color=auto'
+    # 加载用户或系统默认颜色配置
+    if [ -r ~/.dircolors ]; then
+        eval "$(dircolors -b ~/.dircolors)"
+    else
+        eval "$(dircolors -b)"
+    fi
+    alias ls='ls --color=auto' # 定义 ls 彩色输出别名
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
 
-	# 定义 grep 彩色输出别名
-	alias grep='grep --color=auto'
-	alias fgrep='grep -F --color=auto'
-	alias egrep='grep -E --color=auto'
+    # 定义 grep 彩色输出别名
+    alias grep='grep --color=auto'
+    alias fgrep='grep -F --color=auto'
+    alias egrep='grep -E --color=auto'
 fi
 
 alias l='ls -AC'
@@ -90,14 +90,14 @@ alias la='ls -A'
 
 # 加载用户自定义别名文件
 if [ -f ~/.bash_aliases ]; then
-	. ~/.bash_aliases
+    . ~/.bash_aliases
 fi
 
 # 启用命令自动补全
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-	. /etc/bash_completion
+    . /etc/bash_completion
 elif [ -f /usr/share/bash-completion/bash_completion ] && ! shopt -oq posix; then
-	. /usr/share/bash-completion/bash_completion
+    . /usr/share/bash-completion/bash_completion
 fi
 
 # 定义目录导航快捷别名

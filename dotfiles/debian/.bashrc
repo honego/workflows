@@ -73,26 +73,27 @@ esac
 
 # You may uncomment the following lines if you want `ls' to be colorized:
 
-# 加载 ls 颜色配置
+# 启用 ls 的颜色支持, 并添加实用的别名
 if [ -x /usr/bin/dircolors ]; then
 	# 加载用户或系统默认颜色配置
-	if [ -r "$HOME/.dircolors" ]; then
-		eval "$(dircolors -b "$HOME/.dircolors")"
+	if [ -r ~/.dircolors ]; then
+		eval "$(dircolors -b ~/.dircolors)"
 	else
 		eval "$(dircolors -b)"
 	fi
+	alias ls='ls --color=auto' # 定义 ls 彩色输出别名
+	alias dir='dir --color=auto'
+	alias vdir='vdir --color=auto'
+
+	# 定义 grep 彩色输出别名
+	alias grep='grep --color=auto'
+	alias fgrep='grep -F --color=auto'
+	alias egrep='grep -E --color=auto'
 fi
 
-# 定义 ls 彩色输出别名
-alias ls='ls --color=auto'
 alias l='ls -AC'
 alias ll='ls -Al --time-style=long-iso'
 alias la='ls -A'
-
-# 定义 grep 彩色输出别名
-alias grep='grep --color=auto'
-alias fgrep='grep -F --color=auto'
-alias egrep='grep -E --color=auto'
 
 # 防止误操作的别名
 # alias rm='rm -i'

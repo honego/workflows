@@ -36,31 +36,11 @@
 <style>
   p.text-base.font-semibold,
   p.text-sm.font-medium.opacity-50,
-  [id="radix-:r0:"],
-  [id="radix-:r2:"],
-  button[aria-haspopup="dialog"],
-  button:has(.lucide-image-minus) {
+  button:has(.lucide-image-minus),
+  .header-handles > button:has(> .sr-only) {
     display: none !important;
   }
 </style>
-
-<script>
-  (() => {
-    const hideHeaderButtons = () => {
-      document.querySelectorAll("button").forEach((button) => {
-        const label = button.querySelector(".sr-only")?.textContent?.trim();
-        if (label === "Search" || label === "Change language" || label === "Toggle theme") {
-          button.style.setProperty("display", "none", "important");
-        }
-      });
-    };
-    hideHeaderButtons();
-    new MutationObserver(hideHeaderButtons).observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-    });
-  })();
-</script>
 
 <!-- 自定义时间显示样式 -->
 <style>

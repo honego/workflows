@@ -2,10 +2,10 @@
 
 <div align="left">
   <a href="https://www.debian.org">
-    <img src="https://img.shields.io/badge/Debian-A81D33?logo=debian&logoColor=white" alt="Debian" />
+    <img src="https://img.shields.io/badge/Debian-A81D33?style=flat-square&logo=debian&logoColor=white" alt="Debian" />
   </a>
   <a href="https://ubuntu.com">
-    <img src="https://img.shields.io/badge/Ubuntu-E95420?logo=ubuntu&logoColor=white" alt="Ubuntu" />
+    <img src="https://img.shields.io/badge/Ubuntu-E95420?style=flat-square&logo=ubuntu&logoColor=white" alt="Ubuntu" />
   </a>
 </div>
 

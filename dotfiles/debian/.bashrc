@@ -40,32 +40,25 @@ xterm* | rxvt*)
     ;;
 esac
 
-# 启用 ls 的颜色支持, 并添加实用的别名
+# 加载 ls 颜色配置
 if [ -x /usr/bin/dircolors ]; then
-    # 加载用户或系统默认颜色配置
-    if [ -r ~/.dircolors ]; then
-        eval "$(dircolors -b ~/.dircolors)"
+    if [ -r "$HOME/.dircolors" ]; then
+        eval "$(dircolors -b "$HOME/.dircolors")"
     else
         eval "$(dircolors -b)"
     fi
-    alias ls='ls --color=auto' # 定义 ls 彩色输出别名
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
-
-    # 定义 grep 彩色输出别名
-    alias grep='grep --color=auto'
-    alias fgrep='grep -F --color=auto'
-    alias egrep='grep -E --color=auto'
 fi
 
-alias l='ls -AC'
-alias ll='ls -Al --time-style=long-iso'
+# 定义 ls 彩色输出别名
+alias ls='ls --color=auto'
+alias l='ls -CF'
+alias ll='ls -Alh --time-style=long-iso'
 alias la='ls -A'
 
-# 防止误操作的别名
-# alias rm='rm -i'
-# alias cp='cp -i'
-# alias mv='mv -i'
+# 定义 grep 彩色输出别名
+alias grep='grep --color=auto'
+alias fgrep='grep -F'
+alias egrep='grep -E'
 
 # 加载用户自定义别名文件
 if [ -f ~/.bash_aliases ]; then
@@ -80,6 +73,14 @@ if ! shopt -oq posix; then
         . /etc/bash_completion
     fi
 fi
+
+# 带颜色的 GCC 警告和错误
+# export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# 防止误操作的别名
+# alias rm='rm -i'
+# alias cp='cp -i'
+# alias mv='mv -i'
 
 # 定义目录导航快捷别名
 alias ..='cd ..'

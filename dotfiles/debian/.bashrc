@@ -3,8 +3,7 @@
 # Copyright (c) 2025-2026 honeok <i@honeok.com>
 # SPDX-License-Identifier: MIT
 
-# References:
-# https://sources.debian.org/src/bash/*/debian/skel.bashrc
+# Based from: https://sources.debian.org/src/bash/*/debian/skel.bashrc
 
 # 非交互模式下跳过执行
 [ -z "$PS1" ] && return
@@ -32,18 +31,7 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot="$(< /etc/debian_chroot)"
 fi
 
-# 检测终端是否支持彩色提示符
-if command -v tput > /dev/null 2>&1 && tput setaf 1 > /dev/null 2>&1; then
-    color_prompt=yes
-fi
-
-# 设置提示符格式, 包含 chroot 信息
-if [ "${color_prompt:-}" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[01;33m\]@\[\033[01;36m\]\h\[\033[00m\]:\[\033[01;33m\]\w\[\033[01;35m\]\$\[\033[00m\] '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt
+PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 
 # 针对 xterm 和 rxvt 终端设置窗口标题
 case "$TERM" in
@@ -51,12 +39,6 @@ xterm* | rxvt*)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
     ;;
 esac
-
-# 自定义 root 提示符和文件权限掩码 默认由 /etc/profile 设置
-# PS1='${debian_chroot:+($debian_chroot)}\h:\w\$ '
-# umask 022
-
-# You may uncomment the following lines if you want `ls' to be colorized:
 
 # 启用 ls 的颜色支持, 并添加实用的别名
 if [ -x /usr/bin/dircolors ]; then
@@ -91,10 +73,12 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 # 启用命令自动补全
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
-elif [ -f /usr/share/bash-completion/bash_completion ] && ! shopt -oq posix; then
-    . /usr/share/bash-completion/bash_completion
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
 fi
 
 # 定义目录导航快捷别名

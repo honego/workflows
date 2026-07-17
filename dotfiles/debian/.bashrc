@@ -39,19 +39,16 @@ fi
 
 # 设置提示符格式, 包含 chroot 信息
 if [ "${color_prompt:-}" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[01;33m\]@\[\033[01;36m\]\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[01;33m\]@\[\033[01;36m\]\h\[\033[00m\]:\[\033[01;33m\]\w\[\033[01;35m\]\$\[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt
 
-# 设置终端标题为 user@host:dir 针对 xterm / rxvt 终端
+# 针对 xterm 和 rxvt 终端设置窗口标题
 case "$TERM" in
 xterm* | rxvt*)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    :
     ;;
 esac
 

@@ -14,6 +14,9 @@ esac
 # 设置当前 Shell 及子进程的 UTF-8 语言环境
 export LANG=en_US.UTF-8
 
+# 设置默认文本编辑器
+export EDITOR=vim
+
 # Debian / Ubuntu 软件包配置始终使用非交互模式
 export DEBIAN_FRONTEND=noninteractive
 

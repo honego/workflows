@@ -326,6 +326,7 @@ rules:
   - RULE-SET,reject-list,REJECT # 拦截补充
 
   - RULE-SET,connectivity-check-domain,DIRECT # 连接性检查
+  - RULE-SET,ntp-domain,DIRECT
   - RULE-SET,meituan-domain,DIRECT
   - RULE-SET,direct-list,DIRECT # 直连补充
 

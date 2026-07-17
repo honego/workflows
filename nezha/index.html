@@ -38,8 +38,8 @@
   p.text-sm.font-medium.opacity-50,
   [id="radix-:r0:"],
   [id="radix-:r2:"],
-  button:has(.lucide-image-minus),
-  button.rounded-\[50px\][aria-haspopup="dialog"] {
+  button[aria-haspopup="dialog"],
+  button:has(.lucide-image-minus) {
     display: none !important;
   }
 </style>
@@ -49,7 +49,7 @@
     const hideHeaderButtons = () => {
       document.querySelectorAll("button").forEach((button) => {
         const label = button.querySelector(".sr-only")?.textContent?.trim();
-        if (label === "Change language" || label === "Toggle theme") {
+        if (label === "Search" || label === "Change language" || label === "Toggle theme") {
           button.style.setProperty("display", "none", "important");
         }
       });

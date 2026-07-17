@@ -15,19 +15,13 @@
   window.ForceUseSvgFlag = "true"; /* 强制使用 SVG 旗帜 */
 </script>
 
-<!-- 引入抖音美好字体 -->
-<style>
-  @font-face {
-    font-family: "Douyin Sans";
-    src: url("https://cdn.jsdmirror.com/gh/bytedance/fonts@main/DouyinSans/DouyinSansBold.ttf") format("truetype");
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
-  }
+<!-- 引入 MiSans 字体 -->
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/misans@4.1.0/lib/Normal/MiSans-Demibold.min.css" />
 
+<style>
   /* 设置页面字体全局生效 强制覆盖默认无衬线字体 */
   * {
-    font-family: "Douyin Sans", sans-serif !important;
+    font-family: "MiSans", sans-serif !important;
   }
 
   h1,
@@ -35,8 +29,7 @@
   h3,
   h4,
   h5 {
-    font-family: "Douyin Sans", sans-serif !important;
-    font-weight: bold;
+    font-family: "MiSans", sans-serif !important;
   }
 
   /* 确保按钮 输入框等交互组件也使用该字体 */
@@ -44,7 +37,7 @@
   input,
   select,
   textarea {
-    font-family: "Douyin Sans", sans-serif !important;
+    font-family: "MiSans", sans-serif !important;
   }
 </style>
 
@@ -77,9 +70,9 @@
 
   /* 时间主体 */
   .header-timer .flex.items-center.font-medium.text-sm {
-    font-family: "Douyin Sans", sans-serif !important;
+    font-family: "MiSans", sans-serif !important;
     font-size: 2rem !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     line-height: 1 !important;
     letter-spacing: -0.04em !important;
     justify-content: flex-start !important;
@@ -117,7 +110,7 @@
 
   .header-timer .flex.items-center.font-medium.text-sm > span {
     font-size: 2rem !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     line-height: 1 !important;
   }
 

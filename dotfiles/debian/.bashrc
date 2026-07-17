@@ -6,24 +6,28 @@
 # Based from: https://sources.debian.org/src/bash/*/debian/skel.bashrc
 
 # 非交互模式下跳过执行
-[ -z "$PS1" ] && return
+case $- in
+*i*) ;;
+*) return ;;
+esac
 
-# 设置系统 utf-8 语言环境
+# 设置当前 Shell 及子进程的 UTF-8 语言环境
 export LANG=en_US.UTF-8
 
-# 环境变量用于在 debian 或 ubuntu 操作系统中设置非交互式 (noninteractive) 安装模式
+# Debian / Ubuntu 软件包配置始终使用非交互模式
 export DEBIAN_FRONTEND=noninteractive
 
+# 配置命令历史记录
 HISTCONTROL=ignoreboth  # 忽略连续重复命令和以空格开头的命令
 HISTSIZE=500            # 当前终端会话内存中保留的最大命令数量
 HISTFILESIZE=1000       # 历史记录文件 ~/.bash_history 中保留的最大命令数量
 HISTTIMEFORMAT='%F %T ' # 为历史记录显示添加时间戳
 
 shopt -s histappend   # Shell 退出时将本次命令历史追加到历史文件而不是覆盖
-shopt -s dirspell     # 补全目录名时尝试纠正轻微拼写错误
 shopt -s checkwinsize # 执行外部命令后自动更新终端窗口尺寸
+shopt -s dirspell     # 补全目录名时尝试纠正轻微拼写错误
 
-# 启用 less 输入预处理, 支持查看压缩包和部分非文本文件
+# 启用 less 输入预处理 支持查看压缩包和部分非文本文件
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh /usr/bin/lesspipe)"
 
 # 读取 chroot 环境名称供命令提示符显示
@@ -31,6 +35,7 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot="$(< /etc/debian_chroot)"
 fi
 
+# 设置命令提示符
 PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 
 # 针对 xterm 和 rxvt 终端设置窗口标题
@@ -61,8 +66,8 @@ alias fgrep='grep -F'
 alias egrep='grep -E'
 
 # 加载用户自定义别名文件
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f "$HOME/.bash_aliases" ]; then
+    . "$HOME/.bash_aliases"
 fi
 
 # 启用命令自动补全
@@ -73,9 +78,6 @@ if ! shopt -oq posix; then
         . /etc/bash_completion
     fi
 fi
-
-# 带颜色的 GCC 警告和错误
-# export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # 防止误操作的别名
 # alias rm='rm -i'

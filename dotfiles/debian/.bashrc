@@ -32,30 +32,18 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 	debian_chroot="$(cat /etc/debian_chroot)"
 fi
 
-# 启用彩色提示符 针对 xterm-color 终端或 256 色终端
-case "$TERM" in
-xterm-color | *-256color) color_prompt=yes ;;
-esac
-
-# 强制启用彩色提示符 默认禁用, 如启用需取消注释
-# force_color_prompt=yes
-
 # 检查终端是否支持彩色提示符
-if [ -n "$force_color_prompt" ]; then
-	if [ -x /usr/bin/tput ] && tput setaf >/dev/null 2>&1; then
-		color_prompt=yes
-	else
-		color_prompt=
-	fi
+if [ -x /usr/bin/tput ] && tput setaf 1 >/dev/null 2>&1; then
+	color_prompt=yes
 fi
 
-# 设置提示符格式 彩色或无色 包含chroot信息
-if [ "$color_prompt" = yes ]; then
-	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# 设置提示符格式, 包含 chroot 信息
+if [ "${color_prompt:-}" = yes ]; then
+	PS1='\[\033[01;33m\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
 	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
-unset color_prompt force_color_prompt
+unset color_prompt
 
 # 设置终端标题为 user@host:dir 针对 xterm / rxvt 终端
 case "$TERM" in

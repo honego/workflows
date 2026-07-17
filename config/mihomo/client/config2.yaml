@@ -135,7 +135,7 @@ dns:
   fake-ip-filter:
     - "rule-set:private-domain"
     - "rule-set:ntp-domain"
-    - "rule-set:connectivity-domain"
+    - "rule-set:connectivity-check-domain"
   fake-ip-filter-mode: blacklist # 配置 fake-ip-filter 的匹配模式 默认为 blacklist 即如果匹配成功不返回 fake-ip
 
   # 配置后面的nameserver fallback和nameserver-policy向dns服务器的连接过程是否遵守遵守rules规则
@@ -159,7 +159,7 @@ dns:
   # 配置查询域名使用的DNS服务器
   nameserver-policy:
     "rule-set:cn-domain,private-domain": *dns-cn
-    "rule-set:awaads-domain,geosite:category-ads-all": "rcode://success"
+    "rule-set:awaads-domain": "rcode://success"
 
 ## 节点信息
 proxies:

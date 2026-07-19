@@ -88,7 +88,7 @@ listeners:
       x-padding-placement: "queryInHeader" # Available: queryInHeader cookie header query
       x-padding-method: "tokenish" # Available: repeat-x tokenish
     # vless encryption 服务端配置:
-    # 使用 mihomo generate vless-x25519 生成传统 X25519 认证 或 mihomo generate vless-mlkem768 生成 ML-KEM-768 后量子认证
+    # 使用 ./mihomo generate vless-x25519 生成传统 X25519 认证 或 ./mihomo generate vless-mlkem768 生成 ML-KEM-768 后量子认证
     decryption: "mlkem768x25519plus.native/xorpub/random.600s(300-600s)/0s.(padding len).(padding gap).(X25519 PrivateKey).(ML-KEM-768 Seed)..."
     # 下面两项如果填写则开启 tls, 需要同时填写
     certificate: ./certificate.crt # 证书 PEM 格式, 或证书的路径

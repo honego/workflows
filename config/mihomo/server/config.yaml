@@ -60,27 +60,27 @@ listeners:
     listen: "::"
     # proxy: proxy # 如果不为空则直接将该入站流量交由指定 proxy 处理
     users:
-      - uuid: "cat /proc/sys/kernel/random/uuid"
+      - uuid: "./mihomo generate uuid"
         flow: xtls-rprx-vision
     reality-config:
-      dest: www.tesla.com:443
-      private-key: "mihomo generate reality-keypair"
+      dest: www.dmm.com:443
+      private-key: "./mihomo generate reality-keypair"
       short-id: ["openssl rand -hex 8"]
-      server-names: ["www.tesla.com"]
+      server-names: ["www.dmm.com"]
 
-  # VLESS + XHTTP + Encryption
-  - name: "VLESS-XHTTP-Encryption-IN"
+  # VLESS + XHTTP + Encryption + Vision
+  - name: "VLESS-XHTTP-Encryption-Vision-IN"
     type: vless
     port: 10818
     listen: "::"
     # proxy: proxy # 如果不为空则直接将该入站流量交由指定 proxy 处理
     users:
-      - uuid: "cat /proc/sys/kernel/random/uuid"
+      - uuid: "./mihomo generate uuid"
         flow: xtls-rprx-vision
     # 如果不为空则开启 XHTTP 传输层
     xhttp-config:
       path: "/apis/networking.k8s.io/v1/namespaces/default/ingresses"
-      host: "www.tesla.com"
+      host: "www.dmm.com"
       mode: "auto" # Available: "stream-one" "stream-up" or "packet-up"
       x-padding-obfs-mode: true
       x-padding-key: "_dc"
@@ -115,7 +115,7 @@ listeners:
     alpn: ["h3"]
     ignore-client-bandwidth: false # 允许客户端提交带宽参数, 否则不会协商 Brutal
     # HTTP3 服务器认证失败时的行为 (URL 字符串配置), 如果 masquerade 未配置则返回 404
-    masquerade: https://www.pornhub.com
+    masquerade: https://www.dmm.com
 
 rules:
   - GEOSITE,category-ads-all,REJECT

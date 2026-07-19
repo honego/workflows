@@ -67,12 +67,13 @@ proxies:
     servername: www.dmm.com
     client-fingerprint: firefox
     encryption: ""
+    # https://github.com/XTLS/BBS/issues/25
     xhttp-opts:
       path: "/apis/networking.k8s.io/v1/namespaces/default/ingresses"
       host: www.dmm.com
       mode: "auto" # Available: "stream-one" "stream-up" or "packet-up"
       x-padding-obfs-mode: true
       x-padding-key: "_dc"
-      x-padding-header: X-Cache
-      x-padding-placement: queryInHeader # Available: queryInHeader cookie header query
-      x-padding-method: tokenish # Available: repeat-x tokenish
+      x-padding-header: "X-Cache"
+      x-padding-placement: "queryInHeader" # Available: queryInHeader cookie header query
+      x-padding-method: "tokenish" # Available: repeat-x tokenish

@@ -1,18 +1,21 @@
-# https://github.com/XTLS/Xray-install/blob/main/install-release.sh#L526
+# Based on: https://github.com/XTLS/Xray-install/blob/main/install-release.sh#L526
 
 [Unit]
 Description=Xray Service
-Documentation=https://github.com/xtls
+Documentation=https://xtls.github.io
 After=network.target nss-lookup.target
 
 [Service]
-# User=nobody
-# CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-# AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-NoNewPrivileges=true
+User=nobody
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 ExecStart=/etc/xray/bin/xray run -config /etc/xray/config.json -confdir /etc/xray/conf
+NoNewPrivileges=true # 进程及其子进程以后通过执行其他程序, 不能获得比当前更多的权限
+PrivateTmp=true # 单独分配一个临时文件空间, 避免与其他程序通过 /tmp 相互干扰
+# ProtectSystem=full # 创建独立的挂载命名空间, 并把系统关键目录以只读方式提供给 Xray
 Restart=on-failure
-RestartPreventExitStatus=23
+# https://github.com/XTLS/Xray-core/blob/main/main/run.go#L86
+RestartPreventExitStatus=23 # 程序异常退出时自动重启, 但退出码是 23 时不要重启
 LimitNPROC=10000
 LimitNOFILE=1000000
 

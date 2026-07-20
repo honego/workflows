@@ -63,7 +63,8 @@ proxies:
     alpn: [h2, http/1.1] # 默认仅支持 h2 如果开启 h3 模式需要设置 alpn: [h3] 如果开启 http1.1 模式需要设置 alpn: [http/1.1]
     ech-opts:
       enable: true
-      query-server-name: linuxhandbook.com
+      # https://github.com/XTLS/BBS/issues/13#issuecomment-3966039365
+      query-server-name: linuxhandbook.com # Available: labs.cloudflare.dev cloudflare-quic.com
     servername: www.dmm.com
     client-fingerprint: firefox
     encryption: ""

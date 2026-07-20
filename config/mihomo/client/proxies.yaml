@@ -78,3 +78,18 @@ proxies:
       x-padding-header: "X-Cache"
       x-padding-placement: "queryInHeader" # Available: queryInHeader cookie header query
       x-padding-method: "tokenish" # Available: repeat-x tokenish
+
+  # Hysteria2
+  - name: "Hysteria2"
+    type: hysteria2
+    server: 151.101.1.1
+    port: 443
+    # up 和 down 均不写或为 0 则使用 BBR 流控
+    up: "150 Mbps"
+    down: "950 Mbps"
+    # bbr-profile: "" # Available: "standard" "conservative" "aggressive". Default: "standard"
+    password: "openssl rand -base64 32 | tr '/+' '_-'"
+    # obfs: "" # 默认为空 如果填写则开启 obfs, 目前支持 salamander 和 gecko
+    # obfs-password: "openssl rand -base64 32 | tr '/+' '_-'"
+    # skip-cert-verify: false
+    alpn: ["h3"]

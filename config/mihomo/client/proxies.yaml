@@ -91,5 +91,4 @@ proxies:
     password: "openssl rand -base64 32 | tr '/+' '_-'"
     # obfs: "" # 默认为空 如果填写则开启 obfs, 目前支持 salamander 和 gecko
     # obfs-password: "openssl rand -base64 32 | tr '/+' '_-'"
-    # skip-cert-verify: false
     alpn: ["h3"]

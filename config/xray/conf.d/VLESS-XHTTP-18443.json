@@ -18,7 +18,7 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.dmm.com",
+          "serverName": "www.example.com",
           "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
@@ -28,7 +28,7 @@
           ]
         },
         "xhttpSettings": {
-          "host": "www.dmm.com",
+          "host": "www.example.com",
           "path": "/apis/networking.k8s.io/v1/namespaces/default/ingresses",
           "mode": "auto",
           "xPaddingObfsMode": true,

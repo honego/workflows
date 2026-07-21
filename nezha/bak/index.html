@@ -3,12 +3,12 @@
 <script>
   // window.CustomBackgroundImage = "https://img.honeok.com/file/vdR6Ynvz.jpg"; /* 自定义背景图 */
   // window.CustomMobileBackgroundImage = "https://img.honeok.com/file/REi4KKTC.png"; /* 自定义手机端背景图 */
-  window.CustomLogo = "https://img.honeok.com/file/G1XQNWbC.png"; /* 自定义 Logo */
+  window.CustomLogo = "https://img.honeok.com/file/suLvn0Fe.svg"; /* 自定义 Logo */
   window.CustomDesc = "ᓚᘏᗢ"; /* 自定义描述 */
   window.ShowNetTransfer = "true"; /* 卡片显示上下行流量 */
-  window.DisableAnimatedMan = "true"; /* 关掉动画人物插图 */
-  // window.CustomIllustration =
-  //   "https://img.honeok.com/file/Js47VF6P.gif"; /* 自定义插图 与 window.DisableAnimatedMan 冲突 */
+  // window.DisableAnimatedMan = "true"; /* 关掉动画人物插图 */
+  window.CustomIllustration =
+    "https://chatbotcos.weixin.qq.com/chatbot/unlimited-openaiassets_2abfb3270519703981b1a5026fe78f95_5679931784642550639.gif"; /* 自定义插图 与 window.DisableAnimatedMan 冲突 */
   // window.FixedTopServerName = "true"; /* 固定顶部服务器名称 */
   window.ForceTheme = "light"; /* 强制默认颜色主题 */
   // window.CustomLinks = '[{\"link\":\"https://www.honeok.com/\",\"name\":\"HomePage🚲\"}]'; /* 自定义外链 */
@@ -16,34 +16,18 @@
 </script>
 
 <!-- 引入抖音美好字体 -->
+<!-- https://www.nodeseek.com/post-328904-1 -->
 <style>
   @font-face {
     font-family: "Douyin Sans";
     src: url("https://cdn.jsdmirror.com/gh/bytedance/fonts@main/DouyinSans/DouyinSansBold.ttf") format("truetype");
     font-weight: bold;
     font-style: normal;
-    font-display: swap;
+    font-display: swap; /* 优化字体加载过程 */
   }
 
-  /* 设置页面字体全局生效 强制覆盖默认无衬线字体 */
+  /* 设置页面字体全局生效 */
   * {
-    font-family: "Douyin Sans", sans-serif !important;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
-    font-family: "Douyin Sans", sans-serif !important;
-    font-weight: bold;
-  }
-
-  /* 确保按钮 输入框等交互组件也使用该字体 */
-  button,
-  input,
-  select,
-  textarea {
     font-family: "Douyin Sans", sans-serif !important;
   }
 </style>
@@ -52,34 +36,21 @@
 <style>
   p.text-base.font-semibold,
   p.text-sm.font-medium.opacity-50,
-  [id="radix-:r0:"],
-  [id="radix-:r2:"],
   button:has(.lucide-image-minus),
-  button.rounded-\[50px\][aria-haspopup="dialog"] {
+  .header-handles > button:has(> .sr-only) {
     display: none !important;
   }
 </style>
 
 <!-- 自定义时间显示样式 -->
 <style>
-  /* 隐藏标题和副标题 */
-  .header-timer > p.text-base.font-semibold {
-    display: none !important;
-  }
-
-  .header-timer > .flex.items-center.gap-1 > p.text-sm.font-medium.opacity-50 {
-    display: none !important;
-  }
-
   .header-timer {
     align-items: flex-start !important;
   }
 
   /* 时间主体 */
   .header-timer .flex.items-center.font-medium.text-sm {
-    font-family: "Douyin Sans", sans-serif !important;
     font-size: 2rem !important;
-    font-weight: 700 !important;
     line-height: 1 !important;
     letter-spacing: -0.04em !important;
     justify-content: flex-start !important;
@@ -110,27 +81,13 @@
   }
 
   .header-timer .flex.items-center.font-medium.text-sm .relative {
+    min-width: 0.62em !important;
     font-size: 2rem !important;
     line-height: 1 !important;
-    min-width: 0.62em !important;
   }
 
   .header-timer .flex.items-center.font-medium.text-sm > span {
     font-size: 2rem !important;
-    font-weight: 700 !important;
     line-height: 1 !important;
-  }
-
-  /* 手机端 */
-  @media (max-width: 768px) {
-    .header-timer .flex.items-center.font-medium.text-sm,
-    .header-timer .flex.items-center.font-medium.text-sm .relative,
-    .header-timer .flex.items-center.font-medium.text-sm > span {
-      font-size: 1rem !important;
-    }
-
-    .header-timer .flex.items-center.font-medium.text-sm [data-issues-count-animation] {
-      height: 1rem !important;
-    }
   }
 </style>

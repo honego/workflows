@@ -115,7 +115,7 @@ listeners:
     alpn: ["h3"]
     ignore-client-bandwidth: false # 允许客户端提交带宽参数, 否则不会协商 Brutal
     # HTTP3 服务器认证失败时的行为 (URL 字符串配置), 如果 masquerade 未配置则返回 404
-    masquerade: https://www.dmm.com
+    masquerade: https://www.example.com
 
 rules:
   - GEOSITE,category-ads-all,REJECT

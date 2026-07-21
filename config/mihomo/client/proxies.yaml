@@ -31,7 +31,7 @@ proxies:
     cipher: chacha20-ietf-poly1305
     password: "openssl rand -base64 32 | tr '/+' '_-'"
     udp: true
-    udp-over-tcp: false # 是否将 UDP 流量封装到 TCP 中传输
+    udp-over-tcp: true # 是否将 UDP 流量封装到 TCP 中传输
 
   # VLESS + REALITY + Vision
   - name: "VLESS-REALITY-Vision"
@@ -43,7 +43,7 @@ proxies:
     tls: true
     udp: false
     flow: xtls-rprx-vision
-    servername: www.dmm.com
+    servername: www.example.com
     reality-opts:
       public-key: "./mihomo generate reality-keypair"
       short-id: "openssl rand -hex 8"
@@ -66,13 +66,13 @@ proxies:
       # https://github.com/net4people/bbs/issues/529
       # https://github.com/XTLS/BBS/issues/13#issuecomment-3966039365
       query-server-name: linuxhandbook.com # Available: labs.cloudflare.dev www.kali.org xanmod.org
-    servername: www.dmm.com
+    servername: www.example.com
     client-fingerprint: firefox
     encryption: ""
     # https://github.com/XTLS/BBS/issues/25
     xhttp-opts:
       path: "/apis/networking.k8s.io/v1/namespaces/default/ingresses"
-      host: www.dmm.com
+      host: www.example.com
       mode: auto # Available: "stream-one" "stream-up" or "packet-up"
       x-padding-obfs-mode: true
       x-padding-key: "_dc"
@@ -84,7 +84,7 @@ proxies:
   # https://xtls.github.io/config/inbounds/hysteria.html
   - name: "Hysteria2"
     type: hysteria2
-    server: www.dmm.com
+    server: www.example.com
     port: 443
     # up 和 down 均不写或为 0 则使用 BBR 流控
     up: "150 Mbps"
@@ -93,7 +93,7 @@ proxies:
     password: "openssl rand -base64 32 | tr '/+' '_-'"
     # obfs: "" # 默认为空 如果填写则开启 obfs, 目前支持 salamander 和 gecko
     # obfs-password: "openssl rand -base64 32 | tr '/+' '_-'"
-    # sni: www.dmm.com # sni 留空时 默认使用 server 的值
+    # sni: www.example.com # sni 留空时 默认使用 server 的值
     skip-cert-verify: false
     alpn: ["h3"]
     udp: true

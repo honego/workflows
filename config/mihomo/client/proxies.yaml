@@ -4,6 +4,7 @@
 # References:
 # https://github.com/MetaCubeX/mihomo/blob/Meta/docs/config.yaml#L369
 
+# 节点信息
 ---
 proxies:
   # Socks5

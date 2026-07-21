@@ -63,10 +63,10 @@ listeners:
       - uuid: "./mihomo generate uuid"
         flow: xtls-rprx-vision
     reality-config:
-      dest: www.dmm.com:443
+      dest: www.example.com:443
       private-key: "./mihomo generate reality-keypair"
       short-id: ["openssl rand -hex 8"]
-      server-names: ["www.dmm.com"]
+      server-names: ["www.example.com"]
 
   # VLESS + XHTTP + Encryption + Vision
   - name: "VLESS-XHTTP-Encryption-Vision-IN"
@@ -80,7 +80,7 @@ listeners:
     # 如果不为空则开启 XHTTP 传输层
     xhttp-config:
       path: "/apis/networking.k8s.io/v1/namespaces/default/ingresses"
-      host: "www.dmm.com"
+      host: "www.example.com"
       mode: "auto" # Available: "stream-one" "stream-up" or "packet-up"
       x-padding-obfs-mode: true
       x-padding-key: "_dc"

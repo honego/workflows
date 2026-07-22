@@ -34,6 +34,20 @@ proxies:
     udp: true
     udp-over-tcp: true # 是否将 UDP 流量封装到 TCP 中传输
 
+  # https://github.com/XTLS/Xray-core/pull/5067
+  # VLESS + Encryption
+  - name: "VLESS-Encryption"
+    type: vless
+    server: 151.101.1.1
+    port: 443
+    uuid: "./mihomo generate uuid"
+    network: tcp
+    tls: true # 可以不开启tls
+    udp: true
+    flow: xtls-rprx-vision
+    encryption: ""
+    client-fingerprint: firefox
+
   # VLESS + REALITY + Vision
   - name: "VLESS-REALITY-Vision"
     type: vless
